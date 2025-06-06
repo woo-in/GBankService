@@ -1,0 +1,48 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'G'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+	// 스프링 부트 스타터
+	implementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// 테스트 코드
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Spring core context (DI/IoC)
+	implementation 'org.springframework:spring-context'
+
+	// Spring boot 기반 AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.aspectj:aspectjrt:1.9.24' // @Aspect 를 위해 명시적으로 추가
+
+	// Spring JDBC
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	// Tomcat JDBC Connection Pool
+	implementation 'org.apache.tomcat:tomcat-jdbc:10.1.19'
+	// MariaDB JDBC Driver (최신 안정 버전)
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
+
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
