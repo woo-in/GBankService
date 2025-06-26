@@ -3,9 +3,9 @@ package bankapp.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import bankapp.account.BankAccount;
-import bankapp.account.HighCreditAccount;
-import bankapp.account.NormalAccount;
+import bankapp.account.request.creation.BankAccount;
+import bankapp.account.request.creation.HighCreditAccount;
+import bankapp.account.request.creation.NormalAccount;
 import org.springframework.jdbc.core.RowMapper;
 
 public class BankAccountRowMapper implements RowMapper<BankAccount>{

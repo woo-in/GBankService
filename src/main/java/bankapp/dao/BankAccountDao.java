@@ -1,11 +1,12 @@
 package bankapp.dao;
 
 
+import bankapp.account.request.creation.*;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import bankapp.account.BankAccount;
+import bankapp.account.request.creation.BankAccount;
 
 
 
@@ -35,15 +36,27 @@ public class BankAccountDao {
 
 	
 	// 신용 신뢰 계좌 개설 
-	public void insertHighCreditAccount(int accountNumber, String customerName, double balance, int ratio, int grade) {
+	public void insertHighCreditAccount(HighCreditAccountCreationRequest highCreditAccountCreationRequest) {
 		String insertSql = "INSERT INTO BankAccount VALUES(?,?,?,?,?,?)";
-		jdbcTemplate.update(insertSql , accountNumber , customerName ,  balance,ratio , "HighCreditAccount",grade);
+		jdbcTemplate.update(insertSql,
+				highCreditAccountCreationRequest.getAccountNumber(),
+				highCreditAccountCreationRequest.getCustomerName(),
+				highCreditAccountCreationRequest.getBalance(),
+				highCreditAccountCreationRequest.getRatio(),
+				"HighCreditAccount",
+				highCreditAccountCreationRequest.getGrade());
 	}
 	
 	// 보통 예금 계좌 개설 
-	public void insertNormalAccount(int accountNumber, String customerName, double balance, int ratio) {
+	public void insertNormalAccount(NormalAccountCreationRequest normalAccountCreationRequest) {
 		String insertSql = "INSERT INTO BankAccount VALUES(?,?,?,?,?,?)";
-		jdbcTemplate.update(insertSql , accountNumber , customerName ,  balance,ratio ,"NormalAccount",-1);	
+		jdbcTemplate.update(insertSql ,
+				normalAccountCreationRequest.getAccountNumber() ,
+				normalAccountCreationRequest.getCustomerName() ,
+				normalAccountCreationRequest.getBalance() ,
+				normalAccountCreationRequest.getRatio() ,
+				"NormalAccount",
+				-1);
 	}
 	
 	

@@ -1,4 +1,4 @@
-package bankapp.service;
+package bankapp.service.withdraw;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,35 +11,36 @@ import bankapp.exceptions.InvalidAccountException;
 import bankapp.exceptions.InvalidAccountException.Role;
 
 @Component
-public class WithdrawService {
+public class DefaultWithdrawService implements WithdrawService {
 
-	// 데이터 베이스 연동
-	private final BankAccountDao bankAccountDao;
+    // 데이터 베이스 연동
+    private final BankAccountDao bankAccountDao;
 
     @Autowired
-    public WithdrawService(BankAccountDao bankAccountDao) {
+    public DefaultWithdrawService(BankAccountDao bankAccountDao) {
         this.bankAccountDao = bankAccountDao;
     }
 
     // 출금 서비스
-	@Transactional
+    @Override
+    @Transactional
     public void withdraw(int accountNumber, double amount) throws IllegalArgumentException, InsufficientFundsException , InvalidAccountException {
         if (amount < 0.0) {
             throw new IllegalArgumentException("Negative number error");
         }
-                 
-        // 계좌가 존재하지 않음 
+
+        // 계좌가 존재하지 않음
         if(!bankAccountDao.isAccountExist(accountNumber)) {
-        	throw new InvalidAccountException(Role.GENERAL);
+            throw new InvalidAccountException(Role.GENERAL);
         }
-        
-        // 예치금이 적음 
+
+        // 예치금이 적음
         if(amount > bankAccountDao.selectBalance(accountNumber)) {
-        	throw new InsufficientFundsException("Insufficient Funds error");
+            throw new InsufficientFundsException("Insufficient Funds error");
         }
-        
-        // 출금 
+
+        // 출금
         bankAccountDao.updateBalanceMinus(accountNumber, amount);
-                   
+
     }
 }

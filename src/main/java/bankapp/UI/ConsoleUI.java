@@ -2,7 +2,7 @@ package bankapp.UI;
 
 import java.util.Scanner;
 
-import bankapp.account.BankAccount;
+import bankapp.account.request.creation.*;
 import bankapp.exceptions.DuplicateAccountException;
 import bankapp.exceptions.InsufficientFundsException;
 import bankapp.exceptions.InvalidAccountException;
@@ -82,9 +82,13 @@ public class ConsoleUI {
 
         System.out.print("계좌 ID : ");
         int accountNumber;
-        // 유효성 검사 (숫자가 아닌 입력)
+        // 유효성 검사 (숫자가 아닌 입력) , 양수여야함 (0은 시스템계좌)
         try {
             accountNumber = Integer.parseInt(scanner.nextLine());
+            if(accountNumber <= 0){
+                System.out.println("계좌 ID 는 0 보다 커야 합니다.");
+                return ;
+            }
         }
         catch (NumberFormatException e){
             System.out.println("유효하지 않은 계좌 ID 형식 입니다.");
@@ -124,7 +128,8 @@ public class ConsoleUI {
         }
 
         try{
-            accountManager.openNormalAccount(accountNumber , customerName , balance , ratio);
+            NormalAccountCreationRequest normalAccountCreationRequest = new NormalAccountCreationRequest(accountNumber , customerName , balance , ratio,"NormalAccount");
+            accountManager.openAccount(normalAccountCreationRequest);
         }
         catch (IllegalArgumentException e){
         	// 호출시 시스템 에러 의심 (중복체크에서 걸러짐) 
@@ -151,6 +156,10 @@ public class ConsoleUI {
         // 유효성 검사 (숫자가 아닌 입력)
         try {
             accountNumber = Integer.parseInt(scanner.nextLine());
+            if(accountNumber <= 0){
+                System.out.println("계좌 ID 는 0 보다 커야 합니다.");
+                return ;
+            }
         }
         catch (NumberFormatException e){
             System.out.println("유효하지 않은 계좌 ID 형식 입니다.");
@@ -209,10 +218,12 @@ public class ConsoleUI {
 
 
         try{
-            accountManager.openHighCreditAccount(accountNumber , customerName , balance , ratio,grade);
+            HighCreditAccountCreationRequest highCreditAccountCreationRequest = new HighCreditAccountCreationRequest(accountNumber , customerName , balance , ratio,grade,"HighCreditAccount");
+            accountManager.openAccount(highCreditAccountCreationRequest);
         }
         catch (IllegalArgumentException e){
-        	// 호출시 시스템 에러 의심 (중복체크에서 걸러짐) 
+        	// 호출시 시스템 에러 의심 (중복체크에서 걸러짐)
+            // System.out.println(e.getMessage());
             System.out.println("입금액 or 이자율은 0 보다 커야 합니다.");
         }
         catch(DuplicateAccountException e) {
@@ -235,6 +246,10 @@ public class ConsoleUI {
         // 유효성 검사 (숫자가 아닌 입력)
         try {
             accountNumber = Integer.parseInt(scanner.nextLine());
+            if(accountNumber <= 0){
+                System.out.println("계좌 ID 는 0 보다 커야 합니다.");
+                return ;
+            }
         }
         catch (NumberFormatException e){
             System.out.println("유효하지 않은 계좌 ID 형식 입니다.");
@@ -286,6 +301,10 @@ public class ConsoleUI {
         // 유효성 검사 (숫자가 아닌 입력)
         try {
             accountNumber = Integer.parseInt(scanner.nextLine());
+            if(accountNumber <= 0){
+                System.out.println("계좌 ID 는 0 보다 커야 합니다.");
+                return ;
+            }
         }
         catch (NumberFormatException e){
             System.out.println("유효하지 않은 계좌 ID 형식 입니다.");
@@ -341,6 +360,10 @@ public class ConsoleUI {
         // 유효성 검사 (숫자가 아닌 입력)
         try {
             accountNumber = Integer.parseInt(scanner.nextLine());
+            if(accountNumber <= 0){
+                System.out.println("계좌 ID 는 0 보다 커야 합니다.");
+                return ;
+            }
         }
         catch (NumberFormatException e){
             System.out.println("유효하지 않은 계좌 ID 형식 입니다.");
@@ -393,6 +416,10 @@ public class ConsoleUI {
          // 유효성 검사 (숫자가 아닌 입력)
          try {
              senderNumber = Integer.parseInt(scanner.nextLine());
+             if(senderNumber <= 0){
+                 System.out.println("계좌 ID 는 0 보다 커야 합니다.");
+                 return ;
+             }
          }
          catch (NumberFormatException e){
              System.out.println("유효하지 않은 계좌 ID 형식 입니다.");
@@ -405,6 +432,10 @@ public class ConsoleUI {
          // 유효성 검사 (숫자가 아닌 입력) 
          try {
         	 receiverNumber = Integer.parseInt(scanner.nextLine());
+             if(receiverNumber <= 0){
+                 System.out.println("계좌 ID 는 0 보다 커야 합니다.");
+                 return ;
+             }
          }
          catch (NumberFormatException e){
              System.out.println("유효하지 않은 계좌 ID 형식 입니다.");

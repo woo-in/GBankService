@@ -1,4 +1,4 @@
-package bankapp.account;
+package bankapp.account.request.creation;
 
 abstract public class BankAccount {
 

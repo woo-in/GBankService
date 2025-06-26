@@ -1,4 +1,4 @@
-package bankapp.service;
+package bankapp.service.deposit;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,29 +9,30 @@ import bankapp.exceptions.InvalidAccountException;
 import bankapp.exceptions.InvalidAccountException.Role;
 
 @Component
-public class DepositService {
+public class DefaultDepositService implements DepositService{
 
-	
-	// 데이터 베이스 연동
-	private final BankAccountDao bankAccountDao ;
+
+    // 데이터 베이스 연동
+    private final BankAccountDao bankAccountDao ;
 
     @Autowired
-    public DepositService(BankAccountDao bankAccountDao) {
+    public DefaultDepositService(BankAccountDao bankAccountDao) {
         this.bankAccountDao = bankAccountDao;
     }
 
     // 입금 서비스
-	@Transactional
+    @Transactional
+    @Override
     public void deposit(int accountNumber, double amount) throws IllegalArgumentException , InvalidAccountException  {
         if (amount < 0.0) {
             throw new IllegalArgumentException("Negative number error");
         }
 
-        // 계좌가 존재하지 않음 
+        // 계좌가 존재하지 않음
         if(!bankAccountDao.isAccountExist(accountNumber)) {
-        	throw new InvalidAccountException(Role.GENERAL);
+            throw new InvalidAccountException(Role.GENERAL);
         }
-        // 입금 
+        // 입금
         bankAccountDao.updateBalancePlus(accountNumber, amount);
     }
 }
