@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Tass Bank</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .menu-container {
+      background-color: white;
+      padding: 40px 60px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 400px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .circle {
+      width: 20px;
+      height: 20px;
+      background-color: #4a90e2;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .logo-text {
+      font-size: 28px;
+      font-weight: bold;
+      color: #4a90e2;
+    }
+
+    .menu-button {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 16px;
+      font-size: 18px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .menu-button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+<div class="menu-container">
+  <div class="logo">
+    <div class="circle"></div>
+    <div class="logo-text">Tass</div>
+  </div>
+
+  <form th:action="@{/open/select}" method="get">
+    <button type="submit" class="menu-button">계좌 개설</button>
+  </form>
+
+  <form th:action="@{/account/deposit}" method="get">
+    <button type="submit" class="menu-button">입금</button>
+  </form>
+
+  <form th:action="@{/account/withdraw}" method="get">
+    <button type="submit" class="menu-button">출금</button>
+  </form>
+
+  <form th:action="@{/account/transfer}" method="get">
+    <button type="submit" class="menu-button">송금</button>
+  </form>
+
+  <form th:action="@{/account/view}" method="get">
+    <button type="submit" class="menu-button">계좌 조회</button>
+  </form>
+</div>
+</body>
+</html>
+

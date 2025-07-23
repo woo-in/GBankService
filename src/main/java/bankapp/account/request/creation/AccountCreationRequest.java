@@ -1,12 +1,19 @@
 package bankapp.account.request.creation;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class AccountCreationRequest {
 
-    final private int accountNumber;
-    final private String customerName;
-    final private double balance;
-    final private int ratio;
-    final private String accountType;
+    private int accountNumber;
+    private String customerName;
+    private double balance;
+    private int ratio;
+    private String accountType;
+
+    public AccountCreationRequest(){ }
 
     public AccountCreationRequest(int accountNumber , String customerName , double balance , int ratio , String accountType){
         this.accountNumber = accountNumber;
@@ -16,18 +23,6 @@ public class AccountCreationRequest {
         this.accountType = accountType;
     }
 
-    // getter
-    public int getAccountNumber(){
-        return accountNumber;
-    }
-    public String getCustomerName(){
-        return customerName;
-    }
-    public double getBalance(){
-        return balance;
-    }
-    public int getRatio() { return ratio; }
-    public String getAccountType() {return accountType; }
 
 
 }

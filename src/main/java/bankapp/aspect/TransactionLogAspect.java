@@ -73,9 +73,7 @@ public class TransactionLogAspect {
 			bankAccountDao.recordFailLog(serviceName,accountId,"Insufficient Funds error");
 			throw new InsufficientFundsException("Insufficient Funds error");
 		}
-		
-		
-		
+
 		return null; 
 	}
 	
