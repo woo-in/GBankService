@@ -1,4 +1,4 @@
-package bankapp.account.request.creation;
+package bankapp.account.create;
 
 
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NormalAccountCreationRequest extends AccountCreationRequest{
+public class NormalAccountCreationRequest extends AccountCreationRequest {
 
 
     // 생성자

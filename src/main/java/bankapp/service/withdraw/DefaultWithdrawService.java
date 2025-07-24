@@ -1,6 +1,7 @@
 package bankapp.service.withdraw;
 
 
+import bankapp.account.withdraw.AccountWithdrawRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,11 @@ public class DefaultWithdrawService implements WithdrawService {
     // 출금 서비스
     @Override
     @Transactional
-    public void withdraw(int accountNumber, double amount) throws IllegalArgumentException, InsufficientFundsException , InvalidAccountException {
+    public void withdraw(AccountWithdrawRequest accountWithdrawRequest) throws IllegalArgumentException, InsufficientFundsException , InvalidAccountException {
+
+        int accountNumber = accountWithdrawRequest.getAccountNumber();
+        double amount = accountWithdrawRequest.getAmount();
+
         if (amount < 0.0) {
             throw new IllegalArgumentException("Negative number error");
         }

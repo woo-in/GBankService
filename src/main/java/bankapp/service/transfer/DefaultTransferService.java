@@ -1,5 +1,6 @@
 package bankapp.service.transfer;
 
+import bankapp.account.transfer.AccountTransferRequest;
 import bankapp.dao.BankAccountDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,7 +24,12 @@ public class DefaultTransferService implements TransferService{
     // 송금 서비스(500 원 수수료)
     @Override
     @Transactional
-    public void transfer(int fromAccountId, int toAccountId, double amount) throws IllegalArgumentException, InvalidAccountException, InsufficientFundsException {
+    public void transfer(AccountTransferRequest accountTransferRequest) throws IllegalArgumentException, InvalidAccountException, InsufficientFundsException {
+
+        int fromAccountId = accountTransferRequest.getSenderNumber();
+        int toAccountId = accountTransferRequest.getReceiverNumber();
+        double amount = accountTransferRequest.getAmount();
+
 
         if (amount < 0.0) {
             throw new IllegalArgumentException("Negative number error");

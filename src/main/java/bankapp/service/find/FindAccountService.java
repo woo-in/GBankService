@@ -1,6 +1,6 @@
 package bankapp.service.find;
 
-import bankapp.account.request.creation.BankAccount;
+import bankapp.account.model.BankAccount;
 
 
 public interface FindAccountService {

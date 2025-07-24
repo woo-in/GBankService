@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>송금 - Tass</title>
+  <title>출금 - Tass</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -92,23 +92,21 @@
     <div class="logo-text">Tass</div>
   </div>
 
-  <h2>송금</h2>
+  <h2>출금</h2>
 
   <p class="error-message" th:if="${error}" th:text="${error}"></p>
   <p class="success-message" th:if="${success}" th:text="${success}"></p>
 
-  <form th:action="@{/account/transfer}" method="post">
+  <form th:action="@{/withdraw}" method="post">
     <div class="input-field">
-      <input type="number" name="senderNumber" placeholder="송금 계좌 ID" required min="1">
-    </div>
-    <div class="input-field">
-      <input type="number" name="receiverNumber" placeholder="수취 계좌 ID" required min="1">
-    </div>
-    <div class="input-field">
-      <input type="number" step="0.01" name="balance" placeholder="송금액" required min="0">
+      <input type="number" name="accountNumber" placeholder="계좌 ID" required min="1">
     </div>
 
-    <button type="submit" class="submit-button">송금하기</button>
+    <div class="input-field">
+      <input type="number" step="0.01" name="amount" placeholder="출금액" required min="0">
+    </div>
+
+    <button type="submit" class="submit-button">출금하기</button>
   </form>
 </div>
 </body>

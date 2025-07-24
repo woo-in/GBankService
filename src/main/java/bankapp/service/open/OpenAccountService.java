@@ -1,6 +1,6 @@
 package bankapp.service.open;
 
-import bankapp.account.request.creation.AccountCreationRequest;
+import bankapp.account.create.AccountCreationRequest;
 
 public interface OpenAccountService {
 

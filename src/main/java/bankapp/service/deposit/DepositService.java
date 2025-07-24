@@ -1,9 +1,10 @@
 package bankapp.service.deposit;
 
 
+import bankapp.account.deposit.AccountDepositRequest;
 
 public interface DepositService {
 
-    void deposit(int accountNumber, double amount) ;
+    void deposit(AccountDepositRequest accountDepositRequest) ;
 
 }

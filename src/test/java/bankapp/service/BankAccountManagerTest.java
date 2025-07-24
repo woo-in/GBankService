@@ -1,8 +1,8 @@
 package bankapp.service;
 
-import bankapp.account.request.creation.AccountCreationRequest;
-import bankapp.account.request.creation.HighCreditAccountCreationRequest;
-import bankapp.account.request.creation.NormalAccountCreationRequest;
+import bankapp.account.create.AccountCreationRequest;
+import bankapp.account.create.HighCreditAccountCreationRequest;
+import bankapp.account.create.NormalAccountCreationRequest;
 import bankapp.exceptions.DuplicateAccountException;
 import bankapp.service.open.OpenAccountService;
 import org.junit.jupiter.api.BeforeEach;

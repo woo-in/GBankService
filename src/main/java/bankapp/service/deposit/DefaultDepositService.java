@@ -1,5 +1,6 @@
 package bankapp.service.deposit;
 
+import bankapp.account.deposit.AccountDepositRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,11 @@ public class DefaultDepositService implements DepositService{
     // 입금 서비스
     @Transactional
     @Override
-    public void deposit(int accountNumber, double amount) throws IllegalArgumentException , InvalidAccountException  {
+    public void deposit(AccountDepositRequest accountDepositRequest) throws IllegalArgumentException , InvalidAccountException  {
+
+        int accountNumber = accountDepositRequest.getAccountNumber();
+        double amount = accountDepositRequest.getAmount();
+
         if (amount < 0.0) {
             throw new IllegalArgumentException("Negative number error");
         }

@@ -1,8 +1,11 @@
 package bankapp.service;
 
 
-import bankapp.account.request.creation.AccountCreationRequest;
-import bankapp.account.request.creation.BankAccount;
+import bankapp.account.create.AccountCreationRequest;
+import bankapp.account.deposit.AccountDepositRequest;
+import bankapp.account.model.BankAccount;
+import bankapp.account.transfer.AccountTransferRequest;
+import bankapp.account.withdraw.AccountWithdrawRequest;
 import bankapp.exceptions.DuplicateAccountException;
 import bankapp.exceptions.InsufficientFundsException;
 import bankapp.exceptions.InvalidAccountException;
@@ -59,20 +62,20 @@ public class BankAccountManager {
 		openAccountService.openAccount(accountCreationRequest);
 	}
 
-    public void deposit(int accountNumber, double amount) throws IllegalArgumentException , InvalidAccountException {
-		depositService.deposit(accountNumber, amount);
+    public void deposit(AccountDepositRequest accountDepositRequest) throws IllegalArgumentException , InvalidAccountException {
+		depositService.deposit(accountDepositRequest);
     }
 	
-    public void withdraw(int accountNumber, double amount) throws IllegalArgumentException, InsufficientFundsException, InvalidAccountException {
-    	withdrawService.withdraw(accountNumber, amount);
+    public void withdraw(AccountWithdrawRequest accountWithdrawRequest) throws IllegalArgumentException, InsufficientFundsException, InvalidAccountException {
+    	withdrawService.withdraw(accountWithdrawRequest);
     }
     
     public BankAccount findAccount(int accountNumber) throws InvalidAccountException {
     	return findAccountService.findAccount(accountNumber);
     }
         
-    public void transfer(int fromAccountId , int toAccountId , double amount) throws IllegalArgumentException , InvalidAccountException ,InsufficientFundsException{
-    	transferService.transfer(fromAccountId,toAccountId,amount);
+    public void transfer(AccountTransferRequest accountTransferRequest) throws IllegalArgumentException , InvalidAccountException ,InsufficientFundsException{
+    	transferService.transfer(accountTransferRequest);
     }
 }
 

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import bankapp.account.request.creation.BankAccount;
+import bankapp.account.model.BankAccount;
 import bankapp.dao.BankAccountDao;
 import bankapp.exceptions.InvalidAccountException;
 import bankapp.exceptions.InvalidAccountException.Role;

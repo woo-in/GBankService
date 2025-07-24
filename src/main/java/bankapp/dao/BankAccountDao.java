@@ -1,12 +1,13 @@
 package bankapp.dao;
 
 
-import bankapp.account.request.creation.*;
+import bankapp.account.create.HighCreditAccountCreationRequest;
+import bankapp.account.create.NormalAccountCreationRequest;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import bankapp.account.request.creation.BankAccount;
+import bankapp.account.model.BankAccount;
 
 
 

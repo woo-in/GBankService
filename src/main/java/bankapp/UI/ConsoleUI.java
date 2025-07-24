@@ -2,7 +2,10 @@ package bankapp.UI;
 
 import java.util.Scanner;
 
-import bankapp.account.request.creation.*;
+import bankapp.account.create.HighCreditAccountCreationRequest;
+import bankapp.account.create.NormalAccountCreationRequest;
+import bankapp.account.model.BankAccount;
+import bankapp.account.transfer.AccountTransferRequest;
 import bankapp.exceptions.DuplicateAccountException;
 import bankapp.exceptions.InsufficientFundsException;
 import bankapp.exceptions.InvalidAccountException;
@@ -272,7 +275,7 @@ public class ConsoleUI {
 
         // 입금
         try {
-            accountManager.deposit(accountNumber, balance);
+            //accountManager.deposit(, );
         } catch (IllegalArgumentException e) {
         	// 중복체크 , catch 시 시스템 에러 
             System.out.println("입금액은 0 보다 커야 합니다.");
@@ -328,7 +331,8 @@ public class ConsoleUI {
 
         // 출금
         try {
-            accountManager.withdraw(accountNumber, balance);
+            //
+            // accountManager.withdraw(accountNumber, balance);
         }
         catch (IllegalArgumentException e) {
         	// 중복체크 , catch 시 시스템 에러 
@@ -467,7 +471,7 @@ public class ConsoleUI {
 
          // 송금 
          try {
-             accountManager.transfer(senderNumber,receiverNumber,balance);
+            // accountManager.transfer(accountTransferRequest);
          }
          catch (IllegalArgumentException e) {
          	// 중복체크 , catch 시 시스템 에러 
