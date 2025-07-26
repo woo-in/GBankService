@@ -3,6 +3,7 @@ package bankapp.service;
 
 import bankapp.account.create.AccountCreationRequest;
 import bankapp.account.deposit.AccountDepositRequest;
+import bankapp.account.find.AccountFindRequest;
 import bankapp.account.model.BankAccount;
 import bankapp.account.transfer.AccountTransferRequest;
 import bankapp.account.withdraw.AccountWithdrawRequest;
@@ -70,8 +71,8 @@ public class BankAccountManager {
     	withdrawService.withdraw(accountWithdrawRequest);
     }
     
-    public BankAccount findAccount(int accountNumber) throws InvalidAccountException {
-    	return findAccountService.findAccount(accountNumber);
+    public BankAccount findAccount(AccountFindRequest accountFindRequest) throws InvalidAccountException {
+    	return findAccountService.findAccount(accountFindRequest);
     }
         
     public void transfer(AccountTransferRequest accountTransferRequest) throws IllegalArgumentException , InvalidAccountException ,InsufficientFundsException{

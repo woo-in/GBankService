@@ -15,7 +15,6 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 
 @Configuration 
 @EnableAspectJAutoProxy
-//@ComponentScan(basePackages= {"service" , "UI" , "account" , "dao"})
 public class AppCtx{ 
 	
 	

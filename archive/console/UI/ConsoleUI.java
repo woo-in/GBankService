@@ -358,6 +358,8 @@ public class ConsoleUI {
     // 특정 계좌 조회
     public void showAccountInfo(){
 
+        // 1. 입력 폼
+
         // 계좌 ID 입력 및 유효성 검사
         System.out.print("계좌 ID : ");
         int accountNumber;
@@ -374,9 +376,11 @@ public class ConsoleUI {
             return ;
         }
 
+        // 2. 컨트롤러
+
        BankAccount found;
        try {
-    	   found = accountManager.findAccount(accountNumber);
+    	   //found = accountManager.findAccount(accountNumber);
        }
        catch(InvalidAccountException e) {
             System.out.println("유효하지 않은 계좌 ID 입니다.");
@@ -387,26 +391,28 @@ public class ConsoleUI {
        	System.out.println("파악 되지 않은 오류가 있습니다. 관리자에게 문의 하세요."); 
        	return; 
        }
-        
-       System.out.print("계좌 ID : ");
-       System.out.println(found.getAccountNumber());
 
-       System.out.print("이름 : ");
-       System.out.println(found.getCustomerName());
+       // 3. 출력 폼
 
-       System.out.print("잔액 : ");
-       System.out.println(found.getBalance());
-
-       System.out.print("이자율 : ");
-       System.out.println(found.getRatio());
-
-       System.out.print("계좌 종류 : ");
-       if(found.getAccountType().equals("NormalAccount")) {
-    	     System.out.println("보통 예금 계좌");
-       }
-       else if(found.getAccountType().equals("HighCreditAccount")) {
-    	   	 System.out.println("신용 신뢰 계좌");
-       }
+//       System.out.print("계좌 ID : ");
+//       System.out.println(found.getAccountNumber());
+//
+//       System.out.print("이름 : ");
+//       System.out.println(found.getCustomerName());
+//
+//       System.out.print("잔액 : ");
+//       System.out.println(found.getBalance());
+//
+//       System.out.print("이자율 : ");
+//       System.out.println(found.getRatio());
+//
+//       System.out.print("계좌 종류 : ");
+//       if(found.getAccountType().equals("NormalAccount")) {
+//    	     System.out.println("보통 예금 계좌");
+//       }
+//       else if(found.getAccountType().equals("HighCreditAccount")) {
+//    	   	 System.out.println("신용 신뢰 계좌");
+//       }
       
     }
     

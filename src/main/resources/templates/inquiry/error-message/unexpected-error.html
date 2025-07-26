@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Tass Bank</title>
+  <title>계좌 생성 오류 - Tass</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -13,7 +13,7 @@
       height: 100vh;
     }
 
-    .menu-container {
+    .error-container {
       background-color: white;
       padding: 40px 60px;
       border-radius: 20px;
@@ -26,13 +26,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
-    .circle {
-      width: 20px;
-      height: 20px;
-      background-color: #4a90e2;
+    .logo-icon {
+      width: 24px;
+      height: 24px;
+      background-color: #e74c3c; /* 오류 느낌의 빨간색 */
       border-radius: 50%;
       margin-right: 10px;
     }
@@ -40,16 +40,19 @@
     .logo-text {
       font-size: 28px;
       font-weight: bold;
-      color: #4a90e2;
+      color: #e74c3c;
+    }
+
+    .error-message {
+      font-size: 18px;
+      color: #333;
+      margin: 20px 0;
     }
 
     .menu-button {
-      display: block;
-      width: 100%;
-      margin: 12px 0;
-      padding: 16px;
-      font-size: 18px;
-      background-color: #4a90e2;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #4A90E2;
       color: white;
       border: none;
       border-radius: 8px;
@@ -63,32 +66,18 @@
   </style>
 </head>
 <body>
-<div class="menu-container">
+<div class="error-container">
   <div class="logo">
-    <div class="circle"></div>
+    <div class="logo-icon"></div>
     <div class="logo-text">Tass</div>
   </div>
 
-  <form th:action="@{/open/select}" method="get">
-    <button type="submit" class="menu-button">계좌 개설</button>
-  </form>
+  <h2>계좌 생성 중 오류 발생</h2>
+  <p class="error-message">예기치 못한 오류가 발생했습니다.<br>잠시 후 다시 시도해주세요.</p>
 
-  <form th:action="@{/deposit}" method="get">
-    <button type="submit" class="menu-button">입금</button>
-  </form>
-
-  <form th:action="@{/withdraw}" method="get">
-    <button type="submit" class="menu-button">출금</button>
-  </form>
-
-  <form th:action="@{/transfer}" method="get">
-    <button type="submit" class="menu-button">송금</button>
-  </form>
-
-  <form th:action="@{/inquiry}" method="get">
-    <button type="submit" class="menu-button">계좌 조회</button>
+  <form th:action="@{/menu}" method="get">
+    <button type="submit" class="menu-button">메뉴로 돌아가기</button>
   </form>
 </div>
 </body>
 </html>
-

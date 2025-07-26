@@ -103,28 +103,14 @@
 
   <h2>계좌 조회</h2>
 
-  <p class="error-message" th:if="${error}" th:text="${error}"></p>
-
-  <form th:action="@{/account/view}" method="post">
+  <form th:action="@{/inquiry}" method="post">
     <div class="input-field">
       <input type="number" name="accountNumber" placeholder="계좌 ID" required min="1">
     </div>
     <button type="submit" class="submit-button">조회하기</button>
   </form>
 
-  <table class="info-table" th:if="${account}">
-    <tr><td class="label">계좌 ID</td><td th:text="${account.accountNumber}"></td></tr>
-    <tr><td class="label">이름</td><td th:text="${account.customerName}"></td></tr>
-    <tr><td class="label">잔액</td><td th:text="${account.balance}"></td></tr>
-    <tr><td class="label">이자율</td><td th:text="${account.ratio} + '%'"></td></tr>
-    <tr><td class="label">계좌 종류</td>
-      <td th:switch="${account.accountType}">
-        <span th:case="'NormalAccount'">보통 예금 계좌</span>
-        <span th:case="'HighCreditAccount'">신용 신뢰 계좌</span>
-        <span th:case="*">알 수 없음</span>
-      </td>
-    </tr>
-  </table>
+
 </div>
 </body>
 </html>

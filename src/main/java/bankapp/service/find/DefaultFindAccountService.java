@@ -1,5 +1,6 @@
 package bankapp.service.find;
 
+import bankapp.account.find.AccountFindRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,9 @@ public class DefaultFindAccountService implements FindAccountService{
     // 계좌 조회 , 반환 서비스
     @Transactional
     @Override
-    public BankAccount findAccount(int accountNumber) throws InvalidAccountException  {
+    public BankAccount findAccount(AccountFindRequest accountFindRequest) throws InvalidAccountException  {
+
+        int accountNumber = accountFindRequest.getAccountNumber();
 
         // 계좌가 존재하지 않음
         if(!bankAccountDao.isAccountExist(accountNumber)) {
