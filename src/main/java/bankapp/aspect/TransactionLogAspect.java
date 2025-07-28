@@ -1,9 +1,14 @@
 package bankapp.aspect;
 
+import bankapp.account.deposit.AccountDepositRequest;
+import bankapp.account.transfer.AccountTransferRequest;
+import bankapp.account.withdraw.AccountWithdrawRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import bankapp.dao.BankAccountDao;
@@ -13,16 +18,18 @@ import bankapp.exceptions.InvalidAccountException.Role;
 
 
 
+
 @Aspect 
 public class TransactionLogAspect {
 
-	// 데이터 베이스 접근 
+	private static final Logger log = LoggerFactory.getLogger(TransactionLogAspect.class);
+	// 데이터 베이스 접근
 	@Autowired 
 	private BankAccountDao bankAccountDao ; 
 		
-	@Pointcut("execution(public void bankapp.service.deposit.DepositService.deposit(int, double)) "
-			+ "|| execution(public void bankapp.service.withdraw.WithdrawService.withdraw(int, double))"
-			+ " || execution(public void bankapp.service.transfer.TransferService.transfer(int,int,double))")
+	@Pointcut("execution(public void bankapp.service.deposit.DepositService.deposit(bankapp.account.deposit.AccountDepositRequest)) "
+			+ "|| execution(public void bankapp.service.withdraw.WithdrawService.withdraw(bankapp.account.withdraw.AccountWithdrawRequest))"
+			+ " || execution(public void bankapp.service.transfer.TransferService.transfer(bankapp.account.transfer.AccountTransferRequest))")
 	private void depositOrWithdrawPointcut() {}
 	
 	@Around("depositOrWithdrawPointcut()")
@@ -31,30 +38,50 @@ public class TransactionLogAspect {
 		// 입금 -> (대상계좌 , 금액)
 		// 출금 -> (대상계좌 , 금액)
 		// 송금 -> (송금계좌 , 수취계좌 , 금액) 
+
+		// accountNumber
+		// senderNumber
 		
-		
-		Object[] args = joinPoint.getArgs(); 
-		int accountId = (int) args[0]; 
-		
+		Object[] args = joinPoint.getArgs();
+
+		// 입출금시 accountNumber 사용
+		// 송금시 senderNumber,receiverNumber,amount 사용
+		int accountNumber = -1;
+		int senderNumber = -1;
+		int receiverNumber = -1;
+		//
+		double amount = -1.0;
+		if (args[0] instanceof AccountDepositRequest depositRequest) {
+			accountNumber = depositRequest.getAccountNumber();
+		} else if (args[0] instanceof AccountWithdrawRequest withdrawRequest) {
+			accountNumber = withdrawRequest.getAccountNumber();
+		} else if (args[0] instanceof AccountTransferRequest transferRequest) {
+			senderNumber = transferRequest.getSenderNumber();
+			receiverNumber = transferRequest.getReceiverNumber();
+			amount = transferRequest.getAmount();
+		}
+
 		// 작업명 
 		String serviceName = joinPoint.getSignature().getName();
 		
 		try {	
-			joinPoint.proceed(); // 입출금 메서드 실행  
+			joinPoint.proceed(); // 입출금 메서드 실행
 			// 성공 로그기록 
-			bankAccountDao.recordSuccessLog(serviceName,accountId); 
+			bankAccountDao.recordSuccessLog(serviceName,accountNumber);
 			// 만약 성공 로그가 송금이라면 거래로그 테이블에 기록 
 			if(serviceName.equals("transfer")) {
-				bankAccountDao.recordTransferLog((int)args[0],(int)args[1],(double)args[2]);
+				bankAccountDao.recordTransferLog(senderNumber,receiverNumber,amount);
 			}
 		}
 		catch(IllegalArgumentException e) {
 			// 입금액 , 출금액 , 송금액이 음수 (UI 에서 처리하기 때문에 호출되지는 않음)
-			bankAccountDao.recordFailLog(serviceName,accountId, "Negative number error");
+			bankAccountDao.recordFailLog(serviceName,accountNumber, "Negative number error");
 			throw new IllegalArgumentException("Negative number error");
 		}
 		catch(InvalidAccountException e) {
-			// 계좌 서칭 실패 
+			// 계좌 서칭 실패 , 왜 기록이 안되나 ?
+
+
 			 if(e.getRole() == Role.SENDER) {
 				 bankAccountDao.recordFailLog(serviceName,"Invalid sender id");
 				 throw new InvalidAccountException(Role.SENDER); 
@@ -65,12 +92,12 @@ public class TransactionLogAspect {
         	 }
         	 else {
         		bankAccountDao.recordFailLog(serviceName,"Invalid id");
-        		throw new InvalidAccountException(Role.GENERAL); 
+        		throw new InvalidAccountException(Role.GENERAL);
         	 }
 		}
 		catch(InsufficientFundsException e) {
 			// 예치금이 적음
-			bankAccountDao.recordFailLog(serviceName,accountId,"Insufficient Funds error");
+			bankAccountDao.recordFailLog(serviceName,accountNumber,"Insufficient Funds error");
 			throw new InsufficientFundsException("Insufficient Funds error");
 		}
 

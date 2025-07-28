@@ -8,7 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import bankapp.account.model.BankAccount;
-
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
@@ -94,13 +95,30 @@ public class BankAccountDao {
 		String insertSql = "INSERT INTO TransactionLog(accountId , transactionType , transactionStatus) VALUES(?,?,?)"; 
 		jdbcTemplate.update(insertSql , accountId , serviceName , "success");
 	}
-	
+
+	/**
+	 * 이 메서드는 항상 **새로운 트랜잭션을 시작**하도록 지정됩니다.
+	 *
+	 * 호출한 쪽에서 이미 트랜잭션이 진행 중이더라도,
+	 * 기존 트랜잭션은 **일시 중단(suspend)** 되고,
+	 * 이 메서드는 **독립적인 새로운 트랜잭션**으로 실행됩니다.
+	 *
+	 * 주로 사용하는 상황:
+	 * - 호출한 쪽에서 예외가 발생해도, 이 메서드의 작업(DB 저장 등)은 rollback되지 않게 하기 위해
+	 * - 실패 로그, 감사 로그 등 **예외가 발생해도 반드시 DB에 기록되어야 하는 작업**에 사용
+	 *
+	 * 트랜잭션 전파 수준: Propagation.REQUIRES_NEW
+	 * → "항상 새로운 트랜잭션 시작"
+	 */
+
 	// 실패 로그 기록
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void recordFailLog(String serviceName ,int accountId , String reason) {
 		String insertSql = "INSERT INTO TransactionLog(accountId , transactionType , transactionStatus , failureReason) VALUES(?,?,?,?)";
 		jdbcTemplate.update(insertSql , accountId ,serviceName , "fail" , reason);
 	}
-	
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void recordFailLog(String serviceName , String reason) {
 		String insertSql = "INSERT INTO TransactionLog(transactionType , transactionStatus , failureReason) VALUES(?,?,?)";
 		jdbcTemplate.update(insertSql , serviceName, "fail" , reason);
