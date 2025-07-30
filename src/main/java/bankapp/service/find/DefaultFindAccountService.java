@@ -1,11 +1,11 @@
 package bankapp.service.find;
 
-import bankapp.account.find.AccountFindRequest;
+import bankapp.request.find.AccountFindRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import bankapp.account.model.BankAccount;
+import bankapp.model.account.BankAccount;
 import bankapp.dao.BankAccountDao;
 import bankapp.exceptions.InvalidAccountException;
 import bankapp.exceptions.InvalidAccountException.Role;

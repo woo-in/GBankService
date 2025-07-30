@@ -1,8 +1,8 @@
 package bankapp.aspect;
 
-import bankapp.account.deposit.AccountDepositRequest;
-import bankapp.account.transfer.AccountTransferRequest;
-import bankapp.account.withdraw.AccountWithdrawRequest;
+import bankapp.request.deposit.AccountDepositRequest;
+import bankapp.request.transfer.AccountTransferRequest;
+import bankapp.request.withdraw.AccountWithdrawRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -27,9 +27,9 @@ public class TransactionLogAspect {
 	@Autowired 
 	private BankAccountDao bankAccountDao ; 
 		
-	@Pointcut("execution(public void bankapp.service.deposit.DepositService.deposit(bankapp.account.deposit.AccountDepositRequest)) "
-			+ "|| execution(public void bankapp.service.withdraw.WithdrawService.withdraw(bankapp.account.withdraw.AccountWithdrawRequest))"
-			+ " || execution(public void bankapp.service.transfer.TransferService.transfer(bankapp.account.transfer.AccountTransferRequest))")
+	@Pointcut("execution(public void bankapp.service.deposit.DepositService.deposit(bankapp.request.deposit.AccountDepositRequest)) "
+			+ "|| execution(public void bankapp.service.withdraw.WithdrawService.withdraw(bankapp.request.withdraw.AccountWithdrawRequest))"
+			+ " || execution(public void bankapp.service.transfer.TransferService.transfer(bankapp.request.transfer.AccountTransferRequest))")
 	private void depositOrWithdrawPointcut() {}
 	
 	@Around("depositOrWithdrawPointcut()")

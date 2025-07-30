@@ -1,4 +1,4 @@
-package bankapp.account.withdraw;
+package bankapp.request.withdraw;
 import lombok.Getter;
 import lombok.Setter;
 

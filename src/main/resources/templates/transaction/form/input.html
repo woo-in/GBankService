@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>거래 내역 조회 - Tass</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: white;
+      padding: 40px 60px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      width: 420px;
+      text-align: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .logo-icon {
+      width: 24px;
+      height: 24px;
+      background-color: #4A90E2;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .logo-text {
+      font-size: 28px;
+      font-weight: bold;
+      color: #4A90E2;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+    }
+
+    .input-field {
+      margin-bottom: 20px;
+    }
+
+    .input-field input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      background-color: #4A90E2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-button:hover {
+      background-color: #357ABD;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <div class="logo-icon"></div>
+    <div class="logo-text">Tass</div>
+  </div>
+
+  <h2>거래 내역 조회</h2>
+
+  <form th:action="@{/inquiry/transactions}" method="post">
+    <div class="input-field">
+      <input type="number" name="accountNumber" placeholder="계좌 번호 입력" required min="1">
+    </div>
+    <button type="submit" class="submit-button">조회하기</button>
+  </form>
+
+  <div class="error-message" th:if="${error}" th:text="${error}"></div>
+</div>
+</body>
+</html>

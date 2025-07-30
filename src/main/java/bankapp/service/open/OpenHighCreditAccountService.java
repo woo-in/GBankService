@@ -1,7 +1,7 @@
 package bankapp.service.open;
 
-import bankapp.account.create.AccountCreationRequest;
-import bankapp.account.create.HighCreditAccountCreationRequest;
+import bankapp.request.open.AccountCreationRequest;
+import bankapp.request.open.HighCreditAccountCreationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

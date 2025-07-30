@@ -2,10 +2,10 @@ package bankapp.UI;
 
 import java.util.Scanner;
 
-import bankapp.account.create.HighCreditAccountCreationRequest;
-import bankapp.account.create.NormalAccountCreationRequest;
-import bankapp.account.model.BankAccount;
-import bankapp.account.transfer.AccountTransferRequest;
+import bankapp.request.open.HighCreditAccountCreationRequest;
+import bankapp.request.open.NormalAccountCreationRequest;
+import bankapp.request.model.BankAccount;
+import bankapp.request.transfer.AccountTransferRequest;
 import bankapp.exceptions.DuplicateAccountException;
 import bankapp.exceptions.InsufficientFundsException;
 import bankapp.exceptions.InvalidAccountException;

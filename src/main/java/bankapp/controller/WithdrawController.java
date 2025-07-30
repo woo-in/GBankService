@@ -1,6 +1,6 @@
 package bankapp.controller;
 
-import bankapp.account.withdraw.AccountWithdrawRequest;
+import bankapp.request.withdraw.AccountWithdrawRequest;
 import bankapp.exceptions.InsufficientFundsException;
 import bankapp.exceptions.InvalidAccountException;
 import bankapp.service.BankAccountManager;

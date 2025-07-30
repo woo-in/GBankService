@@ -1,6 +1,6 @@
 package bankapp.service.deposit;
 
-import bankapp.account.deposit.AccountDepositRequest;
+import bankapp.request.deposit.AccountDepositRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

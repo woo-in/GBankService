@@ -1,4 +1,4 @@
-package bankapp.account.create;
+package bankapp.request.open;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,12 +1,12 @@
 package bankapp.service;
 
 
-import bankapp.account.create.AccountCreationRequest;
-import bankapp.account.deposit.AccountDepositRequest;
-import bankapp.account.find.AccountFindRequest;
-import bankapp.account.model.BankAccount;
-import bankapp.account.transfer.AccountTransferRequest;
-import bankapp.account.withdraw.AccountWithdrawRequest;
+import bankapp.request.open.AccountCreationRequest;
+import bankapp.request.deposit.AccountDepositRequest;
+import bankapp.request.find.AccountFindRequest;
+import bankapp.model.account.BankAccount;
+import bankapp.request.transfer.AccountTransferRequest;
+import bankapp.request.withdraw.AccountWithdrawRequest;
 import bankapp.exceptions.DuplicateAccountException;
 import bankapp.exceptions.InsufficientFundsException;
 import bankapp.exceptions.InvalidAccountException;

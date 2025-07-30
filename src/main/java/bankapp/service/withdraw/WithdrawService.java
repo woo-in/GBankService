@@ -1,7 +1,7 @@
 package bankapp.service.withdraw;
 
 
-import bankapp.account.withdraw.AccountWithdrawRequest;
+import bankapp.request.withdraw.AccountWithdrawRequest;
 
 public interface WithdrawService {
      void withdraw(AccountWithdrawRequest accountWithdrawRequest);

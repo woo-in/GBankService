@@ -1,6 +1,6 @@
 package bankapp.controller;
 
-import bankapp.account.transfer.AccountTransferRequest;
+import bankapp.request.transfer.AccountTransferRequest;
 import bankapp.exceptions.InsufficientFundsException;
 import bankapp.exceptions.InvalidAccountException;
 import bankapp.service.BankAccountManager;

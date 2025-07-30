@@ -1,7 +1,7 @@
 package bankapp.service.deposit;
 
 
-import bankapp.account.deposit.AccountDepositRequest;
+import bankapp.request.deposit.AccountDepositRequest;
 
 public interface DepositService {
 

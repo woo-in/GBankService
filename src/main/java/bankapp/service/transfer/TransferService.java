@@ -1,6 +1,6 @@
 package bankapp.service.transfer;
 
-import bankapp.account.transfer.AccountTransferRequest;
+import bankapp.request.transfer.AccountTransferRequest;
 
 public interface TransferService {
     void transfer(AccountTransferRequest accountTransferRequest);

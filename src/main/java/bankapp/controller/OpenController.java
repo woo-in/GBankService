@@ -1,8 +1,8 @@
 package bankapp.controller;
 
 
-import bankapp.account.create.HighCreditAccountCreationRequest;
-import bankapp.account.create.NormalAccountCreationRequest;
+import bankapp.request.open.HighCreditAccountCreationRequest;
+import bankapp.request.open.NormalAccountCreationRequest;
 import bankapp.exceptions.DuplicateAccountException;
 import bankapp.service.BankAccountManager;
 import lombok.extern.slf4j.Slf4j;

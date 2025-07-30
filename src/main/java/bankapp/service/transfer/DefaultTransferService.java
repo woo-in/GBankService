@@ -1,6 +1,6 @@
 package bankapp.service.transfer;
 
-import bankapp.account.transfer.AccountTransferRequest;
+import bankapp.request.transfer.AccountTransferRequest;
 import bankapp.dao.BankAccountDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

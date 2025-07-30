@@ -1,4 +1,4 @@
-package bankapp.account.transfer;
+package bankapp.request.transfer;
 import lombok.Getter;
 import lombok.Setter;
 

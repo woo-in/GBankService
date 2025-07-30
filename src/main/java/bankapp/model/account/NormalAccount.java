@@ -1,4 +1,4 @@
-package bankapp.account.model;
+package bankapp.model.account;
 
 
 import lombok.Getter;

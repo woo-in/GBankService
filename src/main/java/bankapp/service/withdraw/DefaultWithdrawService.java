@@ -1,7 +1,7 @@
 package bankapp.service.withdraw;
 
 
-import bankapp.account.withdraw.AccountWithdrawRequest;
+import bankapp.request.withdraw.AccountWithdrawRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

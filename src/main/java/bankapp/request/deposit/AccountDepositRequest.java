@@ -1,4 +1,4 @@
-package bankapp.account.deposit;
+package bankapp.request.deposit;
 
 
 import lombok.Getter;

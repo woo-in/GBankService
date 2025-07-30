@@ -1,6 +1,6 @@
 package bankapp.controller;
 
-import bankapp.account.deposit.AccountDepositRequest;
+import bankapp.request.deposit.AccountDepositRequest;
 import bankapp.exceptions.InvalidAccountException;
 import bankapp.service.BankAccountManager;
 import lombok.extern.slf4j.Slf4j;
