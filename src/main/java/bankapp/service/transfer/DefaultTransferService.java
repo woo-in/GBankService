@@ -26,9 +26,9 @@ public class DefaultTransferService implements TransferService{
     @Transactional
     public void transfer(AccountTransferRequest accountTransferRequest) throws IllegalArgumentException, InvalidAccountException, InsufficientFundsException {
 
-        int fromAccountId = accountTransferRequest.getSenderNumber();
-        int toAccountId = accountTransferRequest.getReceiverNumber();
-        double amount = accountTransferRequest.getAmount();
+        Integer fromAccountId = accountTransferRequest.getSenderNumber();
+        Integer toAccountId = accountTransferRequest.getReceiverNumber();
+        Double amount = accountTransferRequest.getAmount();
 
 
         if (amount < 0.0) {
@@ -45,14 +45,14 @@ public class DefaultTransferService implements TransferService{
         }
 
         // 송금액 + 수수료가 현재 잔액보다 큼
-        if ((amount + 500) > bankAccountDao.selectBalance(fromAccountId)) {
+        if ((amount + 500.0) > bankAccountDao.selectBalance(fromAccountId)) {
             throw new InsufficientFundsException("Insufficient Funds error");
         }
 
         // 업데이트 (시스템 계정에 수수료 누적)
-        final int systemAccountId = 0;
-        bankAccountDao.updateBalancePlus(systemAccountId, 500);
-        bankAccountDao.updateBalanceMinus(fromAccountId, amount + 500);
+        final Integer systemAccountId = 0;
+        bankAccountDao.updateBalancePlus(systemAccountId, 500.0);
+        bankAccountDao.updateBalanceMinus(fromAccountId, amount + 500.0);
         bankAccountDao.updateBalancePlus(toAccountId, amount);
 
     }

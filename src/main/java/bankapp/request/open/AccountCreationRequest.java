@@ -7,15 +7,15 @@ import lombok.Setter;
 @Setter
 public class AccountCreationRequest {
 
-    private int accountNumber;
+    private Integer accountNumber;
     private String customerName;
-    private double balance;
-    private int ratio;
+    private Double balance;
+    private Integer ratio;
     private String accountType;
 
     public AccountCreationRequest(){ }
 
-    public AccountCreationRequest(int accountNumber , String customerName , double balance , int ratio , String accountType){
+    public AccountCreationRequest(Integer accountNumber , String customerName , Double balance , Integer ratio , String accountType){
         this.accountNumber = accountNumber;
         this.customerName = customerName;
         this.balance = balance;

@@ -13,7 +13,7 @@ public class NormalAccountCreationRequest extends AccountCreationRequest {
 
     public NormalAccountCreationRequest(){ }
 
-    public NormalAccountCreationRequest(int accountNumber , String customerName , double balance , int ratio , String accountType){
+    public NormalAccountCreationRequest(Integer accountNumber , String customerName , Double balance , Integer ratio , String accountType){
         super(accountNumber,customerName,balance,ratio , accountType);
     }
 

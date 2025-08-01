@@ -25,13 +25,13 @@ public class BankAccountDao {
 	// sql unchecked 예외 처리 할 것 
 	
 	// 입금 (반드시 탐색 후 호출해야 함) 
-	public void updateBalancePlus(int accountNumber , double amount){
+	public void updateBalancePlus(Integer accountNumber , Double amount){
 		String updateSql = "UPDATE BankAccount SET balance = balance + ? WHERE accountNumber = ?"; 
 		jdbcTemplate.update(updateSql , amount , accountNumber); 		
 	}
 	
 	// 출금 (반드시 탐색 후 호출해야 함) 
-	public void updateBalanceMinus(int accountNumber , double amount){
+	public void updateBalanceMinus(Integer accountNumber , Double amount){
 		String updateSql = "UPDATE BankAccount SET balance = balance - ? WHERE accountNumber = ?"; 
 		jdbcTemplate.update(updateSql , amount , accountNumber);
 	}
@@ -65,7 +65,7 @@ public class BankAccountDao {
 	
 	// accountNumber 로 계좌가 존재하는지 탐색 
 	@SuppressWarnings("DataFlowIssue")
-    public boolean isAccountExist(int accountNumber) {
+    public boolean isAccountExist(Integer accountNumber) {
 		String checkSql = "SELECT COUNT(*) FROM BankAccount WHERE accountNumber = ?";
 
 		int count = jdbcTemplate.queryForObject(checkSql , Integer.class , accountNumber);
@@ -75,7 +75,7 @@ public class BankAccountDao {
 	
 	// 현재 잔액 탐색 (반드시 탐색후 호출) 
 	@SuppressWarnings("DataFlowIssue")
-    public double selectBalance(int accountNumber) {
+    public double selectBalance(Integer accountNumber) {
 		String checkSql = "SELECT balance FROM BankAccount WHERE accountNumber = ?"; 
 		return jdbcTemplate.queryForObject(checkSql , Double.class , accountNumber);
 	}
@@ -83,7 +83,7 @@ public class BankAccountDao {
 	
 	
 	// accountNumber 를 바탕으로 계좌정보 탐색후 pass (반드시 탐색후 호출) 
-	public BankAccount selectBankAccount(int accountNumber) {
+	public BankAccount selectBankAccount(Integer accountNumber) {
 		
 		String checkSql = "SELECT * FROM BankAccount WHERE accountNumber = ?"; 
 		return jdbcTemplate.queryForObject(checkSql ,new BankAccountRowMapper()  , accountNumber);
@@ -91,7 +91,7 @@ public class BankAccountDao {
 	}
 	
 	// 성공 로그 기록 
-	public void recordSuccessLog(String serviceName,int accountId) {
+	public void recordSuccessLog(String serviceName,Integer accountId) {
 		String insertSql = "INSERT INTO TransactionLog(accountId , transactionType , transactionStatus) VALUES(?,?,?)"; 
 		jdbcTemplate.update(insertSql , accountId , serviceName , "success");
 	}
@@ -113,7 +113,7 @@ public class BankAccountDao {
 
 	// 실패 로그 기록
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void recordFailLog(String serviceName ,int accountId , String reason) {
+	public void recordFailLog(String serviceName ,Integer accountId , String reason) {
 		String insertSql = "INSERT INTO TransactionLog(accountId , transactionType , transactionStatus , failureReason) VALUES(?,?,?,?)";
 		jdbcTemplate.update(insertSql , accountId ,serviceName , "fail" , reason);
 	}
@@ -125,7 +125,7 @@ public class BankAccountDao {
 	}
 	
 	// 거래 로그 기록 
-	public void recordTransferLog(int senderId , int receiverId , double amount) {
+	public void recordTransferLog(Integer senderId , Integer receiverId , Double amount) {
 		String insertSql = "INSERT INTO TransferLog(senderId , receiverId , amount) VALUES(?,?,?)";
 		jdbcTemplate.update(insertSql , senderId, receiverId , amount);
 	}

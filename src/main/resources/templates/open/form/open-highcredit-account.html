@@ -91,7 +91,7 @@
 
   <p class="error-message" th:if="${error}" th:text="${error}"></p>
 
-  <form th:action="@{/open/highcredit}" method="post">
+  <form th:action="@{/open/highcredit}" method="post" novalidate>
 
     <!-- AccountType hidden 필드 추가 -->
     <input type="hidden" name="accountType" value="HighCreditAccount">
@@ -109,7 +109,7 @@
     </div>
 
     <div class="input-field">
-      <input type="number" step="0.1" name="ratio" placeholder="이자율" required min="0">
+      <input type="number" step="1" name="ratio" placeholder="이자율" required min="0">
     </div>
 
     <div class="input-field">
