@@ -10,7 +10,10 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     .form-container {
@@ -20,6 +23,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       text-align: center;
       width: 400px;
+      max-width: 90%;
     }
 
     .logo {
@@ -46,6 +50,7 @@
     .input-field {
       margin-bottom: 15px;
       width: 100%;
+      text-align: left;
     }
 
     .input-field input {
@@ -54,6 +59,20 @@
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    .input-field input.error {
+      border-color: #dc3545;
+      background-color: #fff5f5;
+    }
+
+    .field-error {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 5px;
+      text-align: left;
+      display: block;
     }
 
     .submit-button {
@@ -71,18 +90,6 @@
     .submit-button:hover {
       background-color: #357ABD;
     }
-
-    .error-message {
-      color: red;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
-
-    .success-message {
-      color: green;
-      font-size: 16px;
-      margin-bottom: 15px;
-    }
   </style>
 </head>
 <body>
@@ -94,18 +101,47 @@
 
   <h2>송금</h2>
 
-  <p class="error-message" th:if="${error}" th:text="${error}"></p>
-  <p class="success-message" th:if="${success}" th:text="${success}"></p>
+  <form th:action="@{/transfer}" th:object="${accountTransferRequest}" method="post" novalidate>
+    
+    <!-- 송금 계좌 ID 입력 (100001 ~ 999999) -->
+    <div class="input-field">
+      <input type="text"
+             th:field="*{senderNumber}"
+             placeholder="송금 계좌 ID (100001-999999)"
+             required
+             min="100001"
+             max="999999"
+             th:class="${#fields.hasErrors('senderNumber')} ? 'error' : ''">
+      <span class="field-error"
+            th:if="${#fields.hasErrors('senderNumber')}"
+            th:errors="*{senderNumber}"></span>
+    </div>
 
-  <form th:action="@{/transfer}" method="post">
+    <!-- 수취 계좌 ID 입력 (100001 ~ 999999) -->
     <div class="input-field">
-      <input type="number" name="senderNumber" placeholder="송금 계좌 ID" required min="1">
+      <input type="text"
+             th:field="*{receiverNumber}"
+             placeholder="수취 계좌 ID (100001-999999)"
+             required
+             min="100001"
+             max="999999"
+             th:class="${#fields.hasErrors('receiverNumber')} ? 'error' : ''">
+      <span class="field-error"
+            th:if="${#fields.hasErrors('receiverNumber')}"
+            th:errors="*{receiverNumber}"></span>
     </div>
+
+    <!-- 송금액 입력 (양수) -->
     <div class="input-field">
-      <input type="number" name="receiverNumber" placeholder="수취 계좌 ID" required min="1">
-    </div>
-    <div class="input-field">
-      <input type="number" step="100" name="amount" placeholder="송금액" required min="0">
+      <input type="text"
+             th:field="*{amount}"
+             placeholder="송금액 (0 초과)"
+             required
+             min="1"
+             th:class="${#fields.hasErrors('amount')} ? 'error' : ''">
+      <span class="field-error"
+            th:if="${#fields.hasErrors('amount')}"
+            th:errors="*{amount}"></span>
     </div>
 
     <button type="submit" class="submit-button">송금하기</button>

@@ -4,56 +4,74 @@ import bankapp.request.transfer.AccountTransferRequest;
 import bankapp.exceptions.InsufficientFundsException;
 import bankapp.exceptions.InvalidAccountException;
 import bankapp.service.BankAccountManager;
+import bankapp.validator.transfer.AccountTransferRequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
 @RequestMapping("/transfer")
 public class TransferController {
+
     private final BankAccountManager accountManager;
+    private final AccountTransferRequestValidator accountTransferRequestValidator;
 
     @Autowired
     public TransferController(BankAccountManager accountManager) {
         this.accountManager = accountManager;
+        this.accountTransferRequestValidator = new AccountTransferRequestValidator();
     }
+
+    @InitBinder("accountTransferRequest")
+    public void accountTransferRequestBinder(WebDataBinder binder){
+        binder.addValidators(accountTransferRequestValidator);
+    }
+
 
     // 송금 폼
     @GetMapping("")
-    public String showTransferForm(){
+    public String showTransferForm(Model model){
+        model.addAttribute("accountTransferRequest", new AccountTransferRequest());
         return "transfer/form/transfer";
     }
 
     // 송금
     @PostMapping("")
-    public String processTransfer(@ModelAttribute AccountTransferRequest accountTransferRequest , Model model) {
+    public String processTransfer(@Validated @ModelAttribute AccountTransferRequest accountTransferRequest , BindingResult bindingResult , Model model) {
+
+        if (bindingResult.hasErrors()) {
+            // 값 유효하지 않음
+            return "transfer/form/transfer";
+        }
 
         try {
+            // 송금 처리
             accountManager.transfer(accountTransferRequest);
-        } catch (IllegalArgumentException e) {
-            // 입력값 에러
-            return "transfer/error-message/invalid-input-error";
-        } catch (InsufficientFundsException e) {
-            // 잔액 부족
-            return "transfer/error-message/insufficient-fund-error";
-        } catch (InvalidAccountException e) {
+        }
+        catch (InvalidAccountException e) {
             // 존재하지 않는 계좌
             if (e.getRole() == InvalidAccountException.Role.SENDER) {
-                model.addAttribute("errorMessage", "송금 계좌 ID 가 유효하지 않습니다.");
-                return "transfer/error-message/invalid-account-error";
+                bindingResult.rejectValue("senderNumber" , "invalid" ,"송금 계좌 ID 가 유효하지 않습니다." );
+                return "transfer/form/transfer";
             } else if (e.getRole() == InvalidAccountException.Role.RECEIVER) {
-                model.addAttribute("errorMessage", "수취 계좌 ID 가 유효하지 않습니다.");
-                return "transfer/error-message/invalid-account-error";
+                bindingResult.rejectValue("receiverNumber" , "invalid" ,"수취 계좌 ID 가 유효하지 않습니다." );
+                return "transfer/form/transfer";
             } else {
-                return "transfer/error-message/invalid-account-error";
+                return "transfer/error-message/unexpected-error";
             }
-        } catch (Exception e) {
+        }
+        catch (InsufficientFundsException e) {
+            // 잔액 부족
+            bindingResult.rejectValue("amount" , "invalid" , "잔액이 부족합니다.");
+            return "transfer/form/transfer";
+        }
+        catch (Exception e) {
             // 예기치 못한 에러
             return "transfer/error-message/unexpected-error";
         }

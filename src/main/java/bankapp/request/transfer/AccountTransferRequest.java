@@ -5,12 +5,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccountTransferRequest {
-    private int senderNumber;
-    private int receiverNumber;
-    private double amount;
+    private Integer senderNumber;
+    private Integer receiverNumber;
+    private Double amount;
 
     public AccountTransferRequest() { }
-    public AccountTransferRequest(int senderNumber , int receiverNumber , double amount) {
+    public AccountTransferRequest(Integer senderNumber , Integer receiverNumber , Double amount) {
         this.senderNumber = senderNumber;
         this.receiverNumber = receiverNumber;
         this.amount = amount;
