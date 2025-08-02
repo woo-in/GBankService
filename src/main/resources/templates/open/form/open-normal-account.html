@@ -91,15 +91,6 @@
       background-color: #357ABD;
     }
 
-    .global-error {
-      color: #dc3545;
-      font-size: 14px;
-      margin-bottom: 15px;
-      padding: 10px;
-      background-color: #f8d7da;
-      border: 1px solid #f5c6cb;
-      border-radius: 4px;
-    }
   </style>
 </head>
 <body>
@@ -111,10 +102,7 @@
 
   <h2>보통예금 계좌 개설</h2>
 
-  <!-- 전역 오류 메시지 표시 -->
-<!--  <div class="global-error" th:if="${#fields.hasGlobalErrors()}">-->
-<!--    <div th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div>-->
-<!--  </div>-->
+
 
   <form th:action="@{/open/normal}" th:object="${normalAccountCreationRequest}" method="post" novalidate>
 
@@ -176,6 +164,10 @@
             th:if="${#fields.hasErrors('ratio')}" 
             th:errors="*{ratio}"></span>
     </div>
+
+
+
+
 
     <button type="submit" class="submit-button">계좌 개설</button>
   </form>

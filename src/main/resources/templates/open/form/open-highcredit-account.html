@@ -10,7 +10,10 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     .form-container {
@@ -20,6 +23,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       text-align: center;
       width: 400px;
+      max-width: 90%;
     }
 
     .logo {
@@ -46,15 +50,29 @@
     .input-field {
       margin-bottom: 15px;
       width: 100%;
+      text-align: left;
     }
 
-    .input-field input,
-    .input-field select {
+    .input-field input {
       width: 100%;
       padding: 12px;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    .input-field input.error {
+      border-color: #dc3545;
+      background-color: #fff5f5;
+    }
+
+    .field-error {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 5px;
+      text-align: left;
+      display: block;
     }
 
     .submit-button {
@@ -73,11 +91,6 @@
       background-color: #357ABD;
     }
 
-    .error-message {
-      color: red;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
   </style>
 </head>
 <body>
@@ -89,37 +102,86 @@
 
   <h2>신용신뢰 계좌 개설</h2>
 
-  <p class="error-message" th:if="${error}" th:text="${error}"></p>
+<!--  <p class="error-message" th:if="${error}" th:text="${error}"></p>-->
 
-  <form th:action="@{/open/highcredit}" method="post" novalidate>
+
+
+  <form th:action="@{/open/highcredit}" th:object="${highCreditAccountCreationRequest}" method="post" novalidate>
 
     <!-- AccountType hidden 필드 추가 -->
     <input type="hidden" name="accountType" value="HighCreditAccount">
 
+    <!-- 계좌번호 입력 (100001 ~ 999999) -->
     <div class="input-field">
-      <input type="number" name="accountNumber" placeholder="계좌 ID" required min="1">
+      <input type="text"
+             th:field="*{accountNumber}"
+             placeholder="계좌 ID (100001-999999)"
+             required
+             min="100001"
+             max="999999"
+             th:class="${#fields.hasErrors('accountNumber')} ? 'error' : ''">
+      <span class="field-error"
+            th:if="${#fields.hasErrors('accountNumber')}"
+            th:errors="*{accountNumber}"></span>
     </div>
 
+    <!-- 고객 이름 입력 (영어 2~20자) -->
     <div class="input-field">
-      <input type="text" name="customerName" placeholder="이름" required>
+      <input type="text"
+             th:field="*{customerName}"
+             placeholder="이름 (영어 2-20자)"
+             required
+             maxlength="20"
+             th:class="${#fields.hasErrors('customerName')} ? 'error' : ''">
+      <span class="field-error"
+            th:if="${#fields.hasErrors('customerName')}"
+            th:errors="*{customerName}"></span>
     </div>
 
+    <!-- 입금액 입력 (양수) -->
     <div class="input-field">
-      <input type="number" step="100" name="balance" placeholder="입금액" required min="0">
+      <input type="text"
+             step="1"
+             th:field="*{balance}"
+             placeholder="입금액 (0 이상)"
+             required
+             min="1"
+             th:class="${#fields.hasErrors('balance')} ? 'error' : ''">
+      <span class="field-error"
+            th:if="${#fields.hasErrors('balance')}"
+            th:errors="*{balance}"></span>
     </div>
 
+    <!-- 이자율 입력 (0~100 정수) -->
     <div class="input-field">
-      <input type="number" step="1" name="ratio" placeholder="이자율" required min="0">
+      <input type="text"
+             step="1"
+             th:field="*{ratio}"
+             placeholder="이자율 (정수 0-100)"
+             required
+             min="0"
+             max="100"
+             th:class="${#fields.hasErrors('ratio')} ? 'error' : ''">
+      <span class="field-error"
+            th:if="${#fields.hasErrors('ratio')}"
+            th:errors="*{ratio}"></span>
     </div>
 
+    <!-- 신용등급 선택 -->
     <div class="input-field">
-      <select name="grade" required>
-        <option value="" disabled selected>신용등급 선택</option>
+      <select th:field="*{grade}"
+              required
+              th:class="${#fields.hasErrors('grade')} ? 'error' : ''">
+        <option value="" disabled>신용등급 선택</option>
         <option value="1">A (1등급)</option>
         <option value="2">B (2등급)</option>
         <option value="3">C (3등급)</option>
       </select>
+      <span class="field-error"
+            th:if="${#fields.hasErrors('grade')}"
+            th:errors="*{grade}"></span>
     </div>
+
 
     <button type="submit" class="submit-button">계좌 개설</button>
   </form>

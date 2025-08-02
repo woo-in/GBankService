@@ -8,10 +8,10 @@ import lombok.Setter;
 abstract public class BankAccount {
 
     
-    private int accountNumber;
+    private Integer accountNumber;
     private String customerName;
-    private double balance;
-    private int ratio;
+    private Double balance;
+    private Integer ratio;
     private String accountType;
 
     public BankAccount(){ }

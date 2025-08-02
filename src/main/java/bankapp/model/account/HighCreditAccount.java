@@ -8,7 +8,7 @@ import lombok.Setter;
 public class HighCreditAccount extends BankAccount {
 
     // 신용등급(1toA , 2toB , 3toC)
-    private int grade ;
+    private Integer grade ;
 
 
 
