@@ -6,15 +6,12 @@ import bankapp.request.open.HighCreditAccountCreationRequest;
 import bankapp.request.open.NormalAccountCreationRequest;
 import bankapp.exceptions.DuplicateAccountException;
 import bankapp.service.BankAccountManager;
-import bankapp.validator.open.HighCreditAccountCreationRequestValidator;
-import bankapp.validator.open.NormalAccountCreationRequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -26,28 +23,11 @@ public class OpenController {
     // 보통계좌 , 신용신뢰계좌 모두 단일컨트롤러로 함 -> 유지보수시 쪼개는 것 고려
 
     private final BankAccountManager accountManager;
-    private final NormalAccountCreationRequestValidator normalAccountCreationRequestValidator;
-    private final HighCreditAccountCreationRequestValidator highCreditAccountCreationRequestValidator;
 
     @Autowired
     public OpenController(BankAccountManager accountManager) {
         this.accountManager = accountManager;
-        this.normalAccountCreationRequestValidator = new NormalAccountCreationRequestValidator();
-        this.highCreditAccountCreationRequestValidator = new HighCreditAccountCreationRequestValidator();
     }
-
-
-    // 바인더 초기화
-   @InitBinder("normalAccountCreationRequest")
-   public void normalAccountCreationRequestBinder(WebDataBinder binder){
-        binder.addValidators(normalAccountCreationRequestValidator);
-   }
-
-   @InitBinder("highCreditAccountCreationRequest")
-   public void highCreditAccountCreationRequestBinder(WebDataBinder binder){
-        binder.addValidators(highCreditAccountCreationRequestValidator);
-   }
-
 
     // 계좌 종류 선택
     @GetMapping("/select")

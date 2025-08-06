@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class TransferController {
 
     private final BankAccountManager accountManager;
+    // 두 계좌가 같은지 다른지 비교하기 위해 필요함.
     private final AccountTransferRequestValidator accountTransferRequestValidator;
 
     @Autowired

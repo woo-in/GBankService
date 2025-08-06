@@ -74,6 +74,7 @@ public class AccountTransferRequestValidator implements Validator {
         }
     }
 
+
     private void validateDifferentAccounts(Integer senderNumber, Integer receiverNumber, Errors errors) {
         if (senderNumber != null && receiverNumber != null && senderNumber.equals(receiverNumber)) {
             errors.rejectValue("receiverNumber", "same",

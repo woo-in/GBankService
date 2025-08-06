@@ -64,7 +64,7 @@ public class HighCreditAccountCreationRequestValidator implements Validator {
 
     private void validateCustomerName(String customerName, Errors errors) {
 
-        // null 은 바인딩 체크에서 하지 않을까 ?
+
         if (customerName == null || customerName.trim().isEmpty()) {
             errors.rejectValue("customerName", "empty",
                     "이름을 입력하세요.");

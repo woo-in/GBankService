@@ -46,12 +46,14 @@ public class NormalAccountCreationRequestValidator implements Validator {
 
     private void validateAccountNumber(Integer accountNumber, Errors errors) {
 
+        // X
         if (accountNumber == null) {
             errors.rejectValue("accountNumber" , "empty" , "계좌 번호를 입력하세요.");
             return;
         }
 
 
+        // X
         if (accountNumber < 100001 || accountNumber > 999999) {
             errors.rejectValue("accountNumber", "range",
                     "계좌 ID는 100001부터 999999 사이의 값이어야 합니다.");
@@ -60,13 +62,14 @@ public class NormalAccountCreationRequestValidator implements Validator {
 
     private void validateCustomerName(String customerName, Errors errors) {
 
-        // null 은 바인딩 체크에서 하지 않을까 ?
+        // X
         if (customerName == null || customerName.trim().isEmpty()) {
             errors.rejectValue("customerName", "empty",
                     "이름을 입력하세요.");
             return;
         }
 
+        // X
         if (!NAME_PATTERN.matcher(customerName.trim()).matches()) {
             errors.rejectValue("customerName", "value",
                     "고객 이름은 영어 2자에서 20자 사이여야 합니다.");
@@ -74,10 +77,14 @@ public class NormalAccountCreationRequestValidator implements Validator {
     }
 
     private void validateBalance(Double balance, Errors errors) {
+
+        // X
         if (balance == null) {
             errors.rejectValue("balance" , "empty" , "입금액을 입력하세요.");
             return;
         }
+
+        // X
         if (balance < 0) {
             errors.rejectValue("balance", "range",
                     "입금액은 0 이상이어야 합니다.");
@@ -85,10 +92,14 @@ public class NormalAccountCreationRequestValidator implements Validator {
     }
 
     private void validateRatio(Integer ratio, Errors errors) {
+
+        // X
         if (ratio == null) {
             errors.rejectValue("ratio" , "empty" , "이자율을 입력하세요.");
             return;
         }
+
+        // X
         if (ratio < 0 || ratio > 100) {
             errors.rejectValue("ratio", "range",
                     "이자율은 0부터 100 사이의 정수여야 합니다.");
