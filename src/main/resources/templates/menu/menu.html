@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Tass Bank</title>
+  <title th:text="#{bankName}"></title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -26,15 +26,31 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
     }
 
-    .circle {
-      width: 20px;
-      height: 20px;
-      background-color: #4a90e2;
-      border-radius: 50%;
+    .logo-shape-container {
+      position: relative;
+      width: 35px;
+      height: 25px;
       margin-right: 10px;
+    }
+    .circle-1, .circle-2 {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+    }
+    .circle-1 {
+      background-color: #4a90e2;
+      top: 0;
+      left: 0;
+    }
+    .circle-2 {
+      background-color: #74ebd5;
+      opacity: 0.8;
+      top: 0;
+      right: 0;
     }
 
     .logo-text {
@@ -65,8 +81,11 @@
 <body>
 <div class="menu-container">
   <div class="logo">
-    <div class="circle"></div>
-    <div class="logo-text">Tass</div>
+    <div class="logo-shape-container">
+      <div class="circle-1"></div>
+      <div class="circle-2"></div>
+    </div>
+    <div class="logo-text" th:text="#{bankName}">Tass Bank</div>
   </div>
 
   <form th:action="@{/open/select}" method="get">

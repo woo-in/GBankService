@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="|#{bankName} - 회원가입|">우인은행 - 회원가입</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .signup-container {
+      background-color: white;
+      padding: 40px 60px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 400px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .logo-shape-container {
+      position: relative;
+      width: 35px;
+      height: 25px;
+      margin-right: 10px;
+    }
+    .circle-1, .circle-2 {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+    }
+    .circle-1 {
+      background-color: #4a90e2;
+      top: 0;
+      left: 0;
+    }
+    .circle-2 {
+      background-color: #74ebd5;
+      opacity: 0.8;
+      top: 0;
+      right: 0;
+    }
+
+    .logo-text {
+      font-size: 28px;
+      font-weight: bold;
+      color: #4a90e2;
+    }
+
+    .input-field {
+      margin-bottom: 25px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .input-field input {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    .input-field input.error {
+      border-color: #dc3545;
+    }
+
+    .field-guide {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+      text-align: left;
+    }
+
+    .field-error {
+      display: block; /* span 태그가 한 줄을 차지하도록 */
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 4px;
+      text-align: left;
+    }
+
+    .submit-button {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 16px;
+      font-size: 18px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .login-link {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+<div class="signup-container">
+  <div class="logo">
+    <div class="logo-shape-container">
+      <div class="circle-1"></div>
+      <div class="circle-2"></div>
+    </div>
+    <div class="logo-text" th:text="#{bankName}">우인은행</div>
+  </div>
+
+  <form th:action="@{/signup}" th:object="${signUpRequest}" method="post" novalidate>
+    <div class="input-field">
+      <input type="text" th:field="*{username}" placeholder="아이디" th:classappend="${#fields.hasErrors('username')} ? 'error' : ''">
+      <div class="field-guide" th:if="${!#fields.hasErrors('username')}">영문 소문자와 숫자를 포함하여 4~20자로 입력해주세요.</div>
+      <span class="field-error" th:errors="*{username}"></span>
+    </div>
+    <div class="input-field">
+      <input type="password" th:field="*{password}" placeholder="비밀번호" th:classappend="${#fields.hasErrors('password')} ? 'error' : ''">
+      <div class="field-guide" th:if="${!#fields.hasErrors('password')}">영문, 숫자, 특수문자를 포함하여 8~16자로 입력해주세요.</div>
+      <span class="field-error" th:errors="*{password}"></span>
+    </div>
+    <div class="input-field">
+      <input type="password" th:field="*{passwordConfirm}" placeholder="비밀번호 확인" th:classappend="${#fields.hasErrors('passwordConfirm')} ? 'error' : ''">
+      <span class="field-error" th:errors="*{passwordConfirm}"></span>
+    </div>
+    <div class="input-field">
+      <input type="text" th:field="*{name}" placeholder="이름" th:classappend="${#fields.hasErrors('name')} ? 'error' : ''">
+      <span class="field-error" th:errors="*{name}"></span>
+    </div>
+    <div class="input-field">
+      <input type="text" th:field="*{accountNickname}" placeholder="첫 계좌의 별칭 (예: 내 통장)" th:classappend="${#fields.hasErrors('accountNickname')} ? 'error' : ''">
+      <span class="field-error" th:errors="*{accountNickname}"></span>
+    </div>
+    <button type="submit" class="submit-button">가입하고 계좌 만들기</button>
+  </form>
+
+  <div class="login-link">
+    이미 회원이신가요? <a th:href="@{/login}">로그인</a>
+  </div>
+</div>
+</body>
+</html>

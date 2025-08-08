@@ -27,13 +27,9 @@ import java.util.Map;
 public class BankAccountManager {
 
 	private final DepositService depositService;
-
 	private final WithdrawService withdrawService;
-
 	private final FindAccountService findAccountService;
-
 	private final TransferService transferService;
-
 	private final Map<String , OpenAccountService> openAccountServices;
 
 
