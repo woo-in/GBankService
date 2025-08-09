@@ -13,4 +13,11 @@ public class MenuController {
         return "menu/menu";
     }
 
+    // 임시(로그인 성공 출력)
+    @GetMapping("/home")
+    public String showHome(){
+        return "menu/home";
+    }
+
+
 }

@@ -1,27 +1,27 @@
 package bankapp.dao;
 
 import bankapp.model.member.Member;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
+@Slf4j
 @Component
 public class MemberDao {
 
     final private JdbcTemplate jdbcTemplate;
-    final private SimpleJdbcInsert simpleJdbcInsert;
 
     public MemberDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("MEMBER") // INSERT 할 테이블 이름
-                .usingGeneratedKeyColumns("member_id"); // 자동으로 생성되는 Key 컬럼 이름
     }
 
 
@@ -32,17 +32,19 @@ public class MemberDao {
      */
 
     public Member save(Member member){
-        // 1. INSERT 할 데이터를 Map 형태로 준비합니다.
-        Map<String , Object> params = new HashMap<>();
-        params.put("username" , member.getUsername());
-        params.put("password" , member.getPassword());
-        params.put("name" , member.getName());
+        String sql = "INSERT INTO MEMBER (username , password , name) VALUES (?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        // 2. INSERT 실행 , 자동으로 생성된 member_id 가져오기
-        Number key = simpleJdbcInsert.executeAndReturnKey(params);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1 , member.getUsername());
+            ps.setString(2 , member.getPassword());
+            ps.setString(3 , member.getName());
+            return ps;
+        } , keyHolder);
 
-        // 3. 기존 member 객체에 id 를 설정하고 반환
-        member.setMemberId(key.longValue());
+        long generatedId = keyHolder.getKey().longValue();
+        member.setMemberId(generatedId);
         return member;
     }
 

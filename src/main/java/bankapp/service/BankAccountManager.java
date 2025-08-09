@@ -1,18 +1,18 @@
 package bankapp.service;
 
 
+import bankapp.exceptions.*;
 import bankapp.request.open.AccountCreationRequest;
 import bankapp.request.deposit.AccountDepositRequest;
 import bankapp.request.find.AccountFindRequest;
 import bankapp.model.account.BankAccount;
+import bankapp.request.signup.SignUpRequest;
 import bankapp.request.transfer.AccountTransferRequest;
 import bankapp.request.withdraw.AccountWithdrawRequest;
-import bankapp.exceptions.DuplicateAccountException;
-import bankapp.exceptions.InsufficientFundsException;
-import bankapp.exceptions.InvalidAccountException;
 import bankapp.service.deposit.DepositService;
 import bankapp.service.find.FindAccountService;
 import bankapp.service.open.OpenAccountService;
+import bankapp.service.signup.SignUpService;
 import bankapp.service.transfer.TransferService;
 import bankapp.service.withdraw.WithdrawService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,7 @@ public class BankAccountManager {
 	private final FindAccountService findAccountService;
 	private final TransferService transferService;
 	private final Map<String , OpenAccountService> openAccountServices;
+	private final SignUpService signUpService;
 
 
 	@Autowired
@@ -38,7 +39,8 @@ public class BankAccountManager {
 							  DepositService depositService,
 							  WithdrawService withdrawService,
 							  FindAccountService findAccountService,
-							  @Qualifier("freeTransferService") TransferService transferService) {
+							  @Qualifier("freeTransferService") TransferService transferService,
+							  SignUpService signUpService) {
 
 		this.openAccountServices = new HashMap<>();
 		for(OpenAccountService openAccountService : openAccountServices) {
@@ -49,6 +51,7 @@ public class BankAccountManager {
 		this.withdrawService = withdrawService;
 		this.findAccountService = findAccountService;
 		this.transferService = transferService;
+		this.signUpService = signUpService;
 	}
 
 	public void openAccount(AccountCreationRequest accountCreationRequest) throws IllegalArgumentException, DuplicateAccountException {
@@ -74,5 +77,9 @@ public class BankAccountManager {
     public void transfer(AccountTransferRequest accountTransferRequest) throws IllegalArgumentException , InvalidAccountException ,InsufficientFundsException{
     	transferService.transfer(accountTransferRequest);
     }
+
+	public void signUp(SignUpRequest signUpRequest) throws DuplicateUsernameException, PasswordMismatchException {
+		signUpService.signUp(signUpRequest);
+	}
 }
 
