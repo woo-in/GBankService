@@ -32,19 +32,3 @@ public class SecurityConfig {
 }
 
 
-//public Member signIn(LoginRequest request) {
-//    // 1. 아이디로 회원 정보 조회
-//    Member member = memberDao.findByUsername(request.getUsername());
-//    if (member == null) {
-//        throw new IllegalStateException("존재하지 않는 아이디입니다.");
-//    }
-//
-//    // 2. 비밀번호 비교 (핵심!)
-//    if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-//        // 비밀번호 일치 시, 회원 정보 반환
-//        return member;
-//    } else {
-//        // 비밀번호 불일치 시, 예외 발생
-//        throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
-//    }
-//}

@@ -25,7 +25,7 @@ public class SignUpController {
     @Autowired
     public SignUpController(BankAccountManager accountManager) { this.accountManager = accountManager;}
 
-    // 로그인 처리 폼 조회
+    // 회원가입 폼 처리
     @GetMapping("")
     public String showSignUpForm(Model model){
         model.addAttribute("signUpRequest", new SignUpRequest());

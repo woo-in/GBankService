@@ -2,6 +2,8 @@ package bankapp.service;
 
 
 import bankapp.exceptions.*;
+import bankapp.model.member.Member;
+import bankapp.request.login.LoginRequest;
 import bankapp.request.open.AccountCreationRequest;
 import bankapp.request.deposit.AccountDepositRequest;
 import bankapp.request.find.AccountFindRequest;
@@ -11,6 +13,7 @@ import bankapp.request.transfer.AccountTransferRequest;
 import bankapp.request.withdraw.AccountWithdrawRequest;
 import bankapp.service.deposit.DepositService;
 import bankapp.service.find.FindAccountService;
+import bankapp.service.login.LoginService;
 import bankapp.service.open.OpenAccountService;
 import bankapp.service.signup.SignUpService;
 import bankapp.service.transfer.TransferService;
@@ -32,6 +35,7 @@ public class BankAccountManager {
 	private final TransferService transferService;
 	private final Map<String , OpenAccountService> openAccountServices;
 	private final SignUpService signUpService;
+	private final LoginService loginService;
 
 
 	@Autowired
@@ -40,7 +44,8 @@ public class BankAccountManager {
 							  WithdrawService withdrawService,
 							  FindAccountService findAccountService,
 							  @Qualifier("freeTransferService") TransferService transferService,
-							  SignUpService signUpService) {
+							  SignUpService signUpService,
+							  LoginService loginService) {
 
 		this.openAccountServices = new HashMap<>();
 		for(OpenAccountService openAccountService : openAccountServices) {
@@ -52,6 +57,7 @@ public class BankAccountManager {
 		this.findAccountService = findAccountService;
 		this.transferService = transferService;
 		this.signUpService = signUpService;
+		this.loginService = loginService;
 	}
 
 	public void openAccount(AccountCreationRequest accountCreationRequest) throws IllegalArgumentException, DuplicateAccountException {
@@ -81,5 +87,11 @@ public class BankAccountManager {
 	public void signUp(SignUpRequest signUpRequest) throws DuplicateUsernameException, PasswordMismatchException {
 		signUpService.signUp(signUpRequest);
 	}
+
+	public Member login(LoginRequest loginRequest) throws UsernameNotFoundException , IncorrectPasswordException{
+		return loginService.login(loginRequest);
+	}
+
+
 }
 

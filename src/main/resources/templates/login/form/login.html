@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title> 로그인 </title>
+    <title th:text="|#{bankName} - 로그인|">우인은행 - 로그인</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -13,7 +13,7 @@
             height: 100vh;
         }
 
-        .menu-container {
+        .login-container {
             background-color: white;
             padding: 40px 60px;
             border-radius: 20px;
@@ -26,7 +26,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 30px; /* 여백을 조금 늘렸습니다 */
+            margin-bottom: 30px;
         }
 
         .logo-shape-container {
@@ -53,28 +53,49 @@
             right: 0;
         }
 
-
         .logo-text {
             font-size: 28px;
             font-weight: bold;
             color: #4a90e2;
         }
 
-        /* 로그인 폼을 위한 스타일 추가 */
-        .login-input {
+        .input-field {
+            margin-bottom: 25px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .input-field input {
             width: 100%;
             padding: 14px;
-            margin-bottom: 15px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 8px;
-            box-sizing: border-box; /* 패딩과 테두리가 너비에 포함되도록 설정 */
+            box-sizing: border-box;
+        }
+
+        .input-field input.error {
+            border-color: #dc3545;
+        }
+
+        .field-error {
+            display: block;
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            text-align: left;
+        }
+
+        .global-error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-bottom: 15px;
         }
 
         .login-button {
             display: block;
             width: 100%;
-            margin: 12px 0;
+            margin-top: 10px;
             padding: 16px;
             font-size: 18px;
             background-color: #4a90e2;
@@ -84,26 +105,26 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         .login-button:hover {
             background-color: #357ABD;
         }
 
-        .signup-button {
+        .signup-link {
             display: block;
             width: 100%;
-            margin: 12px 0;
+            margin-top: 12px;
             padding: 16px;
             font-size: 18px;
-            background-color: #e0e0e0; /* 회원가입 버튼은 다른 색상으로 구분 */
+            background-color: #e0e0e0;
             color: #333;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            text-decoration: none;
+            box-sizing: border-box;
             transition: background-color 0.3s ease;
         }
-
-        .signup-button:hover {
+        .signup-link:hover {
             background-color: #bdbdbd;
         }
 
@@ -112,34 +133,35 @@
             font-size: 14px;
             color: #777;
         }
-        .forgot-password a {
-            color: #4a90e2;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
-<div class="menu-container">
+<div class="login-container">
     <div class="logo">
         <div class="logo-shape-container">
             <div class="circle-1"></div>
             <div class="circle-2"></div>
         </div>
-        <div class="logo-text" th:text="#{bankName}">Tass Bank</div>
+        <div class="logo-text" th:text="#{bankName}">우인은행</div>
     </div>
 
-    <form th:action="@{/templates/login}" method="post">
-        <div>
-            <input type="text" name="username" class="login-input" placeholder="아이디" required>
+    <form th:action="@{/login}" th:object="${loginRequest}" method="post" novalidate>
+        <div class="global-error" th:if="${#fields.hasGlobalErrors()}">
+            <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
         </div>
-        <div>
-            <input type="password" name="password" class="login-input" placeholder="비밀번호" required>
+
+        <div class="input-field">
+            <input type="text" th:field="*{username}" placeholder="아이디" th:classappend="${#fields.hasErrors('username')} ? 'error' : ''">
+            <span class="field-error" th:errors="*{username}"></span>
+        </div>
+        <div class="input-field">
+            <input type="password" th:field="*{password}" placeholder="비밀번호" th:classappend="${#fields.hasErrors('password')} ? 'error' : ''">
+            <span class="field-error" th:errors="*{password}"></span>
         </div>
         <button type="submit" class="login-button">로그인</button>
     </form>
-    <form th:action="@{/signup}" method="get">
-        <button type="submit" class="signup-button">회원가입</button>
-    </form>
+
+    <a th:href="@{/signup}" class="signup-link">회원가입</a>
 
     <div class="forgot-password">
         비밀번호를 잊어버리셨나요? <a href="#">여기서 찾으세요.</a>
