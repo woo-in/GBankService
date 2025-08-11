@@ -1,4 +1,4 @@
-package bankapp.controller;
+package bankapp.web.controller;
 
 import bankapp.request.transfer.AccountTransferRequest;
 import bankapp.exceptions.InsufficientFundsException;

@@ -1,4 +1,4 @@
-package bankapp.controller;
+package bankapp.web.controller;
 
 import org.springframework.ui.Model;
 import bankapp.request.find.AccountFindRequest;

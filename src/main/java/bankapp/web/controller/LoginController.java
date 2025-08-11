@@ -1,20 +1,20 @@
-package bankapp.controller;
+package bankapp.web.controller;
 
+import bankapp.common.SessionConst;
 import bankapp.exceptions.IncorrectPasswordException;
 import bankapp.exceptions.UsernameNotFoundException;
 import bankapp.model.member.Member;
 import bankapp.request.login.LoginRequest;
 import bankapp.service.BankAccountManager;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
@@ -36,8 +36,10 @@ public class LoginController {
 
     // 처리
     @PostMapping("")
-    public String processLogin(@Validated @ModelAttribute LoginRequest loginRequest , BindingResult bindingResult) {
-
+    public String processLogin(@Validated @ModelAttribute LoginRequest loginRequest
+                                ,BindingResult bindingResult
+                                ,@RequestParam(defaultValue = "/") String redirectURL
+                                ,HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             return "login/form/login";
@@ -46,19 +48,19 @@ public class LoginController {
         // 아이디 비밀번호 검사후 객체 반환
         try{
             Member member = accountManager.login(loginRequest);
+            // 로그인 성공 처리
+            // 세션이 있으면 세션 반환 , 없으면 신규 세션 생성
+            HttpSession session = request.getSession(true);
+            // 세션에 로그인 회원 정보 보관
+            session.setAttribute(SessionConst.LOGIN_MEMBER, member);
+            // 임시 : 리다이렉트 (로그인 성공)
+            return "redirect:" + redirectURL;
         }catch (UsernameNotFoundException e){
             bindingResult.rejectValue("username" , "invalid" , "존재하지 않는 아이디입니다.");
             return "login/form/login";
-        } catch (IncorrectPasswordException e) {
+        }catch (IncorrectPasswordException e) {
             bindingResult.rejectValue("password" , "invalid" , "비밀번호가 일치하지 않습니다.");
             return "login/form/login";
         }
-
-        
-        // 이제 멤버를 사용해서 세션 처리 하면 된다 !
-        // 임시 : 리다이렉트 (로그인 성공)
-        return "redirect:/home";
-
     }
-
 }

@@ -1,4 +1,4 @@
-package bankapp.controller;
+package bankapp.web.controller;
 
 import bankapp.request.withdraw.AccountWithdrawRequest;
 import bankapp.exceptions.InsufficientFundsException;

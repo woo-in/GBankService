@@ -1,4 +1,4 @@
-package bankapp.controller;
+package bankapp.web.controller;
 
 import bankapp.exceptions.DuplicateUsernameException;
 import bankapp.exceptions.PasswordMismatchException;

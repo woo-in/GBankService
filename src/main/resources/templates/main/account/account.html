@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|#{bankName} - 통장|">우인은행 - 통장</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5; /* 앱과 유사한 배경색 */
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-shape-container {
+            position: relative;
+            width: 35px;
+            height: 25px;
+            margin-right: 10px;
+        }
+        .circle-1, .circle-2 {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+        }
+        .circle-1 {
+            background-color: #4a90e2;
+            top: 0;
+            left: 0;
+        }
+        .circle-2 {
+            background-color: #74ebd5;
+            opacity: 0.8;
+            top: 0;
+            right: 0;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333; /* 어두운 배경에서는 흰색이 나을 수 있습니다. */
+        }
+
+        .account-card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .account-info {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .account-balance {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 25px 0;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .action-buttons button {
+            padding: 16px;
+            font-size: 18px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-fill {
+            background-color: #eef1f7;
+            color: #333;
+        }
+        .btn-fill:hover { background-color: #e1e5ea; }
+
+        .btn-send {
+            background-color: #4a90e2;
+            color: white;
+        }
+        .btn-send:hover { background-color: #357ABD; }
+
+        .transaction-history {
+            background-color: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .history-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .transaction-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-details {
+            text-align: left;
+        }
+
+        .transaction-desc {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .transaction-meta {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .transaction-amount {
+            text-align: right;
+        }
+
+        .amount {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .amount.credit { color: #4a90e2; }
+        .amount.debit { color: #333; }
+
+        .balance-after {
+            font-size: 13px;
+            color: #888;
+        }
+
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">
+        <div class="logo-shape-container">
+            <div class="circle-1"></div>
+            <div class="circle-2"></div>
+        </div>
+        <div class="logo-text" th:text="#{bankName}">우인은행</div>
+    </div>
+</header>
+
+<main>
+    <section class="account-card" th:each="account : ${accounts}">
+        <div class="account-info" th:text="${account.nickname} + ' ' + ${account.accountNumber}">내 통장 110-123-456789</div>
+        <h1 class="account-balance" th:text="${#numbers.formatCurrency(account.balance)}">744,820원</h1>
+        <div class="action-buttons">
+            <button class="btn-fill">채우기</button>
+            <button class="btn-send">보내기</button>
+        </div>
+    </section>
+
+    <section class="transaction-history">
+        <h3 class="history-header">거래 내역</h3>
+        <ul class="transaction-list">
+            <li class="transaction-item">
+                <div class="transaction-details">
+                    <p class="transaction-desc">카드 캐시백</p>
+                    <span class="transaction-meta">12:29</span>
+                </div>
+                <div class="transaction-amount">
+                    <p class="amount credit">+500원</p>
+                    <span class="balance-after">744,820원</span>
+                </div>
+            </li>
+            <li class="transaction-item">
+                <div class="transaction-details">
+                    <p class="transaction-desc">CJ CGV 온라인예매</p>
+                    <span class="transaction-meta">12:29</span>
+                </div>
+                <div class="transaction-amount">
+                    <p class="amount debit">-22,000원</p>
+                    <span class="balance-after">744,320원</span>
+                </div>
+            </li>
+            <li class="transaction-item">
+                <div class="transaction-details">
+                    <p class="transaction-desc">김우인에게 송금</p>
+                    <span class="transaction-meta">08-10</span>
+                </div>
+                <div class="transaction-amount">
+                    <p class="amount debit">-50,000원</p>
+                    <span class="balance-after">766,320원</span>
+                </div>
+            </li>
+        </ul>
+    </section>
+</main>
+
+</body>
+</html>
