@@ -1,10 +1,11 @@
 package bankapp.service;
 
-import bankapp.request.open.AccountCreationRequest;
-import bankapp.request.open.HighCreditAccountCreationRequest;
-import bankapp.request.open.NormalAccountCreationRequest;
-import bankapp.exceptions.DuplicateAccountException;
-import bankapp.service.open.OpenAccountService;
+import bankapp.member.manager.BankAccountManager;
+import bankapp.account.request.open.AccountCreationRequest;
+import bankapp.account.request.open.HighCreditAccountCreationRequest;
+import bankapp.account.request.open.NormalAccountCreationRequest;
+import bankapp.account.exceptions.DuplicateAccountException;
+import bankapp.account.service.open.OpenAccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
