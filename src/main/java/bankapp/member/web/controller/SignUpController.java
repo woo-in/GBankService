@@ -1,8 +1,13 @@
 package bankapp.member.web.controller;
 
+import bankapp.account.exceptions.InvalidDepositAmountException;
+import bankapp.account.manager.AccountManager;
+import bankapp.account.request.open.OpenPrimaryAccountRequest;
 import bankapp.member.exceptions.DuplicateUsernameException;
+import bankapp.member.exceptions.MemberNotFoundException;
 import bankapp.member.exceptions.PasswordMismatchException;
 import bankapp.member.manager.MemberManager;
+import bankapp.member.model.Member;
 import bankapp.member.request.signup.SignUpRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +20,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @Controller
 @RequestMapping("/signup")
 public class SignUpController {
 
     private final MemberManager memberManager;
+    private final AccountManager accountManager;
 
     @Autowired
-    public SignUpController(MemberManager memberManager) { this.memberManager = memberManager; }
+    public SignUpController(MemberManager memberManager , AccountManager accountManager) {
+        this.memberManager = memberManager;
+        this.accountManager = accountManager;
+    }
 
     // 회원가입 폼 처리
     @GetMapping("")
@@ -41,19 +52,24 @@ public class SignUpController {
             return "member/signup/signupForm";
         }
 
-        // 중복 검사 , 일치 검사 해야 함
+        // 새 회원 추가
+        Member newMember ;
         try {
-            memberManager.signUp(signUpRequest);
+            newMember = memberManager.signUp(signUpRequest);
+            accountManager.openPrimaryAccount(new OpenPrimaryAccountRequest(newMember.getMemberId() , BigDecimal.ZERO,signUpRequest.getAccountNickname()));
         }catch (DuplicateUsernameException e){
             bindingResult.rejectValue("username" , "duplicate" , "중복된 ID 입니다.");
             return "member/signup/signupForm";
         }catch(PasswordMismatchException e){
             bindingResult.rejectValue("passwordConfirm" , "invalid" , "비밀번호가 일치하지 않습니다.");
             return "member/signup/signupForm";
+        }catch(InvalidDepositAmountException e) {
+            return "redirect:/error";
+        }catch(MemberNotFoundException e) {
+            return "redirect:/error";
         }
 
-        // 가입 완료 : 리다이렉트 새로 해야 함.
-        return "redirect:/home";
+        return "redirect:/";
     }
 
 

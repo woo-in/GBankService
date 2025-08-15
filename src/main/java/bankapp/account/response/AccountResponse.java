@@ -1,7 +1,7 @@
 package bankapp.account.response;
 
 
-import bankapp.account.model.Account;
+import bankapp.account.model.PrimaryAccount;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -16,7 +16,7 @@ public class AccountResponse {
     // 직접 생성 막음
     private AccountResponse() { }
 
-    public static AccountResponse from(Account account){
+    public static AccountResponse from(PrimaryAccount account){
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setAccountNumber(account.getAccountNumber());
         accountResponse.setBalance(account.getBalance());

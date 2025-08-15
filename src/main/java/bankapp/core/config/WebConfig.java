@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginCheckerInterceptor())
                 .order(1)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/signup");
+                .excludePathPatterns("/login", "/signup" , "/error");
         // 로그인과 회원가입 제외 모두 세션 체크
     }
 }

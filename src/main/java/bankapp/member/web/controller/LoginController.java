@@ -44,7 +44,6 @@ public class LoginController {
         if (bindingResult.hasErrors()) {
             return "member/login/loginForm";
         }
-
         // 아이디 비밀번호 검사후 객체 반환
         try{
             Member member = memberManager.login(loginRequest);
@@ -53,7 +52,6 @@ public class LoginController {
             HttpSession session = request.getSession(true);
             // 세션에 로그인 회원 정보 보관
             session.setAttribute(SessionConst.LOGIN_MEMBER, member);
-            // 임시 : 리다이렉트 (로그인 성공)
             return "redirect:" + redirectURL;
         }catch (UsernameNotFoundException e){
             bindingResult.rejectValue("username" , "invalid" , "존재하지 않는 아이디입니다.");
@@ -62,5 +60,6 @@ public class LoginController {
             bindingResult.rejectValue("password" , "invalid" , "비밀번호가 일치하지 않습니다.");
             return "member/login/loginForm";
         }
+
     }
 }

@@ -42,6 +42,7 @@ public class DefaultLoginService implements LoginService{
 
         /// 3. 인증 완료
         return member;
+
     }
 
 }

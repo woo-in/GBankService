@@ -31,7 +31,7 @@ public class MemberDao {
      * @return 생성된 id가 포함된 회원 정보
      */
 
-    public Member save(Member member){
+    public Member insertMember(Member member){
         String sql = "INSERT INTO MEMBER (username , password , name) VALUES (?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -61,6 +61,18 @@ public class MemberDao {
         // 리스트가 비어있으면 null, 아니면 첫 번째 요소를 반환합니다.
         return result.isEmpty() ? null : result.get(0);
     }
+
+    // memberId 로 정보 조회
+    public Member findByMemberId(Long memberId) {
+        String sql = "SELECT * FROM MEMBER WHERE member_id = ?";
+        List<Member> result = jdbcTemplate.query(sql, memberRowMapper(), memberId);
+        return result.isEmpty() ? null : result.get(0);
+    }
+
+
+
+
+
 
     /**
      * 데이터베이스 조회 결과를 Member 객체로 변환해주는 RowMapper입니다.
