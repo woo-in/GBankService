@@ -40,7 +40,7 @@ public class DefaultSignUpService implements SignUpService{
         }
 
         // 아이디 중복 체크
-        if(memberDao.findByUsername(signUpRequest.getUsername()) != null) {
+        if(memberDao.findByUsername(signUpRequest.getUsername()).isPresent()) {
             throw new DuplicateUsernameException("이미 존재하는 아이디입니다.");
         }
 
@@ -49,10 +49,8 @@ public class DefaultSignUpService implements SignUpService{
         newMember.setUsername(username);
         newMember.setPassword(passwordEncoder.encode(password));
         newMember.setName(name);
-        newMember = memberDao.insertMember(newMember);
 
-        return newMember;
-
+        return memberDao.insertMember(newMember);
     }
 
 

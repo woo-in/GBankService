@@ -4,19 +4,13 @@ package bankapp.account.model;
 import bankapp.account.request.open.OpenPrimaryAccountRequest;
 import lombok.Data;
 
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
-public class PrimaryAccount {
 
-    private Long accountId;
-    private Long memberId;
-    private String accountNumber;
-    private BigDecimal balance;
-    private String accountType;
-    private String nickname;
-    private LocalDateTime createdAt;
+@Data
+public class PrimaryAccount extends Account{
 
     public PrimaryAccount() { }
     public PrimaryAccount(Long accountId, Long memberId, String accountNumber, BigDecimal balance, String accountType, String nickname, LocalDateTime createdAt) {

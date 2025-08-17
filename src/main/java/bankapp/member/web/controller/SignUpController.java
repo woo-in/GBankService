@@ -63,9 +63,7 @@ public class SignUpController {
         }catch(PasswordMismatchException e){
             bindingResult.rejectValue("passwordConfirm" , "invalid" , "비밀번호가 일치하지 않습니다.");
             return "member/signup/signupForm";
-        }catch(InvalidDepositAmountException e) {
-            return "redirect:/error";
-        }catch(MemberNotFoundException e) {
+        } catch (InvalidDepositAmountException | MemberNotFoundException e) {
             return "redirect:/error";
         }
 

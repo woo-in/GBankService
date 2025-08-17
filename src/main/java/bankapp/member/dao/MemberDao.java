@@ -1,21 +1,25 @@
 package bankapp.member.dao;
 
 import bankapp.member.model.Member;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component
+@Validated
 public class MemberDao {
 
     final private JdbcTemplate jdbcTemplate;
@@ -31,17 +35,20 @@ public class MemberDao {
      * @return 생성된 id가 포함된 회원 정보
      */
 
-    public Member insertMember(Member member){
+    public Member insertMember(@NotNull(message = "insertMember(Member) cannot be null") Member member){
+
         String sql = "INSERT INTO MEMBER (username , password , name) VALUES (?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1 , member.getUsername());
-            ps.setString(2 , member.getPassword());
-            ps.setString(3 , member.getName());
-            return ps;
-        } , keyHolder);
+
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, member.getUsername());
+                ps.setString(2, member.getPassword());
+                ps.setString(3, member.getName());
+                return ps;
+            }, keyHolder);
+
 
         long generatedId = keyHolder.getKey().longValue();
         member.setMemberId(generatedId);
@@ -54,19 +61,34 @@ public class MemberDao {
      * @param username 조회할 사용자 아이디
      * @return Member 객체 또는 null
      */
-    public Member findByUsername(String username) {
+    public Optional<Member> findByUsername(String username) {
         String sql = "SELECT * FROM MEMBER WHERE username = ?";
-        // 결과를 List<Member> 로 받습니다.
-        List<Member> result = jdbcTemplate.query(sql, memberRowMapper(), username);
-        // 리스트가 비어있으면 null, 아니면 첫 번째 요소를 반환합니다.
-        return result.isEmpty() ? null : result.get(0);
+
+        try {
+            // username 으로 조회
+            Member result = jdbcTemplate.queryForObject(sql, memberRowMapper(), username);
+            // 조회된 결과 반환
+            return Optional.ofNullable(result);
+        } catch (EmptyResultDataAccessException e) {
+            // 조회된 결과가 없을 경우 , 비어있는 optional (정상 상황)
+            return Optional.empty();
+        }
     }
 
     // memberId 로 정보 조회
-    public Member findByMemberId(Long memberId) {
+    public Optional<Member> findByMemberId(Long memberId) {
         String sql = "SELECT * FROM MEMBER WHERE member_id = ?";
-        List<Member> result = jdbcTemplate.query(sql, memberRowMapper(), memberId);
-        return result.isEmpty() ? null : result.get(0);
+
+        try {
+            // username 으로 조회
+            Member result = jdbcTemplate.queryForObject(sql, memberRowMapper(), memberId);
+            // 조회된 결과 반환
+            return Optional.ofNullable(result);
+        } catch (EmptyResultDataAccessException e) {
+            // 조회된 결과가 없을 경우 , 비어있는 optional (정상 상황)
+            return Optional.empty();
+        }
+
     }
 
 
@@ -75,7 +97,7 @@ public class MemberDao {
 
 
     /**
-     * 데이터베이스 조회 결과를 Member 객체로 변환해주는 RowMapper입니다.
+     * 데이터베이스 조회 결과를 Member 객체로 변환해주는 RowMapper
      */
     private RowMapper<Member> memberRowMapper() {
         return (rs, rowNum) -> {

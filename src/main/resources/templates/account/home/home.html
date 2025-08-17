@@ -6,17 +6,24 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background-color: #f0f2f5; /* 앱과 유사한 배경색 */
+            background-color: #f0f2f5;
             margin: 0;
             padding: 20px;
         }
 
         .header {
+            padding: 10px 0;
+            margin-bottom: 20px;
+            background-color: #f0f2f5;
+            position: sticky;
+            top: 0;
+        }
+
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .logo {
@@ -36,25 +43,62 @@
             height: 25px;
             border-radius: 50%;
         }
-        .circle-1 {
-            background-color: #4a90e2;
-            top: 0;
-            left: 0;
-        }
-        .circle-2 {
-            background-color: #74ebd5;
-            opacity: 0.8;
-            top: 0;
-            right: 0;
-        }
+        .circle-1 { background-color: #4a90e2; top: 0; left: 0; }
+        .circle-2 { background-color: #74ebd5; opacity: 0.8; top: 0; right: 0; }
 
         .logo-text {
             font-size: 24px;
             font-weight: bold;
-            color: #333; /* 어두운 배경에서는 흰색이 나을 수 있습니다. */
+            color: #333;
         }
 
-        .account-card {
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item {
+            font-size: 22px;
+            font-weight: bold;
+            color: #888;
+            text-decoration: none;
+            padding-bottom: 10px;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            color: #333;
+        }
+
+        .nav-item.active {
+            color: #333;
+            border-bottom-color: #4a90e2;
+        }
+
+        /* '관리' 버튼 스타일 수정 */
+        .nav-management {
+            font-size: 14px;
+            font-weight: bold; /* 텍스트 강조 */
+            background: linear-gradient(to right, #6a82fb, #fc5c7d); /* 그라데이션 배경 */
+            -webkit-background-clip: text; /* 텍스트에만 배경 적용 (웹킷 브라우저) */
+            background-clip: text;
+            color: transparent; /* 텍스트 색상을 투명하게 */
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .nav-management:hover {
+            opacity: 0.8;
+        }
+
+        .account-card, .transaction-history {
             background-color: white;
             padding: 25px;
             border-radius: 20px;
@@ -62,24 +106,27 @@
             margin-bottom: 20px;
         }
 
-        .account-info {
-            font-size: 16px;
-            color: #555;
-            margin-bottom: 8px;
-        }
-
-        .account-balance {
-            font-size: 36px;
-            font-weight: bold;
-            color: #333;
-            margin: 0 0 25px 0;
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+        /* ... (이하 다른 스타일은 기존과 동일) ... */
+        .account-info { font-size: 16px; color: #555; margin-bottom: 8px; }
+        .account-balance { font-size: 36px; font-weight: bold; color: #333; margin: 0 0 25px 0; }
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .action-buttons button { padding: 16px; font-size: 18px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
+        .btn-fill { background-color: #eef1f7; color: #333; }
+        .btn-fill:hover { background-color: #e1e5ea; }
+        .btn-send { background-color: #4a90e2; color: white; }
+        .btn-send:hover { background-color: #357ABD; }
+        .history-header { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+        .transaction-list { list-style: none; padding: 0; margin: 0; }
+        .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid #f0f2f5; }
+        .transaction-item:last-child { border-bottom: none; }
+        .transaction-details { text-align: left; }
+        .transaction-desc { font-size: 16px; font-weight: 500; color: #333; margin: 0 0 4px 0; }
+        .transaction-meta { font-size: 13px; color: #888; }
+        .transaction-amount { text-align: right; }
+        .amount { font-size: 17px; font-weight: bold; }
+        .amount.credit { color: #4a90e2; }
+        .amount.debit { color: #333; }
+        .balance-after { font-size: 13px; color: #888; }
 
         .action-buttons button {
             padding: 16px;
@@ -89,142 +136,55 @@
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
+            width: 100%; /* 너비를 100%로 설정하여 부모 요소를 꽉 채움 */
+            box-sizing: border-box; /* 패딩이 너비에 포함되도록 보장 */
         }
 
-        .btn-fill {
-            background-color: #eef1f7;
-            color: #333;
-        }
+        .btn-fill { background-color: #eef1f7; color: #333; }
         .btn-fill:hover { background-color: #e1e5ea; }
-
-        .btn-send {
-            background-color: #4a90e2;
-            color: white;
-        }
+        .btn-send { background-color: #4a90e2; color: white; }
         .btn-send:hover { background-color: #357ABD; }
+        .history-header { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+        .transaction-list { list-style: none; padding: 0; margin: 0; }
 
-        .transaction-history {
-            background-color: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
-
-        .history-header {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .transaction-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 5px;
-            border-bottom: 1px solid #f0f2f5;
-        }
-
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-
-        .transaction-details {
-            text-align: left;
-        }
-
-        .transaction-desc {
-            font-size: 16px;
-            font-weight: 500;
-            color: #333;
-            margin: 0 0 4px 0;
-        }
-
-        .transaction-meta {
-            font-size: 13px;
-            color: #888;
-        }
-
-        .transaction-amount {
-            text-align: right;
-        }
-
-        .amount {
-            font-size: 17px;
-            font-weight: bold;
-        }
-
-        .amount.credit { color: #4a90e2; }
-        .amount.debit { color: #333; }
-
-        .balance-after {
-            font-size: 13px;
-            color: #888;
-        }
 
     </style>
 </head>
 <body>
 
 <header class="header">
-    <div class="logo">
-        <div class="logo-shape-container">
-            <div class="circle-1"></div>
-            <div class="circle-2"></div>
+    <div class="header-top">
+        <div class="logo">
+            <div class="logo-shape-container">
+                <div class="circle-1"></div>
+                <div class="circle-2"></div>
+            </div>
+            <div class="logo-text" th:text="#{bankName}">우인은행</div>
         </div>
-        <div class="logo-text" th:text="#{bankName}">우인은행</div>
     </div>
+    <nav class="main-nav">
+        <div class="nav-tabs">
+            <a href="#" class="nav-item active">통장</a>
+            <a href="#" class="nav-item">내 자산</a>
+            <a href="#" class="nav-item">상품찾기</a>
+        </div>
+        <a href="#" class="nav-management">관리</a>
+    </nav>
 </header>
 
 <main>
-    <section class="account-card" th:each="account : ${accounts}">
-        <div class="account-info" th:text="${account.nickname} + ' ' + ${account.accountNumber}">내 통장 110-123-456789</div>
-        <h1 class="account-balance" th:text="${#numbers.formatCurrency(account.balance)}">744,820원</h1>
+    <section class="account-card">
+        <div class="account-info">내 통장 110-123-456789</div>
+        <h1 class="account-balance">13,300,744,820원</h1>
         <div class="action-buttons">
             <button class="btn-fill">채우기</button>
-            <button class="btn-send">보내기</button>
+            <form th:action="@{/transfer/new}" method="get" style="margin: 0;">
+                <button type="submit" class="btn-send">보내기</button>
+            </form>
         </div>
     </section>
-
     <section class="transaction-history">
         <h3 class="history-header">거래 내역</h3>
-        <ul class="transaction-list">
-            <li class="transaction-item">
-                <div class="transaction-details">
-                    <p class="transaction-desc">카드 캐시백</p>
-                    <span class="transaction-meta">12:29</span>
-                </div>
-                <div class="transaction-amount">
-                    <p class="amount credit">+500원</p>
-                    <span class="balance-after">744,820원</span>
-                </div>
-            </li>
-            <li class="transaction-item">
-                <div class="transaction-details">
-                    <p class="transaction-desc">CJ CGV 온라인예매</p>
-                    <span class="transaction-meta">12:29</span>
-                </div>
-                <div class="transaction-amount">
-                    <p class="amount debit">-22,000원</p>
-                    <span class="balance-after">744,320원</span>
-                </div>
-            </li>
-            <li class="transaction-item">
-                <div class="transaction-details">
-                    <p class="transaction-desc">김우인에게 송금</p>
-                    <span class="transaction-meta">08-10</span>
-                </div>
-                <div class="transaction-amount">
-                    <p class="amount debit">-50,000원</p>
-                    <span class="balance-after">766,320원</span>
-                </div>
-            </li>
-        </ul>
     </section>
 </main>
 

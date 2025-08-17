@@ -1,8 +1,11 @@
 package bankapp.member.service.check;
 
 import bankapp.member.dao.MemberDao;
+import bankapp.member.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class DefaultCheckService implements CheckService{
@@ -15,12 +18,21 @@ public class DefaultCheckService implements CheckService{
     }
 
     public boolean isMemberIdExist(Long memberId){
-        return memberDao.findByMemberId(memberId) != null;
+        if(memberId == null) {
+            return false;
+        }
+
+        Optional<Member> memberOptional = memberDao.findByMemberId(memberId);
+        return memberOptional.isPresent();
     }
 
     public boolean isUsernameExist(String username){
-        return memberDao.findByUsername(username) != null;
-    }
+        if(username == null) {
+            return false;
+        }
 
+        Optional<Member> memberOptional = memberDao.findByUsername(username);
+        return memberOptional.isPresent();
+    }
 
 }

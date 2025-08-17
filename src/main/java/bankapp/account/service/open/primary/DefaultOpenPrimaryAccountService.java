@@ -33,7 +33,6 @@ public class DefaultOpenPrimaryAccountService implements OpenPrimaryAccountServi
         // 0. 값 지역저장
         Long memberId = openPrimaryAccountRequest.getMemberId();
         BigDecimal balance = openPrimaryAccountRequest.getBalance();
-        String nickname = openPrimaryAccountRequest.getNickname();
 
         // 1. 값 검증 (예외 처리)
 
