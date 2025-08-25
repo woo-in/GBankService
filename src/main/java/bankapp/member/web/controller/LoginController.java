@@ -3,9 +3,9 @@ package bankapp.member.web.controller;
 import bankapp.core.common.SessionConst;
 import bankapp.member.exceptions.IncorrectPasswordException;
 import bankapp.member.exceptions.UsernameNotFoundException;
-import bankapp.member.manager.MemberManager;
 import bankapp.member.model.Member;
 import bankapp.member.request.login.LoginRequest;
+import bankapp.member.service.login.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +22,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/login")
 public class LoginController {
 
-    private final MemberManager memberManager;
+
+    private final LoginService loginService;
 
     @Autowired
-    public LoginController(MemberManager memberManager) { this.memberManager = memberManager; }
+    public LoginController(LoginService loginService) { this.loginService = loginService; }
 
     // 로그인 폼 처리
     @GetMapping("")
@@ -44,13 +45,9 @@ public class LoginController {
         if (bindingResult.hasErrors()) {
             return "member/login/loginForm";
         }
-        // 아이디 비밀번호 검사후 객체 반환
         try{
-            Member member = memberManager.login(loginRequest);
-            // 로그인 성공 처리
-            // 세션이 있으면 세션 반환 , 없으면 신규 세션 생성
+            Member member = loginService.login(loginRequest);
             HttpSession session = request.getSession(true);
-            // 세션에 로그인 회원 정보 보관
             session.setAttribute(SessionConst.LOGIN_MEMBER, member);
             return "redirect:" + redirectURL;
         }catch (UsernameNotFoundException e){

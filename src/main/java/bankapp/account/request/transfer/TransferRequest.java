@@ -1,9 +1,6 @@
 package bankapp.account.request.transfer;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -27,7 +24,10 @@ public class TransferRequest {
     /**
      * 받는 사람의 계좌 번호. 사용자가 직접 입력합니다.
      */
-    @NotBlank(message = "받는 사람의 계좌번호를 입력해주세요.")
+    @Pattern(
+            regexp = "^(\\d{10}|\\d{11}|\\d{12}|\\d{14}|\\d{15})$",
+            message = "계좌번호는 10,11,12,14,15 자리 숫자여야 합니다."
+    )
     private String toAccountNumber;
 
     /**

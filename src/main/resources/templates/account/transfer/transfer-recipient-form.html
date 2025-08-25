@@ -19,7 +19,6 @@
       background-color: white;
       padding: 40px;
       border-radius: 20px;
-      /* === 오타 수정: B0px -> 30px === */
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       width: 400px;
       max-width: 90%;
@@ -46,6 +45,7 @@
 
     .input-group {
       margin-bottom: 30px;
+      position: relative; /* 에러 메시지 위치 기준 */
     }
 
     .input-group label {
@@ -72,10 +72,31 @@
       border-bottom-color: #4a90e2;
     }
 
+    /* --- 에러 스타일 추가 (login.html 참고) --- */
+    .input-field.error, .select-field.error {
+      border-bottom-color: #dc3545;
+    }
+
+    .field-error {
+      display: block;
+      color: #dc3545;
+      font-size: 12px;
+      text-align: left;
+      margin-top: 4px;
+    }
+
+    .global-error {
+      color: #dc3545;
+      font-size: 14px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    /* --- 에러 스타일 끝 --- */
+
     .select-field {
       -webkit-appearance: none;
       appearance: none;
-      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23cccccc%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%2...%3E');
       background-repeat: no-repeat;
       background-position: right 5px top 50%;
       background-size: 14px;
@@ -92,19 +113,8 @@
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
       margin-top: auto;
     }
-
-    .confirm-button:hover {
-      background-color: #357ABD;
-    }
-
-    .confirm-button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
   </style>
 </head>
 <body>
@@ -113,16 +123,25 @@
     <h1>어떤 계좌로 보낼까요?</h1>
   </div>
 
-  <form class="form-content" th:action="@{/transfer/check-account}" th:object="${transferRequest}" method="post" style="display: flex; flex-direction: column; height: 100%;">
+  <form class="form-content" th:action="@{/transfer/new}" th:object="${transferRecipientRequest}" method="post" style="display: flex; flex-direction: column; height: 100%;" novalidate>
+
+    <div class="global-error" th:if="${#fields.hasGlobalErrors()}">
+      <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+    </div>
+
     <div class="input-group">
       <label for="account-number">계좌번호 입력</label>
-      <input type="text" id="account-number" class="input-field" th:field="*{toAccountNumber}" placeholder="계좌번호">
+      <input type="text" id="account-number" class="input-field" th:field="*{toAccountNumber}"
+             th:classappend="${#fields.hasErrors('toAccountNumber')} ? 'error' : ''" placeholder="계좌번호"
+             oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+      <span class="field-error" th:errors="*{toAccountNumber}"></span>
     </div>
 
     <div class="input-group">
       <label for="bank-select">은행 선택</label>
-      <select id="bank-select" class="select-field" th:field="*{toBankCode}">
-        <option value="999" th:text="#{bankName}" >우인은행</option>
+      <select id="bank-select" class="select-field" th:field="*{toBankCode}"
+              th:classappend="${#fields.hasErrors('toBankCode')} ? 'error' : ''">
+        <option value="999" th:text="#{bankName}">우인은행</option>
         <option value="092">토스뱅크</option>
         <option value="003">IBK기업은행</option>
         <option value="004">KB국민은행</option>
@@ -131,6 +150,7 @@
         <option value="020">우리은행</option>
         <option value="081">하나은행</option>
       </select>
+      <span class="field-error" th:errors="*{toBankCode}"></span>
     </div>
 
     <button type="submit" class="confirm-button">확인</button>

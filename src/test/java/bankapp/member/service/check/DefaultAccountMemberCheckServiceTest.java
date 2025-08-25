@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DefaultCheckServiceTest {
+class DefaultAccountMemberCheckServiceTest {
 
     @Mock
     private MemberDao memberDao;
 
     @InjectMocks
-    private DefaultCheckService defaultCheckService;
+    private DefaultMemberCheckService defaultCheckService;
 
     private Member testMember;
 

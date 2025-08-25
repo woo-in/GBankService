@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|#{bankName} - 송금|">우인은행 - 송금</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        .transfer-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 400px;
+            max-width: 90%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 420px;
+        }
+
+        .info-section {
+            text-align: left;
+        }
+
+        .account-box {
+            margin-bottom: 15px;
+        }
+
+        .account-box .account-name {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0 0 4px 0;
+        }
+
+        .account-box .account-details {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .arrow-icon {
+            font-size: 20px;
+            text-align: left;
+            margin: 5px 0 5px 10px;
+            color: #aaa;
+        }
+
+        .form-section {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            /*margin-top: 45px; !* 정보 섹션과 폼 섹션 사이 간격 *!*/
+            padding-top: 40px;
+        }
+
+        .amount-input-wrapper {
+            display: flex;
+            align-items: baseline;
+            border-bottom: 2px solid #ccc;
+            transition: border-color 0.2s;
+        }
+
+        .amount-input-wrapper.error {
+            border-bottom-color: #dc3545;
+        }
+
+        .amount-input-wrapper:focus-within {
+            border-bottom-color: #4a90e2;
+        }
+
+        .amount-input {
+            width: 100%;
+            flex-grow: 1;
+            font-size: 36px;
+            font-weight: bold;
+            border: none;
+            text-align: left;
+            color: #333;
+            background-color: transparent;
+        }
+
+        .amount-input:focus {
+            outline: none;
+        }
+
+        .amount-input::placeholder {
+            color: #d0d0d0;
+            text-align: left;
+        }
+
+        .amount-unit {
+            font-size: 28px;
+            font-weight: 500;
+            color: #888;
+            margin-left: 8px;
+        }
+
+        .field-error {
+            display: block;
+            color: #dc3545;
+            font-size: 12px;
+            text-align: left;
+            height: 15px;
+            margin-top: 4px;
+        }
+
+
+        .next-button {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="transfer-container">
+
+    <div class="info-section">
+        <div class="account-box">
+            <p class="account-name" th:text="|내 #{bankName} 통장에서|">내 우인은행 통장에서</p>
+            <span class="account-details" th:text="|잔액 ${#numbers.formatInteger(fromAccount.balance, 0, 'COMMA')}원|">잔액 10,000원</span>
+        </div>
+        <div class="arrow-icon">↓</div>
+        <div class="account-box">
+            <p class="account-name" th:text="|${toMember.name} 님에게|">받는 분 계좌로</p>
+            <span class="account-details" th:text="|${toBankName} ${formattedToAccountNumber}|">우인은행 123-456-7890</span>
+        </div>
+    </div>
+
+    <form class="form-section" th:action="@{/transfer/amount}" th:object="${transferAmountRequest}" method="post">
+
+        <div class="amount-section">
+            <div class="amount-input-wrapper" th:classappend="${#fields.hasErrors('amount')} ? 'error' : ''">
+                <input type="text" class="amount-input" th:field="*{amount}"
+                       placeholder="얼마를 보낼까요?"
+                       oninput="handleAmountInput(this)"
+                       inputmode="numeric">
+                <span id="amount-unit-span" class="amount-unit" style="visibility: hidden;">원</span>
+            </div>
+            <span class="field-error" th:errors="*{amount}"></span>
+        </div>
+
+        <button type="submit" class="next-button">다음</button>
+    </form>
+
+</div>
+
+<script>
+    function handleAmountInput(inputElement) {
+        let value = inputElement.value.replace(/[^0-9]/g, '');
+        if (value) {
+            inputElement.value = Number(value).toLocaleString('ko-KR');
+        } else {
+            inputElement.value = '';
+        }
+
+        const unitSpan = document.getElementById('amount-unit-span');
+
+        if (inputElement.value.length > 0) {
+            unitSpan.style.visibility = 'visible';
+        } else {
+            unitSpan.style.visibility = 'hidden';
+        }
+    }
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const amountInput = document.querySelector('.amount-input');
+        amountInput.value = amountInput.value.replace(/,/g, '');
+    });
+</script>
+
+</body>
+</html>

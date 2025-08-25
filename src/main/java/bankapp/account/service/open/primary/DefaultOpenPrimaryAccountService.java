@@ -5,7 +5,7 @@ import bankapp.account.model.PrimaryAccount;
 import bankapp.account.request.open.OpenPrimaryAccountRequest;
 import bankapp.account.exceptions.InvalidDepositAmountException;
 import bankapp.member.exceptions.MemberNotFoundException;
-import bankapp.member.manager.MemberManager;
+import bankapp.member.service.check.MemberCheckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
@@ -19,22 +19,19 @@ import java.math.BigDecimal;
 public class DefaultOpenPrimaryAccountService implements OpenPrimaryAccountService{
 
     private final AccountDao accountDao;
-    private final MemberManager memberManager;
+    private final MemberCheckService memberCheckService;
 
 
     @Autowired
-    public DefaultOpenPrimaryAccountService(AccountDao accountDao , MemberManager memberManager) {
+    public DefaultOpenPrimaryAccountService(AccountDao accountDao , MemberCheckService memberCheckService) {
         this.accountDao = accountDao;
-        this.memberManager = memberManager;
+        this.memberCheckService = memberCheckService;
     }
 
     public PrimaryAccount openPrimaryAccount(OpenPrimaryAccountRequest openPrimaryAccountRequest) {
 
-        // 0. 값 지역저장
         Long memberId = openPrimaryAccountRequest.getMemberId();
         BigDecimal balance = openPrimaryAccountRequest.getBalance();
-
-        // 1. 값 검증 (예외 처리)
 
         // 예치금이 정상적인 값( 0 이상의 값)인가 ?
         if(balance.compareTo(BigDecimal.ZERO) < 0){
@@ -42,7 +39,7 @@ public class DefaultOpenPrimaryAccountService implements OpenPrimaryAccountServi
         }
 
         // 멤버가 실제로 존재하는 멤버인가 ?
-        if(!memberManager.isMemberIdExist(memberId)){
+        if(!memberCheckService.isMemberIdExist(memberId)){
             throw new MemberNotFoundException("memberId " + memberId + "not found.");
         }
 

@@ -1,14 +1,14 @@
 package bankapp.member.web.controller;
 
 import bankapp.account.exceptions.InvalidDepositAmountException;
-import bankapp.account.manager.AccountManager;
 import bankapp.account.request.open.OpenPrimaryAccountRequest;
+import bankapp.account.service.open.primary.OpenPrimaryAccountService;
 import bankapp.member.exceptions.DuplicateUsernameException;
 import bankapp.member.exceptions.MemberNotFoundException;
 import bankapp.member.exceptions.PasswordMismatchException;
-import bankapp.member.manager.MemberManager;
 import bankapp.member.model.Member;
 import bankapp.member.request.signup.SignUpRequest;
+import bankapp.member.service.signup.SignUpService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,13 +27,13 @@ import java.math.BigDecimal;
 @RequestMapping("/signup")
 public class SignUpController {
 
-    private final MemberManager memberManager;
-    private final AccountManager accountManager;
+    private final SignUpService signUpService;
+    private final OpenPrimaryAccountService openPrimaryAccountService;
 
     @Autowired
-    public SignUpController(MemberManager memberManager , AccountManager accountManager) {
-        this.memberManager = memberManager;
-        this.accountManager = accountManager;
+    public SignUpController(SignUpService signUpService , OpenPrimaryAccountService openPrimaryAccountService) {
+        this.signUpService = signUpService;
+        this.openPrimaryAccountService = openPrimaryAccountService;
     }
 
     // 회원가입 폼 처리
@@ -55,8 +55,8 @@ public class SignUpController {
         // 새 회원 추가
         Member newMember ;
         try {
-            newMember = memberManager.signUp(signUpRequest);
-            accountManager.openPrimaryAccount(new OpenPrimaryAccountRequest(newMember.getMemberId() , BigDecimal.ZERO,signUpRequest.getAccountNickname()));
+            newMember = signUpService.signUp(signUpRequest);
+            openPrimaryAccountService.openPrimaryAccount(new OpenPrimaryAccountRequest(newMember.getMemberId() , BigDecimal.ZERO,signUpRequest.getAccountNickname()));
         }catch (DuplicateUsernameException e){
             bindingResult.rejectValue("username" , "duplicate" , "중복된 ID 입니다.");
             return "member/signup/signupForm";

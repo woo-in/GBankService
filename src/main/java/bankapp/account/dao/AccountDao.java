@@ -56,6 +56,8 @@ public class AccountDao {
      * @return 계좌가 존재하면 해당 계좌를 담은 Optional, 그렇지 않으면 비어있는 Optional을 반환합니다.
      */
     public Optional<Account> findByAccountNumber(String accountNumber) {
+
+
         // 이전 대화에서 사용한 'ACCOUNT' 테이블 이름을 사용합니다.
         String sql = "SELECT * FROM ACCOUNT WHERE account_number = ?";
         try {
