@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+// TODO : 이 컨트롤러 (유지할지 , 삭제할지) 결정
 @Controller
 @RequestMapping("/account")
 public class AccountController {

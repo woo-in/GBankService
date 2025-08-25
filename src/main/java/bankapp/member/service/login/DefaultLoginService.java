@@ -10,38 +10,39 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-
+// TODO: 테스트 코드 작성
+/**
+ * {@inheritDoc}
+ * <p>
+ * 이 구현체는 MemberDao와 PasswordEncoder를 사용하여
+ * 데이터베이스의 회원 정보와 암호화된 비밀번호를 비교하는 방식으로
+ * 로그인 로직을 수행합니다.
+ */
 
 @Component
 public class DefaultLoginService implements LoginService{
 
-    // 데이터 베이스 연동
     private final MemberDao memberDao;
     private final PasswordEncoder passwordEncoder;
-
     @Autowired
     public DefaultLoginService(MemberDao memberDao , PasswordEncoder passwordEncoder) {
         this.memberDao = memberDao;
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public Member login(LoginRequest loginRequest){
+    public Member login(LoginRequest loginRequest) throws UsernameNotFoundException, IncorrectPasswordException{
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
-        // 1. 아이디로 회원 정보 조회
         Member member = memberDao.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 아이디입니다."));
 
-
-        // 2. 비밀번호 비교 (null 아님)
         if(!passwordEncoder.matches(password, member.getPassword())) {
-            // 예외 던지기
             throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
-        /// 3. 인증 완료
         return member;
     }
 

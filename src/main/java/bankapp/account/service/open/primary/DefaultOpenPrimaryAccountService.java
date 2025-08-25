@@ -11,62 +11,58 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
-
 import java.math.BigDecimal;
 
+// TODO: 테스트 코드 작성
 
+/**
+ * {@inheritDoc}
+ * <p>
+ * 이 구현체는 AccountDao와 MemberCheckService와 협력하여,
+ * 회원 존재 여부와 초기 입금액을 검증한 후, 새로운 계좌번호를 생성하여
+ * 데이터베이스에 신규 주계좌 정보를 저장하는 방식으로 로직을 수행합니다.
+ */
 @Component
 public class DefaultOpenPrimaryAccountService implements OpenPrimaryAccountService{
 
     private final AccountDao accountDao;
     private final MemberCheckService memberCheckService;
-
-
     @Autowired
     public DefaultOpenPrimaryAccountService(AccountDao accountDao , MemberCheckService memberCheckService) {
         this.accountDao = accountDao;
         this.memberCheckService = memberCheckService;
     }
 
-    public PrimaryAccount openPrimaryAccount(OpenPrimaryAccountRequest openPrimaryAccountRequest) {
+    @Override
+    public PrimaryAccount openPrimaryAccount(OpenPrimaryAccountRequest openPrimaryAccountRequest) throws InvalidDepositAmountException, MemberNotFoundException {
 
         Long memberId = openPrimaryAccountRequest.getMemberId();
         BigDecimal balance = openPrimaryAccountRequest.getBalance();
 
-        // 예치금이 정상적인 값( 0 이상의 값)인가 ?
         if(balance.compareTo(BigDecimal.ZERO) < 0){
             throw new InvalidDepositAmountException("입금액은 0원 이상이어야 합니다.");
         }
 
-        // 멤버가 실제로 존재하는 멤버인가 ?
         if(!memberCheckService.isMemberIdExist(memberId)){
             throw new MemberNotFoundException("memberId " + memberId + "not found.");
         }
 
-        // 2. 계좌 생성 ( accountType , accountNumber 추가)
         PrimaryAccount newAccount = PrimaryAccount.from(openPrimaryAccountRequest);
         newAccount.setAccountType("PRIMARY");
         newAccount.setAccountNumber(createAccountNumber());
         return accountDao.insertAccount(newAccount);
     }
 
-    // 임시로 고유한 계좌 번호 생성하는 메서드
+
+    /**
+     * '은행코드-날짜-랜덤숫자' 조합의 새로운 계좌번호를 생성합니다.
+     * @return 생성된 계좌번호 문자열 (예: 110-250816-123456)
+     */
     private String createAccountNumber() {
-        // 1. 은행 고유 코드 (예: 110)
         String bankCode = "110";
-
-        // 2. 오늘 날짜 (예: 2025년 8월 13일 -> 250813)
         String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-
-        // 3. 6자리 랜덤 숫자 생성 (100000 ~ 999999)
         int randomPart = ThreadLocalRandom.current().nextInt(100000, 1000000);
-
-        // 4. 모두 조합하여 최종 계좌번호 생성 (예: 110-250813-123456)
         return bankCode + "-" + datePart + "-" + randomPart;
-
-        // 실제로는 순번 시스템으로 만든다.
-        // 중앙에서 관리 , [지점/상품코드] - [생성일자 등] - [순번] - [검증번호]
-
     }
 
 

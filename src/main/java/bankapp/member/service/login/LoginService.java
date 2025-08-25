@@ -1,10 +1,21 @@
 package bankapp.member.service.login;
 
+import bankapp.member.exceptions.IncorrectPasswordException;
+import bankapp.member.exceptions.UsernameNotFoundException;
 import bankapp.member.model.Member;
 import bankapp.member.request.login.LoginRequest;
 
-import java.util.Optional;
-
+/**
+ * 사용자 로그인 비지니스 로직의 명세 정의
+ */
 public interface LoginService {
-    Member login(LoginRequest loginRequest);
+    /**
+     * 사용자 아이디와 비밀번호를 받아 인증을 수행합니다.
+     *
+     * @param loginRequest 로그인에 필요한 사용자 아이디와 비밀번호를 담은 DTO
+     * @return 인증에 성공한 회원 엔티티
+     * @throws UsernameNotFoundException 주어진 아이디에 해당하는 회원을 찾을 수 없을 경우
+     * @throws IncorrectPasswordException 아이디는 존재하지만 비밀번호가 일치하지 않을 경우
+     */
+    Member login(LoginRequest loginRequest) throws UsernameNotFoundException, IncorrectPasswordException;
 }

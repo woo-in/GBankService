@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
-// 임시 컨트롤러
+// TODO: 임시 컨트롤러
 @Controller
 @RequestMapping("/")
 public class HomeController {

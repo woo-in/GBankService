@@ -7,11 +7,20 @@ import bankapp.account.model.Account;
 import bankapp.account.model.PrimaryAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Optional;
 
 import static bankapp.core.common.BankCode.WOOIN_BANK;
+
+
+/**
+ * {@inheritDoc}
+ * <p>
+ * 이 구현체는 AccountDao를 사용하여 데이터베이스에 직접 조회함으로써
+ * 계좌 정보 확인 및 조회 로직을 수행합니다.
+ */
+
+// TODO: 테스트 코드 작성
 
 @Component
 public class DefaultAccountCheckService implements AccountCheckService {
@@ -36,25 +45,21 @@ public class DefaultAccountCheckService implements AccountCheckService {
     }
 
     @Override
-    public PrimaryAccount findPrimaryAccountByMemberId(Long memberId){
+    public PrimaryAccount findPrimaryAccountByMemberId(Long memberId) throws PrimaryAccountNotFoundException{
 
-        // 계좌 목록 가져오기
         List<Account> accountList = accountDao.findByMemberId(memberId);
 
-        // 계좌 목록에서 PRIMARY 계좌 찾아서 반환
         for(Account account : accountList){
             if(account.getAccountType().equals("PRIMARY")){
                 return (PrimaryAccount) account;
             }
         }
 
-        // 찾지 못했다면 예외반환
-        // for문을 모두 통과했는데도 PRIMARY 계좌가 없으면 예외 발생
         throw new PrimaryAccountNotFoundException("해당 회원의 주계좌(PRIMARY)를 찾을 수 없습니다. memberId: " + memberId);
     }
 
     @Override
-    public Account findAccountByAccountNumber(String accountNumber){
+    public Account findAccountByAccountNumber(String accountNumber) throws AccountNotFoundException{
         if(accountNumber == null) {
             throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
         }
