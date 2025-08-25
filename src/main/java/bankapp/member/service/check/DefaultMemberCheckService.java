@@ -5,7 +5,8 @@ import bankapp.member.dao.MemberDao;
 import bankapp.member.exceptions.MemberNotFoundException;
 import bankapp.member.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 // TODO: 테스트 코드 작성
@@ -15,7 +16,7 @@ import java.util.Optional;
  * 이 구현체는 MemberDao를 사용하여 데이터베이스에 직접 조회함으로써
  * 회원 정보 확인 및 조회 로직을 수행합니다.
  */
-@Component
+@Service
 public class DefaultMemberCheckService implements MemberCheckService {
 
     private final MemberDao memberDao;

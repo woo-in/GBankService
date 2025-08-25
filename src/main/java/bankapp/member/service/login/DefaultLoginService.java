@@ -7,7 +7,7 @@ import bankapp.member.model.Member;
 import bankapp.member.request.login.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 // TODO: 테스트 코드 작성
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 로그인 로직을 수행합니다.
  */
 
-@Component
+@Service
 public class DefaultLoginService implements LoginService{
 
     private final MemberDao memberDao;

@@ -7,7 +7,8 @@ import bankapp.account.exceptions.InvalidDepositAmountException;
 import bankapp.member.exceptions.MemberNotFoundException;
 import bankapp.member.service.check.MemberCheckService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,7 +23,8 @@ import java.math.BigDecimal;
  * 회원 존재 여부와 초기 입금액을 검증한 후, 새로운 계좌번호를 생성하여
  * 데이터베이스에 신규 주계좌 정보를 저장하는 방식으로 로직을 수행합니다.
  */
-@Component
+
+@Service
 public class DefaultOpenPrimaryAccountService implements OpenPrimaryAccountService{
 
     private final AccountDao accountDao;

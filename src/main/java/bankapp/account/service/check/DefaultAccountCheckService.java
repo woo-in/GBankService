@@ -6,7 +6,7 @@ import bankapp.account.exceptions.PrimaryAccountNotFoundException;
 import bankapp.account.model.Account;
 import bankapp.account.model.PrimaryAccount;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +22,7 @@ import static bankapp.core.common.BankCode.WOOIN_BANK;
 
 // TODO: 테스트 코드 작성
 
-@Component
+@Service
 public class DefaultAccountCheckService implements AccountCheckService {
 
     private final AccountDao accountDao;

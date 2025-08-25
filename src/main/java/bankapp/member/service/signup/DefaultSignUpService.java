@@ -6,7 +6,7 @@ import bankapp.member.model.Member;
 import bankapp.member.request.signup.SignUpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 아이디 중복을 확인하고 비밀번호를 암호화하여 데이터베이스에 새로운 회원을 저장하는 방식으로
  * 회원 가입 로직을 수행합니다.
  */
-@Component
+@Service
 public class DefaultSignUpService implements SignUpService{
 
     private final MemberDao memberDao;
