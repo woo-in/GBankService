@@ -1,7 +1,7 @@
 package bankapp.account.service.open.primary;
 
 import bankapp.account.exceptions.InvalidDepositAmountException;
-import bankapp.account.model.PrimaryAccount;
+import bankapp.account.model.account.PrimaryAccount;
 import bankapp.account.request.open.OpenPrimaryAccountRequest;
 import bankapp.member.exceptions.MemberNotFoundException;
 

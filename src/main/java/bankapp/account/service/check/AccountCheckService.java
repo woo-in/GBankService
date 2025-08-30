@@ -2,8 +2,8 @@ package bankapp.account.service.check;
 
 import bankapp.account.exceptions.AccountNotFoundException;
 import bankapp.account.exceptions.PrimaryAccountNotFoundException;
-import bankapp.account.model.Account;
-import bankapp.account.model.PrimaryAccount;
+import bankapp.account.model.account.Account;
+import bankapp.account.model.account.PrimaryAccount;
 
 /**
  * 계좌 정보의 존재 여부를 확인하거나, 특정 조건에 맞는 계좌를 조회하는 비즈니스 로직 명세를 정의합니다.
@@ -29,6 +29,16 @@ public interface AccountCheckService {
     PrimaryAccount findPrimaryAccountByMemberId(Long memberId) throws PrimaryAccountNotFoundException;
 
     /**
+     * 주어진 계좌 ID에 해당하는 주계좌(PRIMARY) 정보를 조회합니다.
+     *
+     * @param accountId 주계좌를 찾을 계좌 고유 ID
+     * @return 회원의 주계좌 엔티티
+     * @throws PrimaryAccountNotFoundException 해당 회원의 주계좌를 찾을 수 없을 경우
+     */
+    PrimaryAccount findPrimaryAccountByAccountId(Long accountId) throws PrimaryAccountNotFoundException;
+
+
+    /**
      * 주어진 계좌번호에 해당하는 계좌 정보를 조회합니다.
      *
      * @param accountNumber 조회할 계좌번호
@@ -38,11 +48,25 @@ public interface AccountCheckService {
     Account findAccountByAccountNumber(String accountNumber) throws AccountNotFoundException;
 
     /**
+     * 주어진 계좌 ID에 해당하는 계좌 정보를 조회합니다.
+     *
+     * @param accountId 조회할 계좌 ID
+     * @return 회원의 계좌 엔티티
+     * @throws AccountNotFoundException 해당 계좌번호의 계좌를 찾을 수 없을 경우
+     */
+    Account findAccountByAccountId(Long accountId) throws AccountNotFoundException;
+
+
+    /**
      * 주어진 은행 코드가 '우인은행'이 아닌 타행인지 확인합니다.
      *
      * @param bankCode 확인할 은행 코드
      * @return 타행이면 true, '우인은행'이면 false를 반환합니다.
      */
     boolean isExternalBank(String bankCode);
+
+
+
+
 
 }

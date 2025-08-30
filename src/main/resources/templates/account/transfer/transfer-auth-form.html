@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|#{bankName} - 송금 인증|">우인은행 - 송금 인증</title>
+    <!-- 스타일(CSS)이 일부 변경되었습니다. -->
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .auth-container {
+            background-color: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 400px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-shape-container {
+            position: relative;
+            width: 35px;
+            height: 25px;
+            margin-right: 10px;
+        }
+        .circle-1, .circle-2 {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+        }
+        .circle-1 {
+            background-color: #4a90e2;
+            top: 0;
+            left: 0;
+        }
+        .circle-2 {
+            background-color: #74ebd5;
+            opacity: 0.8;
+            top: 0;
+            right: 0;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .auth-header {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .input-field {
+            margin-bottom: 25px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            /* (수정) 일반적인 비밀번호 입력 필드 스타일로 변경 */
+            text-align: left;
+            letter-spacing: normal;
+        }
+
+        .input-field input.error {
+            border-color: #dc3545;
+        }
+
+        .field-error, .global-error {
+            display: block;
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            text-align: left;
+        }
+
+        .confirm-button {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 16px;
+            font-size: 18px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .confirm-button:hover {
+            background-color: #357ABD;
+        }
+
+        .cancel-link {
+            display: block;
+            width: 100%;
+            margin-top: 12px;
+            padding: 16px;
+            font-size: 18px;
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
+        }
+        .cancel-link:hover {
+            background-color: #bdbdbd;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <div class="logo">
+        <div class="logo-shape-container">
+            <div class="circle-1"></div>
+            <div class="circle-2"></div>
+        </div>
+        <div class="logo-text" th:text="#{bankName}">우인은행</div>
+    </div>
+
+    <h2 class="auth-header">계좌 비밀번호 입력</h2>
+
+    <form th:action="@{/transfer/execute}" th:object="${transferAuthRequest}" method="post" novalidate>
+        <div class="global-error" th:if="${#fields.hasGlobalErrors()}">
+            <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+        </div>
+
+        <div class="input-field">
+            <!-- (수정) 비밀번호 입력 필드 속성 변경 -->
+            <input type="password" th:field="*{password}" placeholder="비밀번호"
+                   th:classappend="${#fields.hasErrors('password')} ? 'error' : ''"
+                   maxlength="16" autocomplete="off">
+        </div>
+
+        <button type="submit" class="confirm-button">확인</button>
+    </form>
+
+    <a th:href="@{/}" class="cancel-link">취소</a>
+</div>
+</body>
+</html>

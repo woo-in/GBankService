@@ -1,6 +1,6 @@
 package bankapp.member.service.check;
 
-import bankapp.account.model.Account;
+import bankapp.account.model.account.Account;
 import bankapp.member.dao.MemberDao;
 import bankapp.member.exceptions.MemberNotFoundException;
 import bankapp.member.model.Member;

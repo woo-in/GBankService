@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>송금 확인</title>
+  <style>
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(to right, #b2f0e8, #d5e5ff);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px 0;
+      color: #333;
+    }
+    .card {
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      box-sizing: border-box;
+      margin-top: 50px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1a1a1a;
+      line-height: 1.4;
+      margin: 0;
+    }
+    .highlight {
+      color: #4a90e2;
+      font-weight: bold;
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .details .summary-item:last-child {
+      border-bottom: none;
+    }
+    .summary-item-label {
+      font-size: 15px;
+      color: #666;
+      flex-shrink: 0;
+      margin-right: 15px;
+    }
+    .summary-item-value {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-align: right;
+    }
+    .memo-input {
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-align: right;
+      border: none;
+      border-bottom: 1px solid #ccc;
+      padding: 5px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .memo-input:focus {
+      outline: none;
+      border-color: #4a90e2;
+    }
+    /* (변경) 버튼 컨테이너 스타일 */
+    .buttons {
+      max-width: 420px; /* card와 너비를 맞춤 */
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 20px; /* 카드와의 간격 */
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    /* (변경) 버튼 기본 스타일 */
+    .button-primary, .button-secondary {
+      border-radius: 10px;
+      width: 100%;
+      border: none;
+      padding: 16px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .button-primary {
+      background-color: #4a90e2;
+      color: #ffffff;
+    }
+    .button-secondary {
+      background-color: #ffffff;
+      color: #4a90e2;
+      border: 1px solid #e0e0e0;
+      font-weight: 500;
+    }
+    .fee-info {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+<form th:action="@{/transfer/message}" method="post" th:object="${transferMessageRequest}">
+  <div class="card">
+    <div th:object="${pendingTransferResponse}">
+      <div class="header">
+        <h1><span class="highlight" th:text="|내 #{bankName} 통장에서|">내 우인은행 통장에서 </span></h1>
+        <h1><span class="highlight" th:text="|*{#numbers.formatDecimal(amount, 0, 'COMMA', 0, 'POINT')}원|">200원</span>을</h1>
+        <h1><span class="highlight" th:text="|*{receiverName}님|">정인우 님</span>에게</h1>
+        <h1>정말 옮길까요?</h1>
+      </div>
+      <div class="details">
+        <div class="summary-item">
+          <div class="summary-item-label">출금 계좌</div>
+          <div class="summary-item-value" th:text="|내 #{bankName} 통장에서|">내 우인은행 통장</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-label">입금 계좌</div>
+          <div class="summary-item-value" th:text="|*{receiverBankName} *{receiverAccountNumber}|">우인은행 110-250818-827803</div>
+        </div>
+        <div class="summary-item">
+          <label for="message" class="summary-item-label">받는 분에게 표시</label>
+          <input type="text" id="message" class="memo-input" th:field="*{message}" placeholder="20자 이내" maxlength="20">
+        </div>
+      </div>
+    </div>
+    <p class="fee-info">수수료 무료</p>
+  </div>
+
+  <div class="buttons">
+    <button type="submit" class="button-primary">옮기기</button>
+    <button type="button" class="button-secondary" onclick="location.href='/'">취소</button>
+  </div>
+</form>
+</body>
+</html>

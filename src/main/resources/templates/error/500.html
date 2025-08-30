@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|#{bankName} - 서버 오류|">우인은행 - 서버 오류</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .error-container {
+            background-color: white;
+            padding: 50px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 450px;
+        }
+
+        /* --- 로고 스타일 (로그인 폼과 동일) --- */
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-shape-container {
+            position: relative;
+            width: 35px;
+            height: 25px;
+            margin-right: 10px;
+        }
+        .circle-1, .circle-2 {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+        }
+        .circle-1 {
+            background-color: #4a90e2;
+            top: 0;
+            left: 0;
+        }
+        .circle-2 {
+            background-color: #74ebd5;
+            opacity: 0.8;
+            top: 0;
+            right: 0;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        /* --- 에러 메시지 스타일 --- */
+        .error-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+        /* --- 홈으로 가기 버튼 스타일 (로그인 버튼과 동일) --- */
+        .home-button {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
+        }
+        .home-button:hover {
+            background-color: #357ABD;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <div class="logo">
+        <div class="logo-shape-container">
+            <div class="circle-1"></div>
+            <div class="circle-2"></div>
+        </div>
+        <div class="logo-text" th:text="#{bankName}">우인은행</div>
+    </div>
+
+    <h1 class="error-title">서비스 처리 중 오류가 발생했습니다.</h1>
+    <p class="error-message">
+        일시적인 문제일 수 있으니, 잠시 후 다시 시도해 주세요.<br>
+        문제가 지속되면 고객센터로 문의 바랍니다.
+    </p>
+
+    <a th:href="@{/}" class="home-button">홈으로 가기</a>
+</div>
+</body>
+</html>

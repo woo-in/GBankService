@@ -1,4 +1,4 @@
-package bankapp.core.interceptor;
+package bankapp.member.interceptor;
 
 import bankapp.core.common.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;

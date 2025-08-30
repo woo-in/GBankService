@@ -1,9 +1,10 @@
-package bankapp.account.dao;
+package bankapp.account.dao.account;
 
 import bankapp.account.factory.AccountFactory;
-import bankapp.account.model.Account;
+import bankapp.account.model.account.Account;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,20 +12,22 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
-@Repository
+
 /**
  * {@inheritDoc}
  * <p>
  * 이 구현체는 Spring JDBC의 JdbcTemplate을 사용하여
  * MariaDB 데이터베이스에 직접 SQL을 실행하는 방식으로 Account 데이터 접근 로직을 수행합니다.
  */
-public class JdbcAccountDao implements AccountDao{
+@Slf4j
+@Repository
+public class JdbcAccountDao implements AccountDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final AccountFactory accountFactory;
@@ -33,6 +36,7 @@ public class JdbcAccountDao implements AccountDao{
         this.accountFactory = accountFactory;
     }
 
+    // TODO : 메서드 이름 save (업계표준) 으로 바꾸기
     @Override
     public <T extends Account> T insertAccount(T account) {
         String sql = "INSERT INTO ACCOUNT (member_id , account_number , balance , account_type , nickname) VALUES (?,?,?,?,?)";
@@ -69,13 +73,44 @@ public class JdbcAccountDao implements AccountDao{
     }
 
     @Override
+    public Optional<Account> findByAccountId(Long accountId){
+        String sql = "SELECT * FROM ACCOUNT WHERE account_id = ?";
+        try {
+            Account account = jdbcTemplate.queryForObject(sql, accountRowMapper(), accountId);
+            return Optional.ofNullable(account);
+        }catch (EmptyResultDataAccessException e){
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Account> findByIdForUpdate(Long accountId) {
+        String sql = "SELECT * FROM ACCOUNT WHERE account_id = ? FOR UPDATE";
+        try {
+            Account account = jdbcTemplate.queryForObject(sql, accountRowMapper(), accountId);
+            return Optional.ofNullable(account);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<Account> findByMemberId(Long memberId) {
         String sql = "SELECT * FROM ACCOUNT WHERE member_id = ?";
         return jdbcTemplate.query(sql, accountRowMapper(), memberId);
     }
 
+    @Override
+    public void setBalance(Long accountId, BigDecimal newBalance){
+        String sql = "UPDATE ACCOUNT SET balance = ? WHERE account_id = ?";
+        int affectedRows = jdbcTemplate.update(sql, newBalance, accountId);
 
-
+        // 업데이트된 로우가 1개가 아니라면, accountId가 존재하지 않는 등 문제가 발생한 것임
+        if (affectedRows != 1) {
+            // 이 예외는 트랜잭션 롤백을 유발하여 데이터 정합성을 지킵니다.
+            throw new DataIntegrityViolationException("계좌 잔액 설정에 실패했습니다. accountId: " + accountId);
+        }
+    }
 
     /**
      * 데이터베이스 조회 결과(ResultSet)를 Account 객체로 변환해주는 RowMapper.

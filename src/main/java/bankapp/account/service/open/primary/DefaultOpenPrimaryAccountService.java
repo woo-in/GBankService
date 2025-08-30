@@ -1,7 +1,7 @@
 package bankapp.account.service.open.primary;
 
-import bankapp.account.dao.AccountDao;
-import bankapp.account.model.PrimaryAccount;
+import bankapp.account.dao.account.AccountDao;
+import bankapp.account.model.account.PrimaryAccount;
 import bankapp.account.request.open.OpenPrimaryAccountRequest;
 import bankapp.account.exceptions.InvalidDepositAmountException;
 import bankapp.member.exceptions.MemberNotFoundException;

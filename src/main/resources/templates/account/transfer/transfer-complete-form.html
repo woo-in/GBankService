@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송금 완료</title>
+    <style>
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(to right, #b2f0e8, #d5e5ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 30px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .success-icon {
+            margin: 0 auto 25px auto;
+            width: 80px;
+            height: 80px;
+            background-color: #e8f5e9;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .checkmark {
+            width: 25px;
+            height: 45px;
+            border: solid #4caf50;
+            border-width: 0 8px 8px 0;
+            transform: rotate(45deg);
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin: 0;
+            line-height: 1.4;
+        }
+        /* (추가) 계좌번호를 위한 작은 글씨 스타일 */
+        .recipient-details {
+            font-size: 16px;
+            color: #888;
+            margin: 8px 0 15px 0;
+        }
+        .highlight {
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        .confirm-button {
+            display: block;
+            width: 100%;
+            /* (수정) 정보가 줄어든 만큼 버튼과의 간격 조정 */
+            margin-top: 50px;
+            padding: 16px;
+            font-size: 18px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+        .confirm-button:hover {
+            background-color: #3a7bd2;
+        }
+    </style>
+</head>
+<body>
+<div class="card" th:object="${transferResultResponse}">
+    <div class="success-icon">
+        <div class="checkmark"></div>
+    </div>
+    <div class="header">
+        <h1><span class="highlight" th:text="|*{receiverName}|">정인우</span>님에게</h1>
+        <p class="recipient-details" th:text="|(*{receiverBankName} *{receiverAccountNumber})|">(우인은행 110-250818-827803)</p>
+        <h1><span class="highlight" th:text="|${#numbers.formatDecimal(amount, 0, 'COMMA', 0, 'POINT')}원|">200원</span>을 보냈어요</h1>
+    </div>
+
+    <a th:href="@{/}" class="confirm-button">확인</a>
+</div>
+</body>
+</html>

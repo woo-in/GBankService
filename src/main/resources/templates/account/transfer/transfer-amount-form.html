@@ -136,12 +136,12 @@
     <div class="info-section">
         <div class="account-box">
             <p class="account-name" th:text="|내 #{bankName} 통장에서|">내 우인은행 통장에서</p>
-            <span class="account-details" th:text="|잔액 ${#numbers.formatInteger(fromAccount.balance, 0, 'COMMA')}원|">잔액 10,000원</span>
+            <span class="account-details" th:text="|잔액 ${#numbers.formatInteger(pendingTransferResponse.senderBalance, 0, 'COMMA')}원|">잔액 10,000원</span>
         </div>
         <div class="arrow-icon">↓</div>
         <div class="account-box">
-            <p class="account-name" th:text="|${toMember.name} 님에게|">받는 분 계좌로</p>
-            <span class="account-details" th:text="|${toBankName} ${formattedToAccountNumber}|">우인은행 123-456-7890</span>
+            <p class="account-name" th:text="|${pendingTransferResponse.receiverName} 님에게|">받는 분 계좌로</p>
+            <span class="account-details" th:text="|${pendingTransferResponse.receiverBankName} ${pendingTransferResponse.receiverAccountNumber}|">우인은행 123-456-7890</span>
         </div>
     </div>
 

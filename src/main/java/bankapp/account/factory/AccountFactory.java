@@ -2,8 +2,8 @@
 package bankapp.account.factory;
 
 import bankapp.account.exceptions.UnsupportedAccountTypeException;
-import bankapp.account.model.Account;
-import bankapp.account.model.PrimaryAccount;
+import bankapp.account.model.account.Account;
+import bankapp.account.model.account.PrimaryAccount;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

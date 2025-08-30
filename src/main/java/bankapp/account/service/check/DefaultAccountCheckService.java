@@ -1,10 +1,10 @@
 package bankapp.account.service.check;
 
-import bankapp.account.dao.AccountDao;
+import bankapp.account.dao.account.AccountDao;
 import bankapp.account.exceptions.AccountNotFoundException;
 import bankapp.account.exceptions.PrimaryAccountNotFoundException;
-import bankapp.account.model.Account;
-import bankapp.account.model.PrimaryAccount;
+import bankapp.account.model.account.Account;
+import bankapp.account.model.account.PrimaryAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -59,7 +59,22 @@ public class DefaultAccountCheckService implements AccountCheckService {
     }
 
     @Override
+    public PrimaryAccount findPrimaryAccountByAccountId(Long accountId) throws PrimaryAccountNotFoundException{
+        List<Account> accountList = accountDao.findByMemberId(accountId);
+
+        for(Account account : accountList){
+            if(account.getAccountType().equals("PRIMARY")){
+                return (PrimaryAccount) account;
+            }
+        }
+
+        throw new PrimaryAccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
+    }
+
+
+    @Override
     public Account findAccountByAccountNumber(String accountNumber) throws AccountNotFoundException{
+
         if(accountNumber == null) {
             throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
         }
@@ -72,6 +87,23 @@ public class DefaultAccountCheckService implements AccountCheckService {
 
         return accountOptional.get();
     }
+
+    @Override
+    public Account findAccountByAccountId(Long accountId) throws AccountNotFoundException{
+
+        if(accountId == null) {
+            throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
+        }
+
+        Optional<Account> accountOptional = accountDao.findByAccountId(accountId);
+
+        if(accountOptional.isEmpty()) {
+            throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
+        }
+
+        return accountOptional.get();
+    }
+
 
     @Override
     public boolean isExternalBank(String bankCode) {

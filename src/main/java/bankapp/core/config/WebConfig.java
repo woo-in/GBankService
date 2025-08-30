@@ -1,6 +1,7 @@
 package bankapp.core.config;
 
-import bankapp.core.interceptor.LoginCheckerInterceptor;
+import bankapp.account.interceptor.TransferRequestIdCheckInterceptor;
+import bankapp.member.interceptor.LoginCheckerInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -15,5 +16,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/login", "/signup" , "/error");
         // 로그인과 회원가입 제외 모두 세션 체크
+
+        registry.addInterceptor(new TransferRequestIdCheckInterceptor())
+                .order(2)
+                .addPathPatterns("/transfer/amount");
     }
+
+
+
 }

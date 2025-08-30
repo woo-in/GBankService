@@ -1,7 +1,8 @@
-package bankapp.account.dao;
+package bankapp.account.dao.account;
 
-import bankapp.account.model.Account;
+import bankapp.account.model.account.Account;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,10 +30,44 @@ public interface AccountDao {
     Optional<Account> findByAccountNumber(String accountNumber);
 
     /**
+     * 계좌 고유 ID를 사용하여 계좌를 조회합니다.
+     *
+     * @param accountId 조회할 계좌 ID
+     * @return 계좌가 존재할 경우 해당 Account 객체를 담은 Optional, 존재하지 않을 경우 비어있는 Optional
+     */
+    Optional<Account> findByAccountId(Long accountId);
+
+    /**
+     * 이 메서드는 SELECT 쿼리에 FOR UPDATE 절을 추가하여,
+     * 조회된 로우(row)에 배타적 잠금(Exclusive Lock)을 설정합니다.
+     * 이를 통해 다른 트랜잭션이 해당 로우를 동시에 수정하는 것을 방지할 수 있습니다.
+     * <p>
+     * <b>주의:</b> 이 메서드는 반드시 @Transactional이 선언된 서비스 메서드 내에서 호출되어야만
+     * 트랜잭션이 끝날 때까지 잠금이 유지됩니다.
+     */
+    Optional<Account> findByIdForUpdate(Long accountId);
+
+    /**
      * 회원의 고유 ID를 사용하여 해당 회원이 소유한 모든 계좌 목록을 조회합니다.
      *
      * @param memberId 계좌 목록을 조회할 회원의 고유 ID
      * @return 해당 회원의 계좌 리스트. 계좌가 없을 경우 비어있는 리스트를 반환합니다.
      */
     List<Account> findByMemberId(Long memberId);
+
+
+
+
+
+    /**
+     * 계좌 잔액을 지정된 값으로 설정합니다. (절대적 변경: balance = ?)
+     * 서비스단에서 비관적 잠금 후, 계산된 최종 값을 저장할 때 사용됩니다.
+     * @param accountId 계좌 ID
+     * @param newBalance 설정할 새로운 최종 잔액
+     */
+    void setBalance(Long accountId, BigDecimal newBalance);
+
+
+
+
 }

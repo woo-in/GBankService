@@ -1,6 +1,6 @@
 package bankapp.member.service.check;
 
-import bankapp.account.model.Account;
+import bankapp.account.model.account.Account;
 import bankapp.member.exceptions.MemberNotFoundException;
 import bankapp.member.model.Member;
 
@@ -35,4 +35,8 @@ public interface MemberCheckService {
      * @throws MemberNotFoundException 계좌 정보에 해당하는 회원을 찾을 수 없을 경우 발생 (데이터 정합성 오류)
      */
     Member findMemberByAccount(Account account) throws MemberNotFoundException;
+
+
+
+
 }

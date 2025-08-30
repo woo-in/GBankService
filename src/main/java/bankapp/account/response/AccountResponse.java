@@ -1,7 +1,7 @@
 package bankapp.account.response;
 
 
-import bankapp.account.model.PrimaryAccount;
+import bankapp.account.model.account.PrimaryAccount;
 import lombok.Data;
 
 import java.math.BigDecimal;

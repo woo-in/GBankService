@@ -1,7 +1,7 @@
 //package bankapp.member.service.signup;
 //
 //import bankapp.account.manager.AccountManager;
-//import bankapp.account.model.PrimaryAccount;
+//import bankapp.account.model.account.PrimaryAccount;
 //import bankapp.account.request.open.OpenPrimaryAccountRequest;
 //import bankapp.member.dao.MemberDao;
 //import bankapp.member.exceptions.DuplicateUsernameException;

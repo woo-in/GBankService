@@ -1,4 +1,4 @@
-package bankapp.account.model;
+package bankapp.account.model.account;
 
 
 import bankapp.account.request.open.OpenPrimaryAccountRequest;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 
 @Data
-public class PrimaryAccount extends Account{
+public class PrimaryAccount extends Account {
 
     public PrimaryAccount() { }
     public PrimaryAccount(Long accountId, Long memberId, String accountNumber, BigDecimal balance, String accountType, String nickname, LocalDateTime createdAt) {
