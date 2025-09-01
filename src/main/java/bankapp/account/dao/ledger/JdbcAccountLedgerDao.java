@@ -25,7 +25,7 @@ public class JdbcAccountLedgerDao implements AccountLedgerDao {
     }
 
     @Override
-    public AccountLedger save(AccountLedger accountLedger) { // 1. 지역변수 이름 변경
+    public AccountLedger save(AccountLedger accountLedger) {
         String sql = "INSERT INTO ACCOUNT_LEDGER (account_id, transaction_type, amount, balance_after, description) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
@@ -43,7 +43,6 @@ public class JdbcAccountLedgerDao implements AccountLedgerDao {
 
         long generatedId = keyHolder.getKey().longValue();
 
-        // 2. 생성된 ID로 데이터를 다시 조회하여, created_at까지 포함된 완전한 객체를 반환
         return findById(generatedId)
                 .orElseThrow(() -> new DataIntegrityViolationException("원장 기록 저장 후 데이터를 조회할 수 없습니다. ID: " + generatedId));
     }

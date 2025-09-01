@@ -24,8 +24,9 @@ public interface AccountService {
      * @param accountTransactionRequest 요청 정보
      * @throws AccountNotFoundException     해당 accountId의 계좌를 찾을 수 없을 때
      * @throws InsufficientBalanceException 계좌의 잔액이 출금 금액보다 부족할 때
+     * @return ledger_id : 원장 기록 id
      */
-    void debit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException;
+    long debit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException;
 
     /**
      * 지정된 계좌에 금액을 입금합니다.
@@ -35,8 +36,9 @@ public interface AccountService {
      *
      * @param accountTransactionRequest 요청 정보
      * @throws AccountNotFoundException 해당 accountId의 계좌를 찾을 수 없을 때
+     * @return ledger_id : 원장 기록 id
      */
-    void credit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException;
+    long credit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException;
 
 }
 

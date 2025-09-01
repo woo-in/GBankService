@@ -178,9 +178,11 @@ public class DefaultTransferService implements TransferService{
         }
 
         verifyMemberPassword(pendingTransfer, transferAuthRequest);
-        debitFromSender(pendingTransfer);
-        creditToReceiver(pendingTransfer);
-        // TODO : 거래 기록도 해야 함
+        long senderLedgerId = debitFromSender(pendingTransfer);
+        long creditLedgerId = creditToReceiver(pendingTransfer);
+        recordTransferCompletion(pendingTransfer, senderLedgerId, creditLedgerId);
+
+
     }
 
     private void verifyMemberPassword(PendingTransfer pendingTransfer, TransferAuthRequest transferAuthRequest) throws IncorrectPasswordException{
@@ -195,25 +197,25 @@ public class DefaultTransferService implements TransferService{
 
     }
 
-    private void debitFromSender(PendingTransfer pendingTransfer) {
+    private long debitFromSender(PendingTransfer pendingTransfer) {
         if(pendingTransfer.getStatus() != PENDING_TRANSFER){
             throw new IllegalTransferStateException("거래 단계가 아닙니다.");
         }
 
-        accountService.debit(new AccountTransactionRequest(
+        return accountService.debit(new AccountTransactionRequest(
                 pendingTransfer.getSenderAccountId(),
                 pendingTransfer.getAmount(),
                 "transfer"));
     }
 
-    private void creditToReceiver(PendingTransfer pendingTransfer) {
+    private long creditToReceiver(PendingTransfer pendingTransfer) {
         if(pendingTransfer.getStatus() != PENDING_TRANSFER){
             throw new IllegalTransferStateException("거래 단계가 아닙니다.");
         }
 
         long receiverAccountId = accountCheckService.findAccountByAccountNumber(pendingTransfer.getReceiverAccountNumber()).getAccountId();
 
-        accountService.credit(new AccountTransactionRequest(
+        return accountService.credit(new AccountTransactionRequest(
                 receiverAccountId,
                 pendingTransfer.getAmount(),
                 "transfer"
@@ -221,5 +223,15 @@ public class DefaultTransferService implements TransferService{
     }
 
 
+    private void recordTransferCompletion(PendingTransfer pendingTransfer, long senderLedgerId, long receiverLedgerId) {
+
+        pendingTransfer.setStatus(COMPLETED);
+        pendingTransfer.setUpdatedAt(LocalDateTime.now());
+        pendingTransfer.setSenderLedgerId(senderLedgerId);
+        pendingTransfer.setReceiverLedgerId(receiverLedgerId);
+
+        pendingTransferDao.update(pendingTransfer);
+
+    }
 
 }

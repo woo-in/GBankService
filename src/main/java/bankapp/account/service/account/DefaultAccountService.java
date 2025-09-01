@@ -31,7 +31,7 @@ public class DefaultAccountService implements AccountService {
 
     @Override
     @Transactional
-    public void debit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException , InvalidAmountException {
+    public long debit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException , InvalidAmountException {
 
 
         // TODO : SRP(Make it work , then make it right) 모든 컨트롤러 , 서비스 로직 다시 고민 , 생각보다 더 잘개 쪼개야 한다.
@@ -46,12 +46,12 @@ public class DefaultAccountService implements AccountService {
 
         validateSufficientBalance(account, amount);
 
-        applyDebitChanges(account,accountTransactionRequest);
+        return applyDebitChanges(account,accountTransactionRequest).getLedgerId();
     }
 
     @Override
     @Transactional
-    public void credit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException , InvalidAmountException{
+    public long credit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException , InvalidAmountException{
 
         BigDecimal amount = accountTransactionRequest.getAmount();
         Long accountId = accountTransactionRequest.getAccountId();
@@ -61,7 +61,7 @@ public class DefaultAccountService implements AccountService {
         // 비관적 락 (트랜잭션 끝날때 까지 로우를 잠금)
         Account account = lockAndGetAccount(accountId);
 
-        applyCreditChanges(account,accountTransactionRequest);
+        return applyCreditChanges(account,accountTransactionRequest).getLedgerId();
     }
 
 
@@ -95,20 +95,21 @@ public class DefaultAccountService implements AccountService {
     }
 
     /**
-     * 실제 계좌의 잔액을 변경하고, 거래 원장을 기록합니다.
+     * 실제 계좌의 잔액을 변경하고, 거래 원장을 기록 , ledger_id 를 반환합니다.
      */
-    private void applyDebitChanges(Account account, AccountTransactionRequest accountTransactionRequest) {
+    private AccountLedger applyDebitChanges(Account account, AccountTransactionRequest accountTransactionRequest) {
         BigDecimal balanceAfter = account.getBalance().subtract(accountTransactionRequest.getAmount());
 
         accountDao.setBalance(account.getAccountId(), balanceAfter);
-        accountLedgerDao.save(AccountLedger.from(accountTransactionRequest, TransactionType.DEBIT, balanceAfter));
+        return accountLedgerDao.save(AccountLedger.from(accountTransactionRequest, TransactionType.DEBIT, balanceAfter));
     }
 
-    private void applyCreditChanges(Account account, AccountTransactionRequest accountTransactionRequest) {
+    private AccountLedger applyCreditChanges(Account account, AccountTransactionRequest accountTransactionRequest) {
         BigDecimal balanceAfter = account.getBalance().add(accountTransactionRequest.getAmount());
 
         accountDao.setBalance(account.getAccountId(), balanceAfter);
-        accountLedgerDao.save(AccountLedger.from(accountTransactionRequest, TransactionType.CREDIT, balanceAfter));
+        return accountLedgerDao.save(AccountLedger.from(accountTransactionRequest, TransactionType.CREDIT, balanceAfter));
     }
+
 
 }

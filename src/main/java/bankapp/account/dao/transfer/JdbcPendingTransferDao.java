@@ -30,9 +30,9 @@ public class JdbcPendingTransferDao implements PendingTransferDao{
         String sql = "INSERT INTO PENDING_TRANSFER (" +
                 "request_id, sender_member_id, sender_account_id, status, " +
                 "receiver_bank_name, receiver_account_number, receiver_name, " +
-                "amount, message, completed_ledger_id, " +
+                "amount, message, sender_ledger_id, receiver_ledger_id, " +
                 "expires_at, created_at, updated_at" +
-                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // UUID 를 사용해 고유한 requestId 생성 및 설정
         String requestId = java.util.UUID.randomUUID().toString();
@@ -52,7 +52,8 @@ public class JdbcPendingTransferDao implements PendingTransferDao{
                 pendingTransfer.getReceiverName(),
                 pendingTransfer.getAmount(),
                 pendingTransfer.getMessage(),
-                pendingTransfer.getCompletedLedgerId(),
+                pendingTransfer.getSenderLedgerId(),
+                pendingTransfer.getReceiverLedgerId(),
                 pendingTransfer.getExpiresAt(),
                 pendingTransfer.getCreatedAt(),
                 pendingTransfer.getUpdatedAt()
@@ -81,7 +82,8 @@ public class JdbcPendingTransferDao implements PendingTransferDao{
                 "receiver_name = ?, " +
                 "amount = ?, " +
                 "message = ?, " +
-                "completed_ledger_id = ?, " +
+                "sender_ledger_id = ?, " +
+                "receiver_ledger_id = ?, " +
                 "updated_at = ? " +
                 "WHERE request_id = ?";
 
@@ -94,7 +96,8 @@ public class JdbcPendingTransferDao implements PendingTransferDao{
                 pendingTransfer.getReceiverName(),
                 pendingTransfer.getAmount(),
                 pendingTransfer.getMessage(),
-                pendingTransfer.getCompletedLedgerId(),
+                pendingTransfer.getSenderLedgerId(),
+                pendingTransfer.getReceiverLedgerId(),
                 pendingTransfer.getUpdatedAt(),
                 pendingTransfer.getRequestId()
         );
@@ -117,13 +120,8 @@ public class JdbcPendingTransferDao implements PendingTransferDao{
                 pt.setReceiverName(rs.getString("receiver_name"));
                 pt.setAmount(rs.getBigDecimal("amount"));
                 pt.setMessage(rs.getString("message"));
-
-                // completed_ledger_id는 NULL일 수 있으므로 별도 처리
-                long completedLedgerId = rs.getLong("completed_ledger_id");
-                if (!rs.wasNull()) {
-                    pt.setCompletedLedgerId(completedLedgerId);
-                }
-
+                pt.setSenderLedgerId(rs.getLong("sender_ledger_id"));
+                pt.setReceiverLedgerId(rs.getLong("receiver_ledger_id"));
                 pt.setExpiresAt(rs.getTimestamp("expires_at").toLocalDateTime());
                 pt.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                 pt.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());

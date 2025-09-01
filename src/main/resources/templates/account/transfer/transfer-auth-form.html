@@ -157,6 +157,7 @@
             <input type="password" th:field="*{password}" placeholder="비밀번호"
                    th:classappend="${#fields.hasErrors('password')} ? 'error' : ''"
                    maxlength="16" autocomplete="off">
+            <span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
         </div>
 
         <button type="submit" class="confirm-button">확인</button>

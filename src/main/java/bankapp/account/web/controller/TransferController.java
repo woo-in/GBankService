@@ -6,9 +6,9 @@ import bankapp.account.request.transfer.TransferAuthRequest;
 import bankapp.account.request.transfer.TransferMessageRequest;
 import bankapp.account.request.transfer.TransferRecipientRequest;
 import bankapp.account.response.transfer.PendingTransferResponse;
-import bankapp.account.response.transfer.TransferResultResponse;
 import bankapp.account.service.transfer.TransferService;
 import bankapp.core.common.SessionConst;
+import bankapp.member.exceptions.IncorrectPasswordException;
 import bankapp.member.model.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -175,17 +175,24 @@ public class TransferController {
         // TransferRequestIdCheckInterceptor 로 유효성 검증함
         String requestId = (String) session.getAttribute("requestId");
 
-        // TODO: 예외처리
-        // TODO : 최종 상태 완료로 바꾸고 기존 테이블 삭제 , 완료 테이블에 삽입 , 최종 결과 객체 생성
-        transferService.executeTransfer(requestId, transferAuthRequest);
+        try {
+            transferService.executeTransfer(requestId, transferAuthRequest);
+        }catch(IncorrectPasswordException e){
+            bindingResult.rejectValue("password", "invalid", "비밀번호가 일치하지 않습니다.");
+            return "account/transfer/transfer-auth-form";
+        }
 
 
-        // 결과 보여주기 (임시)
+        prepareTransferDetailsViewModel(model , requestId);
         return "account/transfer/transfer-complete-form";
 
     }
 
-  
+
+    // TODO : *** 실패 기록 테이블 필요함.
+    // ** (모든 걸 기록 가능 , UX 개선 , 이상탐지 (비밀번호 틀림)) **
+
+
 
 
     private void prepareTransferDetailsViewModel(Model model , String requestId){

@@ -82,14 +82,14 @@
     </style>
 </head>
 <body>
-<div class="card" th:object="${transferResultResponse}">
+<div class="card" th:object="${pendingTransferResponse}">
     <div class="success-icon">
         <div class="checkmark"></div>
     </div>
     <div class="header">
         <h1><span class="highlight" th:text="|*{receiverName}|">정인우</span>님에게</h1>
         <p class="recipient-details" th:text="|(*{receiverBankName} *{receiverAccountNumber})|">(우인은행 110-250818-827803)</p>
-        <h1><span class="highlight" th:text="|${#numbers.formatDecimal(amount, 0, 'COMMA', 0, 'POINT')}원|">200원</span>을 보냈어요</h1>
+        <h1><span class="highlight" th:text="|*{#numbers.formatDecimal(amount, 0, 'COMMA', 0, 'POINT')}원|">200원</span>을 보냈어요</h1>
     </div>
 
     <a th:href="@{/}" class="confirm-button">확인</a>

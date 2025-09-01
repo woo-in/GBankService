@@ -173,9 +173,11 @@
 </header>
 
 <main>
-    <section class="account-card">
-        <div class="account-info">내 통장 110-123-456789</div>
-        <h1 class="account-balance">13,300,744,820원</h1>
+    <section class="account-card" th:object="${accountResponse}">
+        <div class="account-info" th:text="|내 통장 *{accountNumber}|">내 통장 110-123-456789</div>
+
+        <h1 class="account-balance" th:text="|*{#numbers.formatInteger(balance, 1, 'COMMA')}원|">13,300,744,820원</h1>
+
         <div class="action-buttons">
             <button class="btn-fill">채우기</button>
             <form th:action="@{/transfer/new}" method="get" style="margin: 0;">
@@ -183,10 +185,10 @@
             </form>
         </div>
     </section>
+
     <section class="transaction-history">
         <h3 class="history-header">거래 내역</h3>
     </section>
 </main>
-
 </body>
 </html>
