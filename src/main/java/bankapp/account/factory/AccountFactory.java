@@ -2,8 +2,7 @@
 package bankapp.account.factory;
 
 import bankapp.account.exceptions.UnsupportedAccountTypeException;
-import bankapp.account.model.account.Account;
-import bankapp.account.model.account.PrimaryAccount;
+import bankapp.account.model.account.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -19,9 +18,8 @@ public class AccountFactory {
     public AccountFactory() {
         // 여기에 새로운 계좌 타입을 추가하기만 하면 됩니다.
         this.accountCreators = Map.of(
-                "PRIMARY", PrimaryAccount::new
-                // 예: "DEPOSIT", DepositAccount::new
-                // 예: "SAVINGS", SavingsAccount::new
+                "PRIMARY", PrimaryAccount::new ,
+                "SAVINGS", SavingsAccount::new
         );
     }
     // PrimaryAccount::new : 이것이 바로 Supplier

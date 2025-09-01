@@ -2,6 +2,7 @@ package bankapp.account.dao.account;
 
 import bankapp.account.factory.AccountFactory;
 import bankapp.account.model.account.Account;
+import bankapp.account.model.account.PrimaryAccount;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -52,8 +53,10 @@ public class JdbcAccountDao implements AccountDao {
             return ps;
         }, keyHolder);
 
-        // TODO: (NPE 고민)
-        long generatedId = keyHolder.getKey().longValue();
+        long generatedId = Optional.ofNullable(keyHolder.getKey())
+                .map(Number::longValue) // 키가 있으면 long 값으로 변환
+                .orElseThrow(() -> new DataIntegrityViolationException("데이터베이스에서 계정 ID를 생성하는 데 실패했습니다."));
+
         account.setAccountId(generatedId);
         return account;
     }
@@ -111,6 +114,40 @@ public class JdbcAccountDao implements AccountDao {
             throw new DataIntegrityViolationException("계좌 잔액 설정에 실패했습니다. accountId: " + accountId);
         }
     }
+
+    @Override
+    public boolean existsByAccountNumber(String accountNumber) {
+        String sql = "SELECT COUNT(*) FROM ACCOUNT WHERE account_number = ?";
+
+        // COUNT 쿼리의 결과는 항상 0 이상이므로 null이 될 수 없습니다.
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, accountNumber);
+
+        return count != null && count > 0;
+    }
+
+
+    @Override
+    public Optional<PrimaryAccount> findPrimaryAccountByMemberId(Long memberId) {
+        String sql = "SELECT * FROM ACCOUNT WHERE member_id = ? AND account_type = 'PRIMARY'";
+        try {
+            Account account = jdbcTemplate.queryForObject(sql, accountRowMapper(), memberId);
+            return Optional.ofNullable((PrimaryAccount) account);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<PrimaryAccount> findPrimaryAccountByAccountId(Long accountId) {
+        String sql = "SELECT * FROM ACCOUNT WHERE account_id = ? AND account_type = 'PRIMARY'";
+        try {
+            Account account = jdbcTemplate.queryForObject(sql, accountRowMapper(), accountId);
+            return Optional.ofNullable((PrimaryAccount) account);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
 
     /**
      * 데이터베이스 조회 결과(ResultSet)를 Account 객체로 변환해주는 RowMapper.

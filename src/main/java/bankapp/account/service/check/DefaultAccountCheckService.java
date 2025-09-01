@@ -7,8 +7,6 @@ import bankapp.account.model.account.Account;
 import bankapp.account.model.account.PrimaryAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
 
 import static bankapp.core.common.BankCode.WOOIN_BANK;
 
@@ -32,82 +30,66 @@ public class DefaultAccountCheckService implements AccountCheckService {
         this.accountDao = accountDao;
     }
 
+
     @Override
     public boolean isAccountNumberExist(String accountNumber){
 
-        if(accountNumber == null) {
+        if (isInvalidAccountNumber(accountNumber)) {
             return false;
         }
 
-        Optional<Account> accountOptional = accountDao.findByAccountNumber(accountNumber);
-        return accountOptional.isPresent();
-
+        return accountDao.existsByAccountNumber(accountNumber);
     }
 
     @Override
     public PrimaryAccount findPrimaryAccountByMemberId(Long memberId) throws PrimaryAccountNotFoundException{
 
-        List<Account> accountList = accountDao.findByMemberId(memberId);
+        return accountDao.findPrimaryAccountByMemberId(memberId)
+                .orElseThrow(() -> new PrimaryAccountNotFoundException("해당 회원의 주계좌(PRIMARY)를 찾을 수 없습니다. memberId: " + memberId));
 
-        for(Account account : accountList){
-            if(account.getAccountType().equals("PRIMARY")){
-                return (PrimaryAccount) account;
-            }
-        }
-
-        throw new PrimaryAccountNotFoundException("해당 회원의 주계좌(PRIMARY)를 찾을 수 없습니다. memberId: " + memberId);
     }
 
     @Override
     public PrimaryAccount findPrimaryAccountByAccountId(Long accountId) throws PrimaryAccountNotFoundException{
-        List<Account> accountList = accountDao.findByMemberId(accountId);
+        return accountDao.findPrimaryAccountByAccountId(accountId)
+                .orElseThrow(() -> new PrimaryAccountNotFoundException("해당 회원의 주계좌(PRIMARY)를 찾을 수 없습니다. memberId: " + accountId));
 
-        for(Account account : accountList){
-            if(account.getAccountType().equals("PRIMARY")){
-                return (PrimaryAccount) account;
-            }
-        }
-
-        throw new PrimaryAccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
     }
 
 
     @Override
     public Account findAccountByAccountNumber(String accountNumber) throws AccountNotFoundException{
 
-        if(accountNumber == null) {
+        if (isInvalidAccountNumber(accountNumber)) {
             throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
         }
 
-        Optional<Account> accountOptional = accountDao.findByAccountNumber(accountNumber);
-
-        if(accountOptional.isEmpty()) {
-            throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
-        }
-
-        return accountOptional.get();
+        return accountDao.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException("해당 계좌를 찾을 수 없습니다. 계좌번호: " + accountNumber));
     }
 
     @Override
     public Account findAccountByAccountId(Long accountId) throws AccountNotFoundException{
 
-        if(accountId == null) {
+        if(isInvalidAccountId(accountId)) {
             throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
         }
 
-        Optional<Account> accountOptional = accountDao.findByAccountId(accountId);
-
-        if(accountOptional.isEmpty()) {
-            throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
-        }
-
-        return accountOptional.get();
+        return accountDao.findByAccountId(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("해당 계좌를 찾을 수 없습니다. 계좌번호: " + accountId));
     }
-
 
     @Override
     public boolean isExternalBank(String bankCode) {
         return !WOOIN_BANK.equals(bankCode);
+    }
+
+    private boolean isInvalidAccountNumber(String accountNumber) {
+        return accountNumber == null || accountNumber.trim().isEmpty();
+    }
+
+    private boolean isInvalidAccountId(Long accountId) {
+        return accountId == null ;
     }
 
 

@@ -12,13 +12,15 @@ import java.time.LocalDateTime;
 @Data
 public class PrimaryAccount extends Account {
 
-    public PrimaryAccount() { }
+    public PrimaryAccount() {
+        this.accountType = "PRIMARY";
+    }
     public PrimaryAccount(Long accountId, Long memberId, String accountNumber, BigDecimal balance, String accountType, String nickname, LocalDateTime createdAt) {
         this.accountId = accountId;
         this.memberId = memberId;
         this.accountNumber = accountNumber;
         this.balance = balance;
-        this.accountType = accountType;
+        this.accountType = "PRIMARY";
         this.nickname = nickname;
         this.createdAt = createdAt;
     }

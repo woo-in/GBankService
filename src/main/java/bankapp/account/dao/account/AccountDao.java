@@ -1,6 +1,7 @@
 package bankapp.account.dao.account;
 
 import bankapp.account.model.account.Account;
+import bankapp.account.model.account.PrimaryAccount;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -56,7 +57,31 @@ public interface AccountDao {
     List<Account> findByMemberId(Long memberId);
 
 
+    /**
+     * 주어진 계좌번호에 해당하는 계좌의 존재 여부를 확인합니다.
+     *
+     * @param accountNumber 계좌 목록을 조회할 계좌번호
+     * @return 계좌가 있는지 여부 반환
+     */
+    boolean existsByAccountNumber(String accountNumber);
 
+    /**
+     * 특정 회원의 주계좌(PRIMARY) 정보를 조회 , 반환합니다.
+     *
+     * @param memberId 주 계좌를 조회할 회원의 고유 ID
+     * @return 계좌가 존재할 경우 해당 PrimaryAccount 객체를 담은 Optional, 존재하지 않을 경우 비어있는 Optional
+     */
+    Optional<PrimaryAccount> findPrimaryAccountByMemberId(Long memberId) ;
+
+
+
+    /**
+     * 특정 계좌의 주계좌(PRIMARY) 정보를 조회 , 반환합니다.
+     *
+     * @param accountId 주 계좌를 조회할 회원의 고유 ID
+     * @return 계좌가 존재할 경우 해당 PrimaryAccount 객체를 담은 Optional, 존재하지 않을 경우 비어있는 Optional
+     */
+    Optional<PrimaryAccount> findPrimaryAccountByAccountId(Long accountId) ;
 
 
     /**
@@ -66,6 +91,7 @@ public interface AccountDao {
      * @param newBalance 설정할 새로운 최종 잔액
      */
     void setBalance(Long accountId, BigDecimal newBalance);
+
 
 
 

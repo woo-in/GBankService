@@ -33,9 +33,6 @@ public class DefaultAccountService implements AccountService {
     @Transactional
     public long debit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException , InvalidAmountException {
 
-
-        // TODO : SRP(Make it work , then make it right) 모든 컨트롤러 , 서비스 로직 다시 고민 , 생각보다 더 잘개 쪼개야 한다.
-
         BigDecimal amount = accountTransactionRequest.getAmount();
         Long accountId = accountTransactionRequest.getAccountId();
 
