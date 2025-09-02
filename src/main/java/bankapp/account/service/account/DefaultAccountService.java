@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
-// TODO: TEST 코드 작성
-
 @Service
 public class DefaultAccountService implements AccountService {
 
@@ -32,38 +30,23 @@ public class DefaultAccountService implements AccountService {
     @Override
     @Transactional
     public long debit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException , InvalidAmountException {
+        Account account = prepareTransaction(accountTransactionRequest.getAccountId(), accountTransactionRequest.getAmount());
 
-        BigDecimal amount = accountTransactionRequest.getAmount();
-        Long accountId = accountTransactionRequest.getAccountId();
+        // 출금에만 필요한 잔액 검증 로직 수행
+        validateSufficientBalance(account, accountTransactionRequest.getAmount());
 
-        validateAmount(amount);
-
-        // 비관적 락 (트랜잭션 끝날때 까지 로우를 잠금)
-        Account account = lockAndGetAccount(accountId);
-
-        validateSufficientBalance(account, amount);
-
-        return applyDebitChanges(account,accountTransactionRequest).getLedgerId();
+        return applyTransaction(account, accountTransactionRequest, TransactionType.DEBIT).getLedgerId();
     }
 
     @Override
     @Transactional
     public long credit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException , InvalidAmountException{
 
-        BigDecimal amount = accountTransactionRequest.getAmount();
-        Long accountId = accountTransactionRequest.getAccountId();
+        Account account = prepareTransaction(accountTransactionRequest.getAccountId(), accountTransactionRequest.getAmount());
 
-        validateAmount(amount);
+        return applyTransaction(account, accountTransactionRequest, TransactionType.CREDIT).getLedgerId();
 
-        // 비관적 락 (트랜잭션 끝날때 까지 로우를 잠금)
-        Account account = lockAndGetAccount(accountId);
-
-        return applyCreditChanges(account,accountTransactionRequest).getLedgerId();
     }
-
-
-
-
 
     /**
      * 요청 DTO 자체의 유효성을 검증합니다. (예: 금액이 양수인지)
@@ -83,6 +66,14 @@ public class DefaultAccountService implements AccountService {
     }
 
     /**
+     *  트랜잭션 처리를 위한 공통 준비 작업을 수행합니다.
+     * (금액 유효성 검사, 계좌 잠금 및 조회)
+     */
+    private Account prepareTransaction(Long accountId, BigDecimal amount) {
+        validateAmount(amount);
+        return lockAndGetAccount(accountId);
+    }
+    /**
      * 계좌의 잔액이 출금 금액에 충분한지 검증합니다.
      */
     private void validateSufficientBalance(Account account, BigDecimal amountToDebit) {
@@ -92,21 +83,15 @@ public class DefaultAccountService implements AccountService {
     }
 
     /**
-     * 실제 계좌의 잔액을 변경하고, 거래 원장을 기록 , ledger_id 를 반환합니다.
+     * TransactionType에 따라 잔액을 계산하고 거래를 기록합니다.
+     * 이후 AccountLedger 를 반환
      */
-    private AccountLedger applyDebitChanges(Account account, AccountTransactionRequest accountTransactionRequest) {
-        BigDecimal balanceAfter = account.getBalance().subtract(accountTransactionRequest.getAmount());
+    private AccountLedger applyTransaction(Account account, AccountTransactionRequest request, TransactionType type) {
+        // TransactionType에 계산 로직을 위임
+        BigDecimal balanceAfter = type.calculate(account.getBalance(), request.getAmount());
 
         accountDao.setBalance(account.getAccountId(), balanceAfter);
-        return accountLedgerDao.save(AccountLedger.from(accountTransactionRequest, TransactionType.DEBIT, balanceAfter));
+        return accountLedgerDao.save(AccountLedger.from(request, type, balanceAfter));
     }
-
-    private AccountLedger applyCreditChanges(Account account, AccountTransactionRequest accountTransactionRequest) {
-        BigDecimal balanceAfter = account.getBalance().add(accountTransactionRequest.getAmount());
-
-        accountDao.setBalance(account.getAccountId(), balanceAfter);
-        return accountLedgerDao.save(AccountLedger.from(accountTransactionRequest, TransactionType.CREDIT, balanceAfter));
-    }
-
 
 }

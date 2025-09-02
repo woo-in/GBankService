@@ -18,8 +18,6 @@ import static bankapp.core.common.BankCode.WOOIN_BANK;
  * 계좌 정보 확인 및 조회 로직을 수행합니다.
  */
 
-// TODO: 테스트 코드 작성
-
 @Service
 public class DefaultAccountCheckService implements AccountCheckService {
 

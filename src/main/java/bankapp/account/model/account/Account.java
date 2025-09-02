@@ -16,4 +16,6 @@ public abstract class Account {
     protected String nickname;
     protected LocalDateTime createdAt;
 
+
+
 }
