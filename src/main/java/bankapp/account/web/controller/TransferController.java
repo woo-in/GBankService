@@ -10,7 +10,6 @@ import bankapp.account.service.transfer.TransferService;
 import bankapp.core.common.SessionConst;
 import bankapp.member.exceptions.IncorrectPasswordException;
 import bankapp.member.model.Member;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,47 +44,39 @@ public class TransferController {
      *  그리고 세션에 송금 요청의 고유 id 를 저장합니다.
      *
      * @param transferRecipientRequest 수취인 정보(은행, 계좌번호)를 담은 DTO
-     * @param bindingResult            DTO의 형식(@Validated) 검증 결과
-     * @param request                  세션을 얻기 위한 객체
-     * @return 검증 성공 시 금액 입력 폼으로 리다이렉트, 실패 시 다시 입력 폼을 보여줌
+     * @return 검증 성공 시 금액 입력 폼으로 리다이렉트, 실패 시 다시 입력(/new) 폼을 보여줌
      */
     @PostMapping("/new")
     public String processRecipientInfo(@Validated @ModelAttribute TransferRecipientRequest transferRecipientRequest,
                                      BindingResult bindingResult,
-                                     HttpServletRequest request) {
-
+                                     @SessionAttribute(value = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                                     HttpSession session) {
 
         if (bindingResult.hasErrors()) {
             return "account/transfer/transfer-recipient-form";
         }
 
-        HttpSession session = request.getSession(false);
-        Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
         String requestId ;
         try{
             requestId = transferService.processRecipient(transferRecipientRequest, loginMember);
+            session.setAttribute("requestId", requestId);
+            return "redirect:/transfer/amount";
         }catch (ExternalTransferNotSupportedException e){
             bindingResult.rejectValue("toBankCode", "Unavailable", "타행 이체는 현재 서비스 준비 중입니다.");
-            return "account/transfer/transfer-recipient-form";
         }catch (RecipientAccountNotFoundException e){
             bindingResult.rejectValue("toAccountNumber", "notFound", "해당 계좌를 찾을 수 없습니다.");
-            return "account/transfer/transfer-recipient-form";
         }catch(SameAccountTransferException e){
             bindingResult.rejectValue("toAccountNumber", "Same", "동일한 계좌로는 송금할 수 없습니다.");
-            return "account/transfer/transfer-recipient-form";
         }
-        // catch 하지 않은 에러 : 500 페이지 보여줌
 
-        session.setAttribute("requestId", requestId);
-        return "redirect:/transfer/amount";
+        return "account/transfer/transfer-recipient-form";
     }
 
-    @GetMapping("/amount")
-    public String showAmountForm(Model model, HttpServletRequest request) {
 
-        HttpSession session = request.getSession(false);
-        // TransferRequestIdCheckInterceptor 로 유효성 검증함
-        String requestId = (String) session.getAttribute("requestId");
+    @GetMapping("/amount")
+    public String showAmountForm(Model model,
+                                 @SessionAttribute(value = "requestId" , required = false) String requestId) {
+
         // TODO : 만약 홈으로 갔다가 다시 돌아온다면 ?
 
         prepareTransferDetailsViewModel(model , requestId);
@@ -95,15 +86,18 @@ public class TransferController {
     }
 
 
+    /**
+     * 송금 2단계: 금액 입력 및 유효성 검증을 처리합니다.
+     *
+     * @param transferAmountRequest 송금액 정보를 담은 DTO
+     * @return 검증 성공 시 금액 메시지 폼으로 리다이렉트, 실패 시 다시 입력(/amount)폼을 보여줌
+     */
     @PostMapping("/amount")
-    public String processAmountInfo(@Validated @ModelAttribute TransferAmountRequest transferAmountRequest,
-                                    BindingResult bindingResult,
-                                    HttpServletRequest request,
-                                    Model model) {
+    public String processAmountInfo(Model model,
+                                    @SessionAttribute(value = "requestId" , required = false) String requestId,
+                                    @Validated @ModelAttribute TransferAmountRequest transferAmountRequest,
+                                    BindingResult bindingResult) {
 
-        HttpSession session = request.getSession(false);
-        // TransferRequestIdCheckInterceptor 로 유효성 검증함
-        String requestId = (String) session.getAttribute("requestId");
 
         if (bindingResult.hasErrors()) {
             prepareTransferDetailsViewModel(model , requestId);
@@ -113,36 +107,35 @@ public class TransferController {
 
         try{
             transferService.processAmount(requestId, transferAmountRequest);
+            return "redirect:/transfer/message";
         }catch (InsufficientBalanceException e){
             bindingResult.rejectValue("amount", "invalid", "잔액이 부족합니다.");
             prepareTransferDetailsViewModel(model , requestId);
-            return "account/transfer/transfer-amount-form";
         }
 
-        return "redirect:/transfer/message";
+        return "account/transfer/transfer-amount-form";
+
     }
 
     @GetMapping("/message")
-    public String showMessageForm(Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-
-        // TransferRequestIdCheckInterceptor 로 유효성 검증함
-        String requestId = (String) session.getAttribute("requestId");
-
+    public String showMessageForm(Model model,
+                                  @SessionAttribute(value = "requestId" , required = false) String requestId){
         prepareTransferDetailsViewModel(model , requestId);
         return "account/transfer/transfer-message-form";
     }
 
+
+    /**
+     * 송금 3단계: 메시지 입력 및 유효성 검증을 처리합니다.
+     *
+     * @param transferMessageRequest 메시지 정보를 담은 DTO
+     * @return 검증 성공 시 인증 폼으로 리다이렉트, 실패 시 다시 입력(/message)폼을 보여줌
+     */
     @PostMapping("/message")
-    public String processMessageInfo(@Validated @ModelAttribute TransferMessageRequest transferMessageRequest,
+    public String processMessageInfo(@SessionAttribute(value = "requestId" , required = false) String requestId,
+                                     @Validated @ModelAttribute TransferMessageRequest transferMessageRequest,
                                      BindingResult bindingResult,
-                                     HttpServletRequest request,
                                      Model model){
-
-        HttpSession session = request.getSession(false);
-        // TransferRequestIdCheckInterceptor 로 유효성 검증함
-        String requestId = (String) session.getAttribute("requestId");
-
 
         if (bindingResult.hasErrors()) {
             prepareTransferDetailsViewModel(model , requestId);
@@ -150,9 +143,10 @@ public class TransferController {
         }
 
         transferService.processMessage(requestId, transferMessageRequest);
-
         return "redirect:/transfer/auth";
     }
+
+
 
     @GetMapping("auth")
     public String showAuthForm(Model model) {
@@ -160,31 +154,33 @@ public class TransferController {
         return "account/transfer/transfer-auth-form";
     }
 
+
+    /**
+     * 송금 4단계: 비밀번호 확인 및 송금
+     *
+     * @param transferAuthRequest 비밀번호
+     * @return 검증 성공 시 송금 완료 폼으로 리다이렉트, 실패 시 다시 입력(/auth)폼을 보여줌
+     */
     @PostMapping("execute")
-    public String executeTransfer(@Validated @ModelAttribute TransferAuthRequest transferAuthRequest,
-                                  BindingResult bindingResult ,
-                                  HttpServletRequest request,
+    public String executeTransfer(@SessionAttribute(value = "requestId" , required = false) String requestId,
+                                  @Validated @ModelAttribute TransferAuthRequest transferAuthRequest,
+                                  BindingResult bindingResult,
                                   Model model){
 
         if (bindingResult.hasErrors()) {
             return "account/transfer/transfer-auth-form";
         }
 
-        HttpSession session = request.getSession(false);
-
-        // TransferRequestIdCheckInterceptor 로 유효성 검증함
-        String requestId = (String) session.getAttribute("requestId");
 
         try {
             transferService.executeTransfer(requestId, transferAuthRequest);
+            prepareTransferDetailsViewModel(model , requestId);
+            return "account/transfer/transfer-complete-form";
         }catch(IncorrectPasswordException e){
             bindingResult.rejectValue("password", "invalid", "비밀번호가 일치하지 않습니다.");
-            return "account/transfer/transfer-auth-form";
         }
 
-
-        prepareTransferDetailsViewModel(model , requestId);
-        return "account/transfer/transfer-complete-form";
+        return "account/transfer/transfer-auth-form";
 
     }
 
@@ -195,10 +191,17 @@ public class TransferController {
 
 
 
+
+
+
+
+
     private void prepareTransferDetailsViewModel(Model model , String requestId){
         PendingTransferResponse pendingTransferResponse = transferService.getPendingTransferResponse(requestId);
         model.addAttribute("pendingTransferResponse", pendingTransferResponse);
     }
+
+
 
 
 

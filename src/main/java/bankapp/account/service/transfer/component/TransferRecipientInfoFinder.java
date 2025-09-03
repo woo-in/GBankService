@@ -6,9 +6,11 @@ import bankapp.account.model.account.Account;
 import bankapp.account.service.check.AccountCheckService;
 import bankapp.member.exceptions.MemberNotFoundException;
 import bankapp.member.service.check.MemberCheckService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class TransferRecipientInfoFinder {
 

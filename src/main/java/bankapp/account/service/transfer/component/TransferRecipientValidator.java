@@ -9,9 +9,11 @@ import bankapp.account.service.check.AccountCheckService;
 import bankapp.core.util.AccountNumberFormatter;
 import bankapp.member.model.Member;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class TransferRecipientValidator {
 
@@ -44,13 +46,22 @@ public class TransferRecipientValidator {
             throw new SameAccountTransferException("동일한 계좌로는 송금할 수 없습니다.");
         }
 
-        return new ValidationResult(fromAccount, toAccountNumber, toBankCode);
+        return new ValidationResult(fromAccount, toBankCode, toAccountNumber);
     }
 
     @Data
     public static class ValidationResult {
-        private final PrimaryAccount fromAccount;
-        private final String toBankCode;
-        private final String toAccountNumber;
+
+        private PrimaryAccount fromAccount;
+        private String toBankCode;
+        private String toAccountNumber;
+
+        public ValidationResult(PrimaryAccount fromAccount, String toBankCode, String toAccountNumber) {
+            this.fromAccount = fromAccount;
+            this.toBankCode = toBankCode;
+            this.toAccountNumber = toAccountNumber;
+        }
+
+        //public ValidationResult() {}
     }
 }

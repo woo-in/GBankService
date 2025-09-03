@@ -218,7 +218,7 @@ class DefaultTransferServiceTest {
         }
     }
 
-    
+
     @Nested
     @DisplayName("송금 실행 (executeTransfer)")
     class ExecuteTransferTests {

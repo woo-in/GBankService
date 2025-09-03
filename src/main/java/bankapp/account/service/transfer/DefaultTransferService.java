@@ -81,6 +81,10 @@ public class DefaultTransferService implements TransferService {
 
         TransferRecipientValidator.ValidationResult validationResult = transferRecipientValidator.validate(transferRecipientRequest, loginMember);
 
+        // TODO : 왜 값이 바뀌는지 ?
+        log.info(validationResult.getToAccountNumber());
+        log.info(validationResult.getToBankCode());
+
         String recipientName = transferRecipientInfoFinder.findRecipientName(validationResult.getToAccountNumber());
 
         PendingTransfer pendingTransfer = initializePendingTransfer(validationResult ,recipientName);
