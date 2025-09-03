@@ -1,321 +1,384 @@
-//package bankapp.account.service.transfer;
-//
-//import bankapp.account.dao.transfer.PendingTransferDao;
-//import bankapp.account.exceptions.*;
-//import bankapp.account.model.account.PrimaryAccount;
-//import bankapp.account.model.transfer.PendingTransfer;
-//import bankapp.account.model.transfer.TransferStatus;
-//import bankapp.account.request.transfer.TransferAmountRequest;
-//import bankapp.account.request.transfer.TransferRecipientRequest;
-//import bankapp.account.response.transfer.PendingTransferResponse;
-//import bankapp.account.service.check.AccountCheckService;
-//import bankapp.core.util.AccountNumberFormatter;
-//import bankapp.member.exceptions.MemberNotFoundException;
-//import bankapp.member.model.Member;
-//import bankapp.member.service.check.MemberCheckService;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Nested;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.ArgumentCaptor;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//
-//import java.math.BigDecimal;
-//import java.time.LocalDateTime;
-//import java.util.Optional;
-//import java.util.UUID;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.ArgumentMatchers.anyString;
-//import static org.mockito.BDDMockito.given;
-//import static org.mockito.Mockito.*;
-//
-//@ExtendWith(MockitoExtension.class)
-//@DisplayName("DefaultTransferService 단위 테스트")
-//class DefaultTransferServiceTest {
-//
-//    @Mock
-//    private PendingTransferDao pendingTransferDao;
-//    @Mock
-//    private AccountCheckService accountCheckService;
-//    @Mock
-//    private MemberCheckService memberCheckService;
-//
-//    // expirationMinutes는 10분으로 고정하여 테스트
-//    private final long expirationMinutes = 10L;
-//
-//    private DefaultTransferService transferService;
-//
-//    // 테스트 실행 전 @Value 값을 수동으로 주입
-//    @BeforeEach
-//    void setUp() {
-//        transferService = new DefaultTransferService(pendingTransferDao, accountCheckService, memberCheckService, expirationMinutes);
-//    }
-//
-//    // 테스트에 사용될 공통 객체들
-//    private Member loginMember;
-//    private PrimaryAccount senderAccount;
-//    private PrimaryAccount recipientAccount;
-//    private Member recipientMember;
-//    private TransferRecipientRequest recipientRequest;
-//
-//    @BeforeEach
-//    void commonSetup() {
-//        loginMember = new Member();
-//        loginMember.setMemberId(1L);
-//        loginMember.setName("김송금");
-//
-//        senderAccount = new PrimaryAccount();
-//        senderAccount.setAccountId(10L);
-//        senderAccount.setMemberId(1L);
-//        senderAccount.setAccountNumber("111-111-1111");
-//        senderAccount.setBalance(BigDecimal.valueOf(100000));
-//
-//        recipientAccount = new PrimaryAccount();
-//        recipientAccount.setAccountNumber("222-222-2222");
-//
-//        recipientMember = new Member();
-//        recipientMember.setName("이수취");
-//
-//        recipientRequest = new TransferRecipientRequest();
-//        recipientRequest.setToBankCode("088");
-//        recipientRequest.setToAccountNumber("2222222222");
-//
-//    }
-//
-//    @Nested
-//    @DisplayName("processRecipient: 수취인 정보 처리")
-//    class ProcessRecipientTest {
-//
-//        @Test
-//        @DisplayName("성공: 모든 검증을 통과하고 PendingTransfer 객체를 생성한 뒤 requestId를 반환한다")
-//        void shouldSucceedAndReturnRequestId() throws Exception {
-//            // given
-//            String formattedAccountNumber = AccountNumberFormatter.format(recipientRequest.getToAccountNumber());
-//            given(accountCheckService.isExternalBank(recipientRequest.getToBankCode())).willReturn(false);
-//            given(accountCheckService.isAccountNumberExist(formattedAccountNumber)).willReturn(true);
-//            given(accountCheckService.findPrimaryAccountByMemberId(loginMember.getMemberId())).willReturn(senderAccount);
-//            given(accountCheckService.findAccountByAccountNumber(formattedAccountNumber)).willReturn(recipientAccount);
-//            given(memberCheckService.findMemberByAccount(recipientAccount)).willReturn(recipientMember);
-//
-//            PendingTransfer pendingTransfer = new PendingTransfer();
-//            String expectedRequestId = UUID.randomUUID().toString();
-//            pendingTransfer.setRequestId(expectedRequestId);
-//            given(pendingTransferDao.init(any(PendingTransfer.class))).willReturn(pendingTransfer);
-//
-//            // when
-//            String requestId = transferService.processRecipient(recipientRequest, loginMember);
-//
-//            // then
-//            assertThat(requestId).isEqualTo(expectedRequestId);
-//
-//            // pendingTransferDao.init()에 전달된 PendingTransfer 객체를 캡처하여 검증
-//            ArgumentCaptor<PendingTransfer> captor = ArgumentCaptor.forClass(PendingTransfer.class);
-//            verify(pendingTransferDao).init(captor.capture());
-//            PendingTransfer captured = captor.getValue();
-//
-//            assertThat(captured.getSenderAccountId()).isEqualTo(senderAccount.getAccountId());
-//            assertThat(captured.getSenderMemberId()).isEqualTo(loginMember.getMemberId());
-//            assertThat(captured.getReceiverAccountNumber()).isEqualTo(formattedAccountNumber);
-//            assertThat(captured.getReceiverName()).isEqualTo(recipientMember.getName());
-//            assertThat(captured.getStatus()).isEqualTo(TransferStatus.PENDING_AMOUNT);
-//            assertThat(captured.getExpiresAt()).isAfter(LocalDateTime.now());
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 타행 이체는 ExternalTransferNotSupportedException 예외를 던진다")
-//        void shouldThrow_ExternalTransferNotSupportedException_ForExternalBank() {
-//            // given
-//            given(accountCheckService.isExternalBank(recipientRequest.getToBankCode())).willReturn(true);
-//
-//            // when & then
-//            assertThrows(ExternalTransferNotSupportedException.class,
-//                    () -> transferService.processRecipient(recipientRequest, loginMember));
-//            verify(pendingTransferDao, never()).init(any());
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 수취인 계좌가 존재하지 않으면 RecipientAccountNotFoundException 예외를 던진다")
-//        void shouldThrow_RecipientAccountNotFoundException_WhenAccountNotExist() {
-//            // given
-//            String formattedAccountNumber = AccountNumberFormatter.format(recipientRequest.getToAccountNumber());
-//            given(accountCheckService.isExternalBank(recipientRequest.getToBankCode())).willReturn(false);
-//            given(accountCheckService.isAccountNumberExist(formattedAccountNumber)).willReturn(false);
-//
-//            // when & then
-//            assertThrows(RecipientAccountNotFoundException.class,
-//                    () -> transferService.processRecipient(recipientRequest, loginMember));
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 보내는 계좌와 받는 계좌가 동일하면 SameAccountTransferException 예외를 던진다")
-//        void shouldThrow_SameAccountTransferException_ForSameAccount() throws PrimaryAccountNotFoundException {
-//            // given
-//            recipientRequest.setToAccountNumber("1111111111"); // 보내는 사람 계좌와 동일하게 설정
-//            String formattedAccountNumber = AccountNumberFormatter.format(recipientRequest.getToAccountNumber());
-//            given(accountCheckService.isExternalBank(recipientRequest.getToBankCode())).willReturn(false);
-//            given(accountCheckService.isAccountNumberExist(formattedAccountNumber)).willReturn(true);
-//            given(accountCheckService.findPrimaryAccountByMemberId(loginMember.getMemberId())).willReturn(senderAccount);
-//
-//            // when & then
-//            // 문제 : 계좌가 동일해도 넘어감.
-//            assertThrows(SameAccountTransferException.class,
-//                    () -> transferService.processRecipient(recipientRequest, loginMember));
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 수취인 계좌에 해당하는 멤버를 찾지 못하면 RecipientAccountNotFoundException 예외를 던진다")
-//        void shouldThrow_RecipientAccountNotFoundException_WhenMemberNotFound() throws Exception {
-//            // given
-//            String formattedAccountNumber = AccountNumberFormatter.format(recipientRequest.getToAccountNumber());
-//            given(accountCheckService.isExternalBank(recipientRequest.getToBankCode())).willReturn(false);
-//            given(accountCheckService.isAccountNumberExist(formattedAccountNumber)).willReturn(true);
-//            given(accountCheckService.findPrimaryAccountByMemberId(loginMember.getMemberId())).willReturn(senderAccount);
-//            given(accountCheckService.findAccountByAccountNumber(formattedAccountNumber)).willReturn(recipientAccount);
-//            given(memberCheckService.findMemberByAccount(recipientAccount)).willThrow(MemberNotFoundException.class); // 멤버를 못 찾는 상황
-//
-//            // when & then
-//            assertThrows(RecipientAccountNotFoundException.class,
-//                    () -> transferService.processRecipient(recipientRequest, loginMember));
-//        }
-//    }
-//
-//    @Nested
-//    @DisplayName("getPendingTransferResponse: 송금 정보 조회")
-//    class GetPendingTransferResponseTest {
-//
-//        @Test
-//        @DisplayName("성공: 유효한 requestId로 송금 정보를 조회하고 DTO로 변환하여 반환한다")
-//        void shouldReturnPendingTransferResponse() throws Exception {
-//            // given
-//            String requestId = UUID.randomUUID().toString();
-//            PendingTransfer pendingTransfer = new PendingTransfer();
-//            pendingTransfer.setSenderAccountId(senderAccount.getAccountId());
-//            pendingTransfer.setReceiverName("이수취");
-//            pendingTransfer.setReceiverBankName("신한은행");
-//            pendingTransfer.setReceiverAccountNumber("222-222-2222");
-//
-//            given(pendingTransferDao.findById(requestId)).willReturn(Optional.of(pendingTransfer));
-//            given(accountCheckService.findPrimaryAccountByAccountId(senderAccount.getAccountId())).willReturn(senderAccount);
-//
-//            // when
-//            PendingTransferResponse response = transferService.getPendingTransferResponse(requestId);
-//
-//            // then
-//            assertThat(response.getSenderAccountNumber()).isEqualTo(senderAccount.getAccountNumber());
-//            assertThat(response.getReceiverName()).isEqualTo(pendingTransfer.getReceiverName());
-//            assertThat(response.getReceiverBankName()).isEqualTo(pendingTransfer.getReceiverBankName());
-//            assertThat(response.getReceiverAccountNumber()).isEqualTo(pendingTransfer.getReceiverAccountNumber());
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 존재하지 않는 requestId로 조회 시 PendingTransferNotFoundException 예외를 던진다")
-//        void shouldThrow_PendingTransferNotFoundException_WhenRequestIdNotExist() {
-//            // given
-//            String invalidRequestId = "invalid-id";
-//            given(pendingTransferDao.findById(invalidRequestId)).willReturn(Optional.empty());
-//
-//            // when & then
-//            assertThrows(PendingTransferNotFoundException.class,
-//                    () -> transferService.getPendingTransferResponse(invalidRequestId));
-//        }
-//    }
-//
-//    @Nested
-//    @DisplayName("processAmount: 송금 금액 처리")
-//    class ProcessAmountTest {
-//
-//        private String requestId;
-//        private TransferAmountRequest amountRequest;
-//        private PendingTransfer pendingTransfer;
-//
-//        @BeforeEach
-//        void setup() {
-//            requestId = UUID.randomUUID().toString();
-//            amountRequest = new TransferAmountRequest();
-//            amountRequest.setAmount(BigDecimal.valueOf(50000));
-//
-//            pendingTransfer = new PendingTransfer();
-//            pendingTransfer.setRequestId(requestId);
-//            pendingTransfer.setSenderAccountId(senderAccount.getAccountId());
-//            pendingTransfer.setStatus(TransferStatus.PENDING_AMOUNT); // 금액 입력 단계
-//        }
-//
-//        @Test
-//        @DisplayName("성공: 잔액이 충분하고 모든 조건이 맞으면 PendingTransfer의 금액과 상태를 업데이트한다")
-//        void shouldUpdateAmountAndStatusOnSuccess() throws Exception {
-//            // given
-//            senderAccount.setBalance(BigDecimal.valueOf(100000)); // 충분한 잔액
-//            given(pendingTransferDao.findById(requestId)).willReturn(Optional.of(pendingTransfer));
-//            given(accountCheckService.findPrimaryAccountByAccountId(senderAccount.getAccountId())).willReturn(senderAccount);
-//
-//            // when
-//            transferService.processAmount(requestId, amountRequest);
-//
-//            // then
-//            ArgumentCaptor<PendingTransfer> captor = ArgumentCaptor.forClass(PendingTransfer.class);
-//            verify(pendingTransferDao).update(captor.capture());
-//            PendingTransfer updated = captor.getValue();
-//
-//            assertThat(updated.getAmount()).isEqualTo(amountRequest.getAmount());
-//            assertThat(updated.getStatus()).isEqualTo(TransferStatus.PENDING_AUTH);
-//            assertThat(updated.getUpdatedAt()).isNotNull();
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 송금액이 0 이하면 InvalidAmountException 예외를 던진다")
-//        void shouldThrow_InvalidAmountException_ForZeroOrLessAmount() {
-//            // given
-//            amountRequest.setAmount(BigDecimal.ZERO);
-//
-//            // when & then
-//            assertThrows(InvalidAmountException.class,
-//                    () -> transferService.processAmount(requestId, amountRequest));
-//            verify(pendingTransferDao, never()).update(any());
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 현재 송금 단계가 PENDING_AMOUNT가 아니면 IllegalTransferStateException 예외를 던진다")
-//        void shouldThrow_IllegalTransferStateException_WhenStatusIsNotPendingAmount() {
-//            // given
-//            pendingTransfer.setStatus(TransferStatus.PENDING_AUTH); // 이미 금액 입력 단계가 아님
-//            given(pendingTransferDao.findById(requestId)).willReturn(Optional.of(pendingTransfer));
-//
-//            // when & then
-//            assertThrows(IllegalTransferStateException.class,
-//                    () -> transferService.processAmount(requestId, amountRequest));
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 출금 계좌의 잔액이 부족하면 InsufficientBalanceException 예외를 던진다")
-//        void shouldThrow_InsufficientBalanceException_WhenBalanceIsLow() throws PrimaryAccountNotFoundException {
-//            // given
-//            senderAccount.setBalance(BigDecimal.valueOf(40000)); // 잔액 부족
-//            given(pendingTransferDao.findById(requestId)).willReturn(Optional.of(pendingTransfer));
-//            given(accountCheckService.findPrimaryAccountByAccountId(senderAccount.getAccountId())).willReturn(senderAccount);
-//
-//            // when & then
-//            assertThrows(InsufficientBalanceException.class,
-//                    () -> transferService.processAmount(requestId, amountRequest));
-//        }
-//
-//        @Test
-//        @DisplayName("실패: 송금자의 주계좌를 찾을 수 없는 데이터 정합성 오류 시 IllegalStateException 예외를 던진다")
-//        void shouldThrow_IllegalStateException_WhenPrimaryAccountIsMissing() throws PrimaryAccountNotFoundException {
-//            // given
-//            given(pendingTransferDao.findById(requestId)).willReturn(Optional.of(pendingTransfer));
-//            // 주계좌를 찾을 수 없는 심각한 내부 오류 상황을 가정
-//            given(accountCheckService.findPrimaryAccountByAccountId(senderAccount.getAccountId()))
-//                    .willThrow(PrimaryAccountNotFoundException.class);
-//
-//            // when & then
-//            assertThrows(IllegalStateException.class,
-//                    () -> transferService.processAmount(requestId, amountRequest));
-//        }
-//    }
-//}
+package bankapp.account.service.transfer;
+
+import bankapp.account.dao.transfer.PendingTransferDao;
+import bankapp.account.exceptions.IllegalTransferStateException;
+import bankapp.account.exceptions.PendingTransferNotFoundException;
+import bankapp.account.exceptions.SameAccountTransferException;
+import bankapp.account.model.account.PrimaryAccount;
+import bankapp.account.model.transfer.PendingTransfer;
+import bankapp.account.model.transfer.TransferStatus;
+import bankapp.account.request.account.AccountTransactionRequest;
+import bankapp.account.request.transfer.TransferAuthRequest;
+import bankapp.account.request.transfer.TransferRecipientRequest;
+import bankapp.account.response.transfer.PendingTransferResponse;
+import bankapp.account.service.account.AccountService;
+import bankapp.account.service.check.AccountCheckService;
+import bankapp.account.service.transfer.component.*;
+import bankapp.core.util.BankNameConverter;
+import bankapp.member.exceptions.IncorrectPasswordException;
+import bankapp.member.model.Member;
+import bankapp.member.service.check.MemberCheckService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.math.BigDecimal;
+
+import static bankapp.account.model.transfer.TransferStatus.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class DefaultTransferServiceTest {
+
+    // 테스트 대상
+    private DefaultTransferService transferService;
+
+    // Mock 객체들
+    @Mock private PendingTransferDao pendingTransferDao;
+    @Mock private AccountService accountService;
+    @Mock private AccountCheckService accountCheckService;
+    @Mock private MemberCheckService memberCheckService;
+    @Mock private PasswordEncoder passwordEncoder;
+    @Mock private TransferRecipientValidator transferRecipientValidator;
+    @Mock private TransferRecipientInfoFinder transferRecipientInfoFinder;
+    @Mock private TransferAmountValidator transferAmountValidator;
+    @Mock private TransferMessageValidator transferMessageValidator;
+    @Mock private TransferAuthValidator transferAuthValidator;
+
+    // 테스트에 사용될 Mock 객체들
+    @Mock private Member loginMember;
+    @Mock private PrimaryAccount fromAccount;
+
+    @BeforeEach
+    void setUp() {
+        // @InjectMocks 대신 수동 주입 방식을 사용하므로 그대로 둡니다.
+        transferService = new DefaultTransferService(
+                pendingTransferDao, accountService, accountCheckService, memberCheckService,
+                passwordEncoder, transferRecipientValidator, transferRecipientInfoFinder,
+                transferAmountValidator, transferMessageValidator, transferAuthValidator,
+                10L // expirationMinutes
+        );
+
+    }
+
+    @Nested
+    @DisplayName("수취인 정보 처리 (processRecipient)")
+    class ProcessRecipientTests {
+        @Test
+        @DisplayName("성공: 모든 검증 통과 시 requestId 반환 및 상태 변경")
+        void success_WhenAllConditionsMet_ReturnsRequestIdAndChangesStatus()  {
+            // --- Arrange (준비) ---
+            String toBankCode = "088";
+            String toAccountNumber = "110-456-789012";
+            long senderAccountId = 1L;
+            String recipientName = "김받는";
+            String expectedRequestId = "test-request-id-12345";
+
+            TransferRecipientRequest request = new TransferRecipientRequest(toBankCode, toAccountNumber);
+
+            // fromAccount Mock 객체가 getAccountId() 호출 시 senderAccountId를 반환하도록 설정
+            when(fromAccount.getAccountId()).thenReturn(senderAccountId);
+
+            // ValidationResult는 실제 객체로 생성해도 무방합니다. (데이터 전달용 객체)
+            TransferRecipientValidator.ValidationResult validationResult = new TransferRecipientValidator.ValidationResult(fromAccount, toBankCode, toAccountNumber);
+
+            // Mock 객체들의 행동 정의
+            when(transferRecipientValidator.validate(request, loginMember)).thenReturn(validationResult);
+            when(transferRecipientInfoFinder.findRecipientName(toAccountNumber)).thenReturn(recipientName);
+
+            PendingTransfer initializedTransfer = new PendingTransfer();
+            initializedTransfer.setRequestId(expectedRequestId);
+            when(pendingTransferDao.init(any(PendingTransfer.class))).thenReturn(initializedTransfer);
+
+            // --- Act (실행) ---
+            String actualRequestId = transferService.processRecipient(request, loginMember);
+
+            // --- Assert (검증) ---
+            assertThat(actualRequestId).isEqualTo(expectedRequestId);
+
+            ArgumentCaptor<PendingTransfer> captor = ArgumentCaptor.forClass(PendingTransfer.class);
+            verify(pendingTransferDao, times(1)).init(captor.capture());
+            PendingTransfer capturedTransfer = captor.getValue();
+
+            assertThat(capturedTransfer.getStatus()).isEqualTo(TransferStatus.PENDING_AMOUNT);
+            assertThat(capturedTransfer.getSenderAccountId()).isEqualTo(senderAccountId);
+            assertThat(capturedTransfer.getReceiverAccountNumber()).isEqualTo(toAccountNumber);
+            assertThat(capturedTransfer.getReceiverName()).isEqualTo(recipientName);
+            assertThat(capturedTransfer.getReceiverBankName()).isEqualTo(BankNameConverter.getBankNameByCode(toBankCode));
+
+            verify(transferRecipientValidator, times(1)).validate(request, loginMember);
+            verify(transferRecipientInfoFinder, times(1)).findRecipientName(toAccountNumber);
+        }
+
+        @Test
+        @DisplayName("실패: 송금 계좌와 수취 계좌가 동일하면 SameAccountTransferException 발생")
+        void throwsException_WhenSenderAndRecipientAccountsAreSame()   {
+            // --- Arrange (준비) ---
+            // 1. 테스트에 사용할 임의의 입력 데이터
+            String sameAccountNumber = "110-110-110110";
+            TransferRecipientRequest request = new TransferRecipientRequest("088", sameAccountNumber);
+
+            // 2. Validator가 특정 예외를 던지도록 설정
+            // validate 메소드가 호출되면 SameAccountTransferException을 발생시키도록 설정합니다.
+            String expectedErrorMessage = "자기 자신에게 송금할 수 없습니다.";
+            doThrow(new SameAccountTransferException(expectedErrorMessage))
+                    .when(transferRecipientValidator).validate(any(TransferRecipientRequest.class), any(Member.class));
+
+
+            // --- Act & Assert (실행 및 검증) ---
+            // processRecipient 메소드를 실행했을 때 특정 예외가 발생하는지 검증합니다.
+            assertThatThrownBy(() -> transferService.processRecipient(request, loginMember))
+                    .isInstanceOf(SameAccountTransferException.class) // 예외 타입 검증
+                    .hasMessage(expectedErrorMessage); // 예외 메시지 검증
+
+
+            // --- Verify (추가 검증) ---
+            // 예외가 발생했으므로, 수취인 이름을 찾거나 DB에 저장하는 로직은 호출되지 않았어야 합니다.
+            verify(transferRecipientInfoFinder, never()).findRecipientName(anyString());
+            verify(pendingTransferDao, never()).init(any(PendingTransfer.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("진행중인 송금 정보 조회 (getPendingTransferResponse)")
+    class GetPendingTransferResponseTests {
+
+        @Test
+        @DisplayName("성공: 유효한 requestId로 조회 시 올바른 송금 정보 응답 반환")
+        void success_WhenPendingTransferExists_ReturnsCorrectResponse()   {
+            // --- Arrange (준비) ---
+            // 1. 테스트에 사용할 데이터와 Mock 객체 준비
+            String requestId = "test-request-id";
+            long senderAccountId = 1L;
+
+            PendingTransfer mockPendingTransfer = new PendingTransfer();
+            mockPendingTransfer.setRequestId(requestId);
+            mockPendingTransfer.setSenderAccountId(senderAccountId);
+            mockPendingTransfer.setReceiverAccountNumber("110-456-789012");
+            mockPendingTransfer.setReceiverName("김받는");
+            mockPendingTransfer.setAmount(new BigDecimal("50000"));
+            mockPendingTransfer.setMessage("생일 축하해");
+            mockPendingTransfer.setStatus(PENDING_AUTH);
+
+            PrimaryAccount mockSenderAccount = new PrimaryAccount();
+            mockSenderAccount.setAccountNumber("110-123-456789");
+
+            // 2. Mock 객체들의 행동 정의
+            // DAO가 Optional<PendingTransfer>를 반환하도록 설정
+            when(pendingTransferDao.findById(requestId)).thenReturn(java.util.Optional.of(mockPendingTransfer));
+            // AccountCheckService가 PrimaryAccount를 반환하도록 설정
+            when(accountCheckService.findPrimaryAccountByAccountId(senderAccountId)).thenReturn(mockSenderAccount);
+
+            // --- Act (실행) ---
+            // 테스트 대상 메소드 호출
+            PendingTransferResponse response = transferService.getPendingTransferResponse(requestId);
+
+            // --- Assert (검증) ---
+            // 1. 반환된 DTO가 null이 아닌지 확인
+            assertThat(response).isNotNull();
+
+            // 2. DTO의 각 필드가 Mock 객체의 데이터와 일치하는지 검증
+
+            assertThat(response.getSenderAccountNumber()).isEqualTo(mockSenderAccount.getAccountNumber());
+            assertThat(response.getReceiverAccountNumber()).isEqualTo(mockPendingTransfer.getReceiverAccountNumber());
+            assertThat(response.getReceiverName()).isEqualTo(mockPendingTransfer.getReceiverName());
+            assertThat(response.getAmount()).isEqualTo(mockPendingTransfer.getAmount());
+            assertThat(response.getMessage()).isEqualTo(mockPendingTransfer.getMessage());
+
+            // 3. 의존하는 Mock 객체들의 메소드가 정확히 1번씩 호출되었는지 검증
+            verify(pendingTransferDao, times(1)).findById(requestId);
+            verify(accountCheckService, times(1)).findPrimaryAccountByAccountId(senderAccountId);
+        }
+
+        @Test
+        @DisplayName("실패: 존재하지 않는 requestId로 조회 시 PendingTransferNotFoundException 발생")
+        void throwsException_WhenRequestIdNotFound() {
+            // --- Arrange (준비) ---
+            String invalidRequestId = "invalid-id";
+            // DAO가 빈 Optional을 반환하도록 설정
+            when(pendingTransferDao.findById(invalidRequestId)).thenReturn(java.util.Optional.empty());
+
+            // --- Act & Assert (실행 및 검증) ---
+            assertThatThrownBy(() -> transferService.getPendingTransferResponse(invalidRequestId))
+                    .isInstanceOf(PendingTransferNotFoundException.class);
+
+            // --- Verify (추가 검증) ---
+            // PendingTransfer를 찾지 못했으므로, accountCheckService는 호출되지 않았어야 함
+            verify(accountCheckService, never()).findPrimaryAccountByAccountId(anyLong());
+        }
+    }
+
+    
+    @Nested
+    @DisplayName("송금 실행 (executeTransfer)")
+    class ExecuteTransferTests {
+
+        @Test
+        @DisplayName("실패: 송금 상태가 PENDING_AUTH가 아니면 IllegalTransferStateException 발생")
+        void throwsException_WhenStatusIsNotPendingAuth() {
+            // --- Arrange (준비) ---
+            String requestId = "test-request-id";
+            TransferAuthRequest authRequest = new TransferAuthRequest("any-password");
+
+            // 1. Validator가 IllegalTransferStateException을 던지도록 설정
+            // 이 테스트의 핵심: validate 단계에서 예외가 발생하는 상황을 시뮬레이션합니다.
+            String expectedErrorMessage = "송금 인증 단계가 아닙니다.";
+            when(transferAuthValidator.validate(requestId))
+                    .thenThrow(new IllegalTransferStateException(expectedErrorMessage));
+
+            // --- Act & Assert (실행 및 검증) ---
+            // executeTransfer 메소드 실행 시 예상된 예외가 발생하는지 검증합니다.
+            assertThatThrownBy(() -> transferService.executeTransfer(requestId, authRequest))
+                    .isInstanceOf(IllegalTransferStateException.class)
+                    .hasMessage(expectedErrorMessage);
+
+            // --- Verify (추가 검증) ---
+            // 2. 예외가 발생했으므로, 이후의 어떤 로직도 실행되지 않았음을 검증합니다.
+            // private 메소드는 직접 검증할 수 없으므로, private 메소드 내부에서 호출하는
+            // public 메소드들이 호출되지 않았음을 확인하여 간접적으로 검증합니다.
+
+            // verifyMemberPassword() 관련 로직 미호출 검증
+            verify(memberCheckService, never()).findMemberByAccount(any());
+            verify(passwordEncoder, never()).matches(anyString(), anyString());
+
+            // debitFromSender() 및 creditToReceiver() 관련 로-직 미호출 검증
+            verify(accountService, never()).debit(any());
+            verify(accountService, never()).credit(any());
+
+            // recordTransferCompletion() 관련 로직 미호출 검증
+            verify(pendingTransferDao, never()).update(any(PendingTransfer.class));
+        }
+
+        @Test
+        @DisplayName("실패: 비밀번호가 일치하지 않으면 IncorrectPasswordException 발생")
+        void throwsException_WhenPasswordIsInvalid() {
+            // --- Arrange (준비) ---
+            String requestId = "test-request-id-auth-step";
+            String wrongPassword = "wrong-password";
+            String encodedPasswordFromDB = "encoded-password-from-db";
+
+            TransferAuthRequest authRequest = new TransferAuthRequest(wrongPassword);
+
+            // 1. 테스트에 사용할 Mock 객체들 준비
+            PendingTransfer mockPendingTransfer = new PendingTransfer();
+            mockPendingTransfer.setSenderAccountId(1L);
+
+            PrimaryAccount mockSenderAccount = new PrimaryAccount();
+            Member mockSenderMember = new Member();
+            mockSenderMember.setPassword(encodedPasswordFromDB);
+
+            // 2. Mock 객체들의 행동 정의
+            // Validator는 통과했다고 가정
+            when(transferAuthValidator.validate(requestId)).thenReturn(mockPendingTransfer);
+
+            // 비밀번호 검증에 필요한 Member 객체를 찾을 수 있도록 설정
+            when(accountCheckService.findPrimaryAccountByAccountId(anyLong())).thenReturn(mockSenderAccount);
+            when(memberCheckService.findMemberByAccount(mockSenderAccount)).thenReturn(mockSenderMember);
+
+            // ⭐️ 이 테스트의 핵심: passwordEncoder가 비밀번호 불일치(false)를 반환하도록 설정
+            when(passwordEncoder.matches(wrongPassword, encodedPasswordFromDB)).thenReturn(false);
+
+
+            // --- Act & Assert (실행 및 검증) ---
+            // executeTransfer 실행 시 IncorrectPasswordException이 발생하는지 검증
+            assertThatThrownBy(() -> transferService.executeTransfer(requestId, authRequest))
+                    .isInstanceOf(IncorrectPasswordException.class)
+                    .hasMessage("비밀번호가 일치하지 않습니다.");
+
+
+            // --- Verify (추가 검증) ---
+            // 비밀번호 검증에 실패했으므로, 실제 이체 로직은 호출되지 않았음을 검증
+            verify(accountService, never()).debit(any());
+            verify(accountService, never()).credit(any());
+            verify(pendingTransferDao, never()).update(any(PendingTransfer.class));
+        }
+
+        @Test
+        @DisplayName("성공: 모든 검증 통과 시 송금을 완료하고 상태를 COMPLETED로 변경")
+        void success_WhenAllStepsAreValid_CompletesTransfer() {
+            // --- Arrange (준비) ---
+            String requestId = "test-request-id-success";
+            String correctPassword = "correct-password";
+            long senderAccountId = 1L;
+            long receiverAccountId = 2L;
+            long senderLedgerId = 101L;
+            long receiverLedgerId = 102L;
+
+            TransferAuthRequest authRequest = new TransferAuthRequest(correctPassword);
+
+            // 1. Mock 객체 데이터 준비
+            PendingTransfer mockPendingTransfer = new PendingTransfer();
+            mockPendingTransfer.setSenderAccountId(senderAccountId);
+            mockPendingTransfer.setReceiverAccountNumber("110-987-654321");
+            mockPendingTransfer.setAmount(new BigDecimal("10000"));
+            // debit/credit 내부에서 상태를 한번 더 체크하므로, 상태를 PENDING_TRANSFER로 미리 설정
+            mockPendingTransfer.setStatus(PENDING_TRANSFER);
+
+            PrimaryAccount mockSenderAccount = new PrimaryAccount();
+            PrimaryAccount mockReceiverAccount = new PrimaryAccount();
+            mockReceiverAccount.setAccountId(receiverAccountId);
+            Member mockSenderMember = new Member();
+            mockSenderMember.setPassword("encoded-password");
+
+            // 2. Mock 객체들의 행동을 순서대로 정의
+            // (1) 인증 검증 통과
+            when(transferAuthValidator.validate(requestId)).thenReturn(mockPendingTransfer);
+            // (2) 비밀번호 검증 통과
+            when(accountCheckService.findPrimaryAccountByAccountId(senderAccountId)).thenReturn(mockSenderAccount);
+            when(memberCheckService.findMemberByAccount(mockSenderAccount)).thenReturn(mockSenderMember);
+            when(passwordEncoder.matches(correctPassword, "encoded-password")).thenReturn(true);
+            // (3) 출금 성공
+            when(accountService.debit(any(AccountTransactionRequest.class))).thenReturn(senderLedgerId);
+            // (4) 입금 성공
+            when(accountCheckService.findAccountByAccountNumber(mockPendingTransfer.getReceiverAccountNumber())).thenReturn(mockReceiverAccount);
+            when(accountService.credit(any(AccountTransactionRequest.class))).thenReturn(receiverLedgerId);
+
+
+            // --- Act (실행) ---
+            // 예외가 발생하지 않아야 하므로 assertDoesNotThrow 사용
+            assertDoesNotThrow(() -> transferService.executeTransfer(requestId, authRequest));
+
+
+            // --- Verify (검증) ---
+            // 1. 최종적으로 DB에 업데이트되는 PendingTransfer 객체를 캡처
+            ArgumentCaptor<PendingTransfer> captor = ArgumentCaptor.forClass(PendingTransfer.class);
+            // verifyMemberPassword와 recordTransferCompletion에서 총 2번 호출됨
+            verify(pendingTransferDao, times(2)).update(captor.capture());
+
+            // 2. 캡처된 마지막 객체(recordTransferCompletion에서 넘어온)의 상태를 검증
+            PendingTransfer finalTransferState = captor.getValue();
+            assertThat(finalTransferState.getStatus()).isEqualTo(COMPLETED);
+            assertThat(finalTransferState.getSenderLedgerId()).isEqualTo(senderLedgerId);
+            assertThat(finalTransferState.getReceiverLedgerId()).isEqualTo(receiverLedgerId);
+
+            // 3. 주요 서비스들이 정확히 한 번씩 호출되었는지 검증
+            verify(passwordEncoder, times(1)).matches(anyString(), anyString());
+            verify(accountService, times(1)).debit(any(AccountTransactionRequest.class));
+            verify(accountService, times(1)).credit(any(AccountTransactionRequest.class));
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+}

@@ -3,6 +3,7 @@ package bankapp.account.model.account;
 
 import bankapp.account.request.open.OpenPrimaryAccountRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class PrimaryAccount extends Account {
 
     public PrimaryAccount() {
@@ -20,7 +22,7 @@ public class PrimaryAccount extends Account {
         this.memberId = memberId;
         this.accountNumber = accountNumber;
         this.balance = balance;
-        this.accountType = "PRIMARY";
+        this.accountType = accountType;
         this.nickname = nickname;
         this.createdAt = createdAt;
     }

@@ -13,8 +13,6 @@ import bankapp.member.model.Member;
 
 public interface TransferService {
 
-    // TODO : 트랜잭션 단위 인터페이스에 설명
-
     /**
      * 송금 절차의 첫 단계를 처리하고, 임시 송금 요청을 생성합니다.
      * <p>

@@ -15,6 +15,14 @@ public class TransferRecipientRequest {
             message = "계좌번호는 10,11,12,14,15 자리 숫자여야 합니다."
     )
     private String toAccountNumber;
+
+
+    public TransferRecipientRequest(String toBankCode, String toAccountNumber) {
+        this.toBankCode = toBankCode;
+        this.toAccountNumber = toAccountNumber;
+    }
+
+    public TransferRecipientRequest() {}
 }
 
 
