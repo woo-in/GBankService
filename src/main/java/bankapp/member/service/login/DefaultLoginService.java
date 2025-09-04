@@ -5,6 +5,7 @@ import bankapp.member.exceptions.IncorrectPasswordException;
 import bankapp.member.exceptions.UsernameNotFoundException;
 import bankapp.member.model.Member;
 import bankapp.member.request.login.LoginRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 로그인 로직을 수행합니다.
  */
 
+@Slf4j
 @Service
 public class DefaultLoginService implements LoginService{
 
@@ -33,6 +35,7 @@ public class DefaultLoginService implements LoginService{
     @Override
     @Transactional(readOnly = true)
     public Member login(LoginRequest loginRequest) throws UsernameNotFoundException, IncorrectPasswordException{
+
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
@@ -44,6 +47,7 @@ public class DefaultLoginService implements LoginService{
         }
 
         return member;
+
     }
 
 }

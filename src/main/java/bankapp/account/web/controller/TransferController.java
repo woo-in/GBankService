@@ -19,6 +19,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+// TODO : SpringSecurity 배우고 해결해야 할 문제
+// 주어진 경로를 이용하지 않고 URL 로 바로 요청해도 가진다.
+// new(get) -> new(post) ->  amount(get) -> amount(post)
+// -> message(get) -> message(post) -> auth(get) -> execute(post)
+
+// amount(get) ~ execute(post) : RequestId 있어야 이동가능
+// 반대로 말하면 , new(post) 이후 , request id 만 있다면 어디로든 이동은 가능
+// 물론 가져도 DB 에서 상태 체크해서 거부 하지만 , access 자체를 원천 봉쇄할 필요 있다.
+
 @Slf4j
 @Controller
 @RequestMapping("/transfer")
@@ -77,7 +86,6 @@ public class TransferController {
     public String showAmountForm(Model model,
                                  @SessionAttribute(value = "requestId" , required = false) String requestId) {
 
-        // TODO : 만약 홈으로 갔다가 다시 돌아온다면 ?
 
         prepareTransferDetailsViewModel(model , requestId);
         model.addAttribute("transferAmountRequest", new TransferAmountRequest());
@@ -187,12 +195,6 @@ public class TransferController {
 
     // TODO : *** 실패 기록 테이블 필요함.
     // ** (모든 걸 기록 가능 , UX 개선 , 이상탐지 (비밀번호 틀림)) **
-
-
-
-
-
-
 
 
 

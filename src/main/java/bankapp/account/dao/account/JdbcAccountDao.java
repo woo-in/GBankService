@@ -37,7 +37,7 @@ public class JdbcAccountDao implements AccountDao {
         this.accountFactory = accountFactory;
     }
 
-    // TODO : 메서드 이름 save (업계표준) 으로 바꾸기
+    // TODO : 메서드 이름 save (업계표준) 으로 바꾸기 (JPA 배우고 적용)
     @Override
     public <T extends Account> T insertAccount(T account) {
         String sql = "INSERT INTO ACCOUNT (member_id , account_number , balance , account_type , nickname) VALUES (?,?,?,?,?)";

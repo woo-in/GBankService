@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/error")
 public class ErrorController {
 
+    // TODO: 유저가 URL 을 잘못 입력한 경우는 다르게 처리해야 하지 않을까 ?
 
     /**
      * 사용자에게 보여줄 기본 오류 페이지 화면을 반환한다.

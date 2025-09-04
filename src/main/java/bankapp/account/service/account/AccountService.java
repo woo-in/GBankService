@@ -13,7 +13,6 @@ import java.math.BigDecimal;
  */
 public interface AccountService {
 
-    // TODO: 인터페이스에 트랜잭션 명시 ?
     // TODO: 이 서비스는 돈과 직결된 중요한 부분이니 + , - 를 테이블에 기록하고 이를 일정시간 마다 다른 테이블과 체크하는 백그라운드
     /**
      * 지정된 계좌에서 금액을 출금합니다.

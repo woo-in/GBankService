@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 
 import static bankapp.account.model.transfer.TransferStatus.*;
 
-// TODO: 테스트 필요
 @Slf4j
 @Service
 public class DefaultTransferService implements TransferService {
@@ -81,7 +80,6 @@ public class DefaultTransferService implements TransferService {
 
         TransferRecipientValidator.ValidationResult validationResult = transferRecipientValidator.validate(transferRecipientRequest, loginMember);
 
-        // TODO : 왜 값이 바뀌는지 ?
         log.info(validationResult.getToAccountNumber());
         log.info(validationResult.getToBankCode());
 
