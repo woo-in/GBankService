@@ -33,4 +33,18 @@ public interface MemberDao {
      */
     Optional<Member> findByMemberId(Long memberId);
 
+    /**
+     * member 식별자의 존재 여부를 확인합니다.
+     * @param memberId 회원 ID
+     * @return 존재하면 true, 그렇지 않으면 false
+     */
+    boolean existsByMemberId(Long memberId);
+
+    /**
+     * user 사용 아이디 존재 여부를 확인합니다.
+     * @param username user 사용 아이디
+     * @return 존재하면 true, 그렇지 않으면 false
+     */
+    boolean existsByUsername(String username);
+
 }

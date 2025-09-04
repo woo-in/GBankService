@@ -1,9 +1,11 @@
 package bankapp.member.service.signup;
+
 import bankapp.member.dao.MemberDao;
 import bankapp.member.exceptions.DuplicateUsernameException;
 import bankapp.member.exceptions.PasswordMismatchException;
 import bankapp.member.model.Member;
 import bankapp.member.request.signup.SignUpRequest;
+import bankapp.member.service.signup.component.SignUpRequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,34 +26,25 @@ public class DefaultSignUpService implements SignUpService{
 
     private final MemberDao memberDao;
     private final PasswordEncoder passwordEncoder;
+    private final SignUpRequestValidator signUpRequestValidator;
     @Autowired
-    public DefaultSignUpService(MemberDao memberDao ,  PasswordEncoder passwordEncoder) {
+    public DefaultSignUpService(MemberDao memberDao ,  PasswordEncoder passwordEncoder , SignUpRequestValidator signUpRequestValidator) {
         this.memberDao = memberDao;
         this.passwordEncoder = passwordEncoder;
+        this.signUpRequestValidator = signUpRequestValidator;
     }
 
     @Override
     @Transactional
     public Member signUp(SignUpRequest signUpRequest) throws DuplicateUsernameException, PasswordMismatchException{
 
-        String username = signUpRequest.getUsername();
-        String password = signUpRequest.getPassword();
-        String passwordConfirm = signUpRequest.getPasswordConfirm();
-        String name = signUpRequest.getName();
+        signUpRequestValidator.validate(signUpRequest);
 
-        if(passwordConfirm == null || !passwordConfirm.equals(password)) {
-            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
-        }
-
-        if(memberDao.findByUsername(signUpRequest.getUsername()).isPresent()) {
-            throw new DuplicateUsernameException("이미 존재하는 아이디입니다.");
-        }
 
         Member newMember = new Member();
-        newMember.setUsername(username);
-        newMember.setPassword(passwordEncoder.encode(password));
-        newMember.setName(name);
-
+        newMember.setUsername(signUpRequest.getUsername());
+        newMember.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        newMember.setName(signUpRequest.getName());
         return memberDao.insertMember(newMember);
     }
 

@@ -7,13 +7,12 @@ import bankapp.member.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 // TODO: 테스트 코드 작성
 /**
  * {@inheritDoc}
  * <p>
- * 이 구현체는 MemberDao를 사용하여 데이터베이스에 직접 조회함으로써
+ * 이 구현체는 MemberDao를 사용하여 데이터베이스를 체크하여
  * 회원 정보 확인 및 조회 로직을 수행합니다.
  */
 @Service
@@ -31,8 +30,7 @@ public class DefaultMemberCheckService implements MemberCheckService {
             return false;
         }
 
-        Optional<Member> memberOptional = memberDao.findByMemberId(memberId);
-        return memberOptional.isPresent();
+        return memberDao.existsByMemberId(memberId);
     }
 
     @Override
@@ -41,8 +39,7 @@ public class DefaultMemberCheckService implements MemberCheckService {
             return false;
         }
 
-        Optional<Member> memberOptional = memberDao.findByUsername(username);
-        return memberOptional.isPresent();
+        return memberDao.existsByUsername(username);
     }
 
     @Override
@@ -51,13 +48,8 @@ public class DefaultMemberCheckService implements MemberCheckService {
             throw new MemberNotFoundException("멤버를 찾을 수 없습니다.");
         }
 
-        Optional<Member> memberOptional = memberDao.findByMemberId(account.getMemberId());
-
-        if(memberOptional.isEmpty()){
-            throw new MemberNotFoundException("멤버를 찾을 수 없습니다.");
-        }
-
-        return memberOptional.get();
+        return memberDao.findByMemberId(account.getMemberId())
+                .orElseThrow(() -> new MemberNotFoundException("계정에 해당하는 멤버를 찾을 수 없습니다."));
     }
 
 
