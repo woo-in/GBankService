@@ -52,6 +52,21 @@
             color: #333;
         }
 
+        /* --- 로그아웃 버튼 스타일 추가 --- */
+        .logout-button {
+            background: none;
+            border: none;
+            color: #555;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
+            transition: color 0.2s;
+        }
+        .logout-button:hover {
+            color: #000;
+        }
+
         .main-nav {
             display: flex;
             justify-content: space-between;
@@ -82,14 +97,13 @@
             border-bottom-color: #4a90e2;
         }
 
-        /* '관리' 버튼 스타일 수정 */
         .nav-management {
             font-size: 14px;
-            font-weight: bold; /* 텍스트 강조 */
-            background: linear-gradient(to right, #6a82fb, #fc5c7d); /* 그라데이션 배경 */
-            -webkit-background-clip: text; /* 텍스트에만 배경 적용 (웹킷 브라우저) */
+            font-weight: bold;
+            background: linear-gradient(to right, #6a82fb, #fc5c7d);
+            -webkit-background-clip: text;
             background-clip: text;
-            color: transparent; /* 텍스트 색상을 투명하게 */
+            color: transparent;
             padding: 8px 16px;
             text-decoration: none;
             transition: opacity 0.2s;
@@ -106,11 +120,10 @@
             margin-bottom: 20px;
         }
 
-        /* ... (이하 다른 스타일은 기존과 동일) ... */
         .account-info { font-size: 16px; color: #555; margin-bottom: 8px; }
         .account-balance { font-size: 36px; font-weight: bold; color: #333; margin: 0 0 25px 0; }
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .action-buttons button { padding: 16px; font-size: 18px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
+        .action-buttons button { padding: 16px; font-size: 18px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; width: 100%; box-sizing: border-box; }
         .btn-fill { background-color: #eef1f7; color: #333; }
         .btn-fill:hover { background-color: #e1e5ea; }
         .btn-send { background-color: #4a90e2; color: white; }
@@ -128,26 +141,6 @@
         .amount.debit { color: #333; }
         .balance-after { font-size: 13px; color: #888; }
 
-        .action-buttons button {
-            padding: 16px;
-            font-size: 18px;
-            border-radius: 12px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            width: 100%; /* 너비를 100%로 설정하여 부모 요소를 꽉 채움 */
-            box-sizing: border-box; /* 패딩이 너비에 포함되도록 보장 */
-        }
-
-        .btn-fill { background-color: #eef1f7; color: #333; }
-        .btn-fill:hover { background-color: #e1e5ea; }
-        .btn-send { background-color: #4a90e2; color: white; }
-        .btn-send:hover { background-color: #357ABD; }
-        .history-header { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
-        .transaction-list { list-style: none; padding: 0; margin: 0; }
-
-
     </style>
 </head>
 <body>
@@ -161,6 +154,9 @@
             </div>
             <div class="logo-text" th:text="#{bankName}">우인은행</div>
         </div>
+        <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <button type="submit" class="logout-button">로그아웃</button>
+        </form>
     </div>
     <nav class="main-nav">
         <div class="nav-tabs">
@@ -175,9 +171,7 @@
 <main>
     <section class="account-card" th:object="${accountResponse}">
         <div class="account-info" th:text="|내 통장 *{accountNumber}|">내 통장 110-123-456789</div>
-
         <h1 class="account-balance" th:text="|*{#numbers.formatInteger(balance, 1, 'COMMA')}원|">13,300,744,820원</h1>
-
         <div class="action-buttons">
             <button class="btn-fill">채우기</button>
             <form th:action="@{/transfer/new}" method="get" style="margin: 0;">
