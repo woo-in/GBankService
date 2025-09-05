@@ -65,7 +65,6 @@ public class SignUpController {
 
 
         try {
-            // TODO: 회원가입은 완료 , 계좌 생성은 안된 경우 대비할 것
             Member newMember = signUpService.signUp(signUpRequest);
             openPrimaryAccountService.openPrimaryAccount(new OpenPrimaryAccountRequest(newMember.getMemberId() , BigDecimal.ZERO,signUpRequest.getAccountNickname()));
         }catch (DuplicateUsernameException e){
@@ -78,9 +77,19 @@ public class SignUpController {
             return "redirect:/error";
         }
 
-        // TODO: 회원 가입 성공후 , 완료 되었다는 페이지로 redirect 하기
-        return "redirect:/";
+        // TODO: 회원 가입 성공후 , 완료 되었다는 페이지로 redirect 설계하기 
+        // 이후에 어떻게 설계할지 ? (다시 로그인 , 아니면 로그인 상태 유지)
+        // 그리고 interceptor 는 이를 어떻게 처리할지 ? 고민
+        return "redirect:/signup/success";
     }
 
+    /**
+     * 회원가입 성공 폼 화면을 반환한다.
+     * @return 회원가입 성공 폼 뷰의 논리적 이름
+     */
+    @GetMapping("success")
+    public String showSignUpSuccessForm(){
+        return "member/signup/signupSuccess";
+    }
 
 }
