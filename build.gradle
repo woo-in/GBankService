@@ -40,8 +40,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	// Tomcat JDBC Connection Pool
 	implementation 'org.apache.tomcat:tomcat-jdbc:10.1.19'
-	// MariaDB JDBC Driver (최신 안정 버전)
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
+	// Mysql JDBC Driver (최신 안정 버전)
+	implementation 'com.mysql:mysql-connector-j'
 
 	// Web(MVC) , 타입립스
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -56,6 +56,10 @@ dependencies {
 
 	// spring security
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// API 호출
+	// 주의 : 비동기/논블로킹
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 }
 

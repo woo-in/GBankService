@@ -63,7 +63,6 @@ public class SignUpController {
             return "member/signup/signupForm";
         }
 
-
         try {
             Member newMember = signUpService.signUp(signUpRequest);
             openPrimaryAccountService.openPrimaryAccount(new OpenPrimaryAccountRequest(newMember.getMemberId() , BigDecimal.ZERO,signUpRequest.getAccountNickname()));
@@ -77,7 +76,7 @@ public class SignUpController {
             return "redirect:/error";
         }
 
-        // TODO: 회원 가입 성공후 , 완료 되었다는 페이지로 redirect 설계하기 
+        // TODO: 회원 가입 성공후 , 완료 되었다는 페이지로 redirect 설계하기
         // 이후에 어떻게 설계할지 ? (다시 로그인 , 아니면 로그인 상태 유지)
         // 그리고 interceptor 는 이를 어떻게 처리할지 ? 고민
         return "redirect:/signup/success";

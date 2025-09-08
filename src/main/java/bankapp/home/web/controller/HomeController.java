@@ -1,4 +1,4 @@
-package bankapp.account.web.controller;
+package bankapp.home.web.controller;
 
 import bankapp.account.response.account.AccountResponse;
 import bankapp.account.service.check.AccountCheckService;
@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
+
 
 @Slf4j
 @Controller
@@ -28,6 +29,7 @@ public class HomeController {
 
         prepareHomeDetailsViewModel(model, loginMember);
         return "account/home/home";
+
     }
 
 

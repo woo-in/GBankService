@@ -17,8 +17,8 @@ public class PendingTransfer {
     private String receiverName;
     private BigDecimal amount;
     private String message;
-    private long senderLedgerId;
-    private long receiverLedgerId;
+    private Long senderLedgerId;
+    private Long receiverLedgerId;
     private LocalDateTime expiresAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -67,6 +67,7 @@ public class JdbcPendingTransferDao implements PendingTransferDao{
         String sql = "SELECT * FROM PENDING_TRANSFER WHERE request_id = ?";
         try {
             PendingTransfer pendingTransfer = jdbcTemplate.queryForObject(sql, pendingTransferRowMapper(), requestId);
+
             return Optional.ofNullable(pendingTransfer);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -88,6 +89,7 @@ public class JdbcPendingTransferDao implements PendingTransferDao{
                 "WHERE request_id = ?";
 
         pendingTransfer.setUpdatedAt(java.time.LocalDateTime.now());
+
 
         jdbcTemplate.update(sql,
                 pendingTransfer.getStatus().name(),
@@ -120,8 +122,8 @@ public class JdbcPendingTransferDao implements PendingTransferDao{
                 pt.setReceiverName(rs.getString("receiver_name"));
                 pt.setAmount(rs.getBigDecimal("amount"));
                 pt.setMessage(rs.getString("message"));
-                pt.setSenderLedgerId(rs.getLong("sender_ledger_id"));
-                pt.setReceiverLedgerId(rs.getLong("receiver_ledger_id"));
+                pt.setSenderLedgerId(rs.getObject("sender_ledger_id", Long.class));
+                pt.setReceiverLedgerId(rs.getObject("receiver_ledger_id", Long.class));
                 pt.setExpiresAt(rs.getTimestamp("expires_at").toLocalDateTime());
                 pt.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                 pt.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());

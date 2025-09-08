@@ -27,6 +27,7 @@ public class DefaultAccountService implements AccountService {
         this.accountLedgerDao = accountLedgerDao;
     }
 
+    // TODO: 트랜잭션 최적으로 바꾸기
     @Override
     @Transactional
     public long debit(AccountTransactionRequest accountTransactionRequest) throws AccountNotFoundException, InsufficientBalanceException , InvalidAmountException {

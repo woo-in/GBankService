@@ -152,6 +152,9 @@ public class DefaultTransferService implements TransferService {
         pendingTransfer.setAmount(transferAmountRequest.getAmount());
         pendingTransfer.setStatus(PENDING_MESSAGE);
         pendingTransfer.setUpdatedAt(LocalDateTime.now());
+
+
+
         pendingTransferDao.update(pendingTransfer);
     }
     private void applyMessageUpdatePendingTransfer(PendingTransfer pendingTransfer, TransferMessageRequest transferMessageRequest) {
