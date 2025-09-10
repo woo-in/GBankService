@@ -28,7 +28,7 @@ public class HomeController {
                            Model model) {
 
         prepareHomeDetailsViewModel(model, loginMember);
-        return "account/home/home";
+        return "home/home";
 
     }
 

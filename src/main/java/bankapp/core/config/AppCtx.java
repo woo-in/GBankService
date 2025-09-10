@@ -18,8 +18,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @EnableAspectJAutoProxy
 public class AppCtx{ 
 
-// TODO: 템플릿 폴더 구조 정리하기
-
 	@Value("${spring.datasource.driver-class-name}")
 	private String driverClassName;
 
