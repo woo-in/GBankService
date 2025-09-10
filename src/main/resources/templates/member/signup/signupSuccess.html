@@ -76,8 +76,8 @@
             margin-bottom: 35px;
         }
 
-        /* --- 홈으로 가기 버튼 스타일 --- */
-        .home-button {
+        /* --- 버튼 스타일 수정 --- */
+        .login-button {
             display: block;
             width: 100%;
             padding: 16px;
@@ -91,7 +91,7 @@
             box-sizing: border-box;
             transition: background-color 0.3s ease;
         }
-        .home-button:hover {
+        .login-button:hover {
             background-color: #357ABD;
         }
     </style>
@@ -109,10 +109,10 @@
     <h1 class="success-title">회원가입이 완료되었습니다!</h1>
     <p class="success-message">
         우인은행의 회원이 되신 것을 환영합니다.<br>
-        다양한 금융 서비스를 지금 바로 이용해 보세요.
+        <strong>고객님의 정보를 안전하게 보호하기 위해, 다시 로그인해주세요.</strong>
     </p>
 
-    <a th:href="@{/}" class="home-button">홈으로 가기</a>
+    <a th:href="@{/login}" class="login-button">로그인 하러 가기</a>
 </div>
 </body>
 </html>
