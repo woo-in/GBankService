@@ -2,6 +2,7 @@ package bankapp.core.config;
 
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -19,20 +20,32 @@ public class AppCtx{
 
 // TODO: 템플릿 폴더 구조 정리하기
 
+	@Value("${spring.datasource.driver-class-name}")
+	private String driverClassName;
+
+	@Value("${spring.datasource.url}")
+	private String url;
+
+	@Value("${spring.datasource.username}")
+	private String username;
+
+	@Value("${spring.datasource.password}")
+	private String password;
+
+
 	// dataSource 빈 등록 
 	@Bean(destroyMethod = "close")
 	public DataSource dataSource() {
 		
 		DataSource ds = new DataSource();
-		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-		ds.setUrl("jdbc:mysql://localhost:3306/bankapp_db?serverTimezone=UTC&characterEncoding=UTF-8");
-		ds.setUsername("root"); 
-		ds.setPassword("02050205");
-		
-		// 10 개로 시작 , 최대 활성 갯수는 10000 
-		ds.setInitialSize(10); 
-		ds.setMaxActive(10000); 
-	
+		ds.setDriverClassName(driverClassName);
+		ds.setUrl(url);
+		ds.setUsername(username);
+		ds.setPassword(password);
+
+		ds.setInitialSize(10);
+		ds.setMaxActive(10000);
+
 		return ds; 
 	}
 
