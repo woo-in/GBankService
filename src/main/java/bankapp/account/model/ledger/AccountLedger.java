@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 public class AccountLedger {
 
     private Long ledgerId;
-    private Long accountId; //
-    private TransactionType transactionType; //
-    private BigDecimal amount; //
-    private BigDecimal balanceAfter; //
-    private String description; //
+    private Long accountId;
+    private TransactionType transactionType;
+    private BigDecimal amount;
+    private BigDecimal balanceAfter;
+    private String description;
     private LocalDateTime createdAt;
 
 

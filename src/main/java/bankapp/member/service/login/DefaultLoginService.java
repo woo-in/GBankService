@@ -1,9 +1,9 @@
 package bankapp.member.service.login;
 
-import bankapp.member.dao.MemberDao;
 import bankapp.member.exceptions.IncorrectPasswordException;
 import bankapp.member.exceptions.UsernameNotFoundException;
 import bankapp.member.model.Member;
+import bankapp.member.repository.MemberRepository;
 import bankapp.member.request.login.LoginRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DefaultLoginService implements LoginService{
 
-    private final MemberDao memberDao;
+    // TODO : JPA 수정 2
+
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     @Autowired
-    public DefaultLoginService(MemberDao memberDao , PasswordEncoder passwordEncoder) {
-        this.memberDao = memberDao;
+    public DefaultLoginService(MemberRepository memberRepository , PasswordEncoder passwordEncoder) {
+        this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -39,7 +41,7 @@ public class DefaultLoginService implements LoginService{
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
-        Member member = memberDao.findByUsername(username)
+        Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 아이디입니다."));
 
         if(!passwordEncoder.matches(password, member.getPassword())) {

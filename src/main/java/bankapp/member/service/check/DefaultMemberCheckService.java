@@ -1,13 +1,13 @@
 package bankapp.member.service.check;
 
 import bankapp.account.model.account.Account;
-import bankapp.member.dao.MemberDao;
 import bankapp.member.exceptions.MemberNotFoundException;
 import bankapp.member.model.Member;
+import bankapp.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+// TODO : JPA 수정 1
 // TODO: 테스트 코드 작성
 /**
  * {@inheritDoc}
@@ -18,11 +18,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultMemberCheckService implements MemberCheckService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
+
     @Autowired
-    public DefaultMemberCheckService(MemberDao memberDao){
-        this.memberDao = memberDao;
+    public DefaultMemberCheckService(MemberRepository memberRepository){
+        this.memberRepository = memberRepository;
     }
+
 
     @Override
     public boolean isMemberIdExist(Long memberId){
@@ -30,7 +32,7 @@ public class DefaultMemberCheckService implements MemberCheckService {
             return false;
         }
 
-        return memberDao.existsByMemberId(memberId);
+        return memberRepository.existsById(memberId);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class DefaultMemberCheckService implements MemberCheckService {
             return false;
         }
 
-        return memberDao.existsByUsername(username);
+        return memberRepository.existsByUsername(username);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class DefaultMemberCheckService implements MemberCheckService {
             throw new MemberNotFoundException("멤버를 찾을 수 없습니다.");
         }
 
-        return memberDao.findByMemberId(account.getMemberId())
+        return memberRepository.findById(account.getMemberId())
                 .orElseThrow(() -> new MemberNotFoundException("계정에 해당하는 멤버를 찾을 수 없습니다."));
     }
 

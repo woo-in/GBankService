@@ -1,8 +1,8 @@
 package bankapp.member.service.signup.component;
 
-import bankapp.member.dao.MemberDao;
 import bankapp.member.exceptions.DuplicateUsernameException;
 import bankapp.member.exceptions.PasswordMismatchException;
+import bankapp.member.repository.MemberRepository;
 import bankapp.member.request.signup.SignUpRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class SignUpRequestValidator {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     @Autowired
-    public SignUpRequestValidator(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public SignUpRequestValidator(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
 
@@ -26,7 +26,7 @@ public class SignUpRequestValidator {
         }
 
         // 2. 아이디(username) 중복 검증
-        if (memberDao.findByUsername(request.getUsername()).isPresent()) {
+        if (memberRepository.existsByUsername(request.getUsername())) {
             throw new DuplicateUsernameException("이미 존재하는 아이디입니다.");
         }
     }

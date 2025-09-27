@@ -1,9 +1,9 @@
 package bankapp.member.service.signup;
 
-import bankapp.member.dao.MemberDao;
 import bankapp.member.exceptions.DuplicateUsernameException;
 import bankapp.member.exceptions.PasswordMismatchException;
 import bankapp.member.model.Member;
+import bankapp.member.repository.MemberRepository;
 import bankapp.member.request.signup.SignUpRequest;
 import bankapp.member.service.signup.component.SignUpRequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DefaultSignUpService implements SignUpService{
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final SignUpRequestValidator signUpRequestValidator;
     @Autowired
-    public DefaultSignUpService(MemberDao memberDao ,  PasswordEncoder passwordEncoder , SignUpRequestValidator signUpRequestValidator) {
-        this.memberDao = memberDao;
+    public DefaultSignUpService(MemberRepository memberRepository ,  PasswordEncoder passwordEncoder , SignUpRequestValidator signUpRequestValidator) {
+        this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.signUpRequestValidator = signUpRequestValidator;
     }
@@ -45,7 +45,7 @@ public class DefaultSignUpService implements SignUpService{
         newMember.setUsername(signUpRequest.getUsername());
         newMember.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         newMember.setName(signUpRequest.getName());
-        return memberDao.insertMember(newMember);
+        return memberRepository.save(newMember);
     }
 
 
