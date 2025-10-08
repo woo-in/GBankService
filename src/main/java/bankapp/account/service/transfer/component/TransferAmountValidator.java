@@ -1,26 +1,24 @@
 package bankapp.account.service.transfer.component;
 
-import bankapp.account.dao.transfer.PendingTransferDao;
 import bankapp.account.exceptions.*;
-import bankapp.account.model.account.PrimaryAccount;
+import bankapp.account.model.account.Account;
 import bankapp.account.model.transfer.PendingTransfer;
+import bankapp.account.repository.PendingTransferRepository;
 import bankapp.account.request.transfer.TransferAmountRequest;
-import bankapp.account.service.check.AccountCheckService;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static bankapp.account.model.transfer.TransferStatus.*;
 
 @Component
 public class TransferAmountValidator {
 
-    private final PendingTransferDao pendingTransferDao;
-    private final AccountCheckService accountCheckService;
+    private final PendingTransferRepository pendingTransferRepository;
 
-    public TransferAmountValidator(PendingTransferDao pendingTransferDao ,  AccountCheckService accountCheckService) {
-        this.pendingTransferDao = pendingTransferDao;
-        this.accountCheckService = accountCheckService;
+    public TransferAmountValidator(PendingTransferRepository pendingTransferRepository) {
+        this.pendingTransferRepository = pendingTransferRepository;
     }
 
     /**
@@ -45,31 +43,22 @@ public class TransferAmountValidator {
             throw new InvalidAmountException("송금액은 0보다 커야 합니다.");
         }
 
-        PendingTransfer pendingTransfer = pendingTransferDao.findById(requestId)
+        PendingTransfer pendingTransfer = pendingTransferRepository.findById(requestId)
                 .orElseThrow(() -> new PendingTransferNotFoundException("유효하지 않은 송금 요청입니다. ID: " + requestId));
 
         if (pendingTransfer.getStatus() != PENDING_AMOUNT) {
             throw new IllegalTransferStateException("금액을 입력할 수 있는 단계가 아닙니다.");
         }
 
-        PrimaryAccount senderPrimaryAccount;
-        try {
-            senderPrimaryAccount = accountCheckService.findPrimaryAccountByAccountId(pendingTransfer.getSenderAccountId());
-        } catch (PrimaryAccountNotFoundException e) {
-            throw new IllegalStateException("송금 처리 중 심각한 내부 데이터 오류가 발생했습니다.");
-        }
 
-        if (senderPrimaryAccount.getBalance().compareTo(amountToTransfer) < 0) {
+        Account senderAccount = Optional.ofNullable(pendingTransfer.getSenderAccount())
+                .orElseThrow(() -> new IllegalStateException("송금 처리 중 심각한 내부 데이터 오류가 발생했습니다."));
+
+        if (senderAccount.getBalance().compareTo(amountToTransfer) < 0) {
             throw new InsufficientBalanceException("계좌 잔액이 부족합니다.");
         }
 
         return pendingTransfer;
 
     }
-
-
-
-
-
-
 }

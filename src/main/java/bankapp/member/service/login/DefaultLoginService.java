@@ -24,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DefaultLoginService implements LoginService{
 
-    // TODO : JPA 수정 2
-
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     @Autowired

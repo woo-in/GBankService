@@ -5,22 +5,22 @@ import bankapp.account.exceptions.RecipientAccountNotFoundException;
 import bankapp.account.model.account.Account;
 import bankapp.account.service.check.AccountCheckService;
 import bankapp.member.exceptions.MemberNotFoundException;
-import bankapp.member.service.check.MemberCheckService;
+import bankapp.member.model.Member;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Slf4j
 @Component
 public class TransferRecipientInfoFinder {
 
     private final AccountCheckService accountCheckService;
-    private final MemberCheckService memberCheckService;
 
     @Autowired
-    public TransferRecipientInfoFinder(AccountCheckService accountCheckService, MemberCheckService memberCheckService) {
+    public TransferRecipientInfoFinder(AccountCheckService accountCheckService) {
         this.accountCheckService = accountCheckService;
-        this.memberCheckService = memberCheckService;
     }
 
     /**
@@ -32,7 +32,11 @@ public class TransferRecipientInfoFinder {
     public String findRecipientName(String accountNumber) throws RecipientAccountNotFoundException {
         try {
             Account account = accountCheckService.findAccountByAccountNumber(accountNumber);
-            return memberCheckService.findMemberByAccount(account).getName();
+
+            Member member = Optional.ofNullable(account.getMember())
+                    .orElseThrow(() -> new MemberNotFoundException("멤버 정보가 유효하지 않습니다."));
+
+            return member.getName();
         } catch (AccountNotFoundException | MemberNotFoundException e) {
             throw new RecipientAccountNotFoundException("수취인 계좌를 찾을 수 없습니다.");
         }

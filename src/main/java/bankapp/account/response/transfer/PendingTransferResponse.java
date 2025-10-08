@@ -1,6 +1,6 @@
 package bankapp.account.response.transfer;
 
-import bankapp.account.model.account.PrimaryAccount;
+import bankapp.account.model.account.Account;
 import bankapp.account.model.transfer.PendingTransfer;
 import lombok.Data;
 
@@ -19,11 +19,11 @@ public class PendingTransferResponse {
     private BigDecimal amount;
     private String message;
 
-    public static PendingTransferResponse from(PendingTransfer pendingTransfer , PrimaryAccount senderPrimaryAccount){
+    public static PendingTransferResponse from(PendingTransfer pendingTransfer , Account senderAccount){
 
         PendingTransferResponse pendingTransferResponse = new PendingTransferResponse(pendingTransfer);
-        pendingTransferResponse.setSenderAccountNumber(senderPrimaryAccount.getAccountNumber());
-        pendingTransferResponse.setSenderBalance(senderPrimaryAccount.getBalance());
+        pendingTransferResponse.setSenderAccountNumber(senderAccount.getAccountNumber());
+        pendingTransferResponse.setSenderBalance(senderAccount.getBalance());
 
         return pendingTransferResponse;
     }

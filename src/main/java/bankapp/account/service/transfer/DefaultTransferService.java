@@ -1,9 +1,9 @@
 package bankapp.account.service.transfer;
 
-import bankapp.account.dao.transfer.PendingTransferDao;
 import bankapp.account.exceptions.*;
-import bankapp.account.model.account.PrimaryAccount;
+import bankapp.account.model.account.Account;
 import bankapp.account.model.transfer.PendingTransfer;
+import bankapp.account.repository.PendingTransferRepository;
 import bankapp.account.request.account.AccountTransactionRequest;
 import bankapp.account.request.transfer.TransferAmountRequest;
 import bankapp.account.request.transfer.TransferAuthRequest;
@@ -16,7 +16,6 @@ import bankapp.account.service.transfer.component.*;
 import bankapp.core.util.BankNameConverter;
 import bankapp.member.exceptions.IncorrectPasswordException;
 import bankapp.member.model.Member;
-import bankapp.member.service.check.MemberCheckService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,11 +30,10 @@ import static bankapp.account.model.transfer.TransferStatus.*;
 @Service
 public class DefaultTransferService implements TransferService {
 
-    private final PendingTransferDao pendingTransferDao;
+    private final PendingTransferRepository pendingTransferRepository;
 
     private final AccountService accountService;
     private final AccountCheckService accountCheckService;
-    private final MemberCheckService memberCheckService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -48,10 +46,9 @@ public class DefaultTransferService implements TransferService {
     private final long expirationMinutes;
 
     @Autowired
-    public DefaultTransferService(PendingTransferDao pendingTransferDao,
+    public DefaultTransferService(PendingTransferRepository pendingTransferRepository,
                                   AccountService accountService,
                                   AccountCheckService accountCheckService,
-                                  MemberCheckService memberCheckService,
                                   PasswordEncoder passwordEncoder,
                                   TransferRecipientValidator transferRecipientValidator,
                                   TransferRecipientInfoFinder transferRecipientInfoFinder,
@@ -59,10 +56,9 @@ public class DefaultTransferService implements TransferService {
                                   TransferMessageValidator transferMessageValidator,
                                   TransferAuthValidator transferAuthValidator,
                                   @Value("${transfer.expiration-minutes}") long expirationMinutes) {
-        this.pendingTransferDao = pendingTransferDao;
+        this.pendingTransferRepository = pendingTransferRepository;
         this.accountService = accountService;
         this.accountCheckService = accountCheckService;
-        this.memberCheckService = memberCheckService;
         this.passwordEncoder = passwordEncoder;
         this.transferRecipientValidator = transferRecipientValidator;
         this.transferRecipientInfoFinder = transferRecipientInfoFinder;
@@ -80,12 +76,9 @@ public class DefaultTransferService implements TransferService {
 
         TransferRecipientValidator.ValidationResult validationResult = transferRecipientValidator.validate(transferRecipientRequest, loginMember);
 
-        log.info(validationResult.getToAccountNumber());
-        log.info(validationResult.getToBankCode());
-
         String recipientName = transferRecipientInfoFinder.findRecipientName(validationResult.getToAccountNumber());
 
-        PendingTransfer pendingTransfer = initializePendingTransfer(validationResult ,recipientName);
+        PendingTransfer pendingTransfer = initializePendingTransfer(validationResult ,recipientName , loginMember);
 
         return pendingTransfer.getRequestId();
     }
@@ -95,12 +88,12 @@ public class DefaultTransferService implements TransferService {
     @Transactional(readOnly = true)
     public PendingTransferResponse getPendingTransferResponse(String requestId) throws PendingTransferNotFoundException, PrimaryAccountNotFoundException {
 
-        PendingTransfer pendingTransfer = pendingTransferDao.findById(requestId)
+        PendingTransfer pendingTransfer = pendingTransferRepository.findById(requestId)
                 .orElseThrow(() -> new PendingTransferNotFoundException("유효하지 않은 송금 요청입니다. ID: " + requestId));
 
-        PrimaryAccount senderPrimaryAccount = accountCheckService.findPrimaryAccountByAccountId(pendingTransfer.getSenderAccountId());
+        Account senderAccount = pendingTransfer.getSenderAccount();
 
-        return PendingTransferResponse.from(pendingTransfer, senderPrimaryAccount);
+        return PendingTransferResponse.from(pendingTransfer, senderAccount);
     }
 
     @Override
@@ -128,59 +121,55 @@ public class DefaultTransferService implements TransferService {
         PendingTransfer pendingTransfer = transferAuthValidator.validate(requestId);
 
         verifyMemberPassword(pendingTransfer, transferAuthRequest);
-        long senderLedgerId = debitFromSender(pendingTransfer);
-        long creditLedgerId = creditToReceiver(pendingTransfer);
-        recordTransferCompletion(pendingTransfer, senderLedgerId, creditLedgerId);
+        debitFromSender(pendingTransfer);
+        creditToReceiver(pendingTransfer);
+        recordTransferCompletion(pendingTransfer);
     }
 
 
 
 
-    private PendingTransfer initializePendingTransfer(TransferRecipientValidator.ValidationResult result , String recipientName) {
-        PendingTransfer pendingTransfer = new PendingTransfer();
-        pendingTransfer.setSenderAccountId(result.getFromAccount().getAccountId());
-        pendingTransfer.setSenderMemberId(result.getFromAccount().getMemberId());
-        pendingTransfer.setStatus(PENDING_AMOUNT);
-        pendingTransfer.setExpiresAt(LocalDateTime.now().plusMinutes(expirationMinutes));
-        pendingTransfer.setReceiverAccountNumber(result.getToAccountNumber());
-        pendingTransfer.setReceiverBankName(BankNameConverter.getBankNameByCode(result.getToBankCode()));
-        pendingTransfer.setReceiverName(recipientName);
+    private PendingTransfer initializePendingTransfer(TransferRecipientValidator.ValidationResult result , String recipientName , Member loginMember) {
+        PendingTransfer pendingTransfer = new PendingTransfer(loginMember
+                ,result.getFromAccount()
+                ,BankNameConverter.getBankNameByCode(result.getToBankCode())
+                ,result.getToAccountNumber()
+                ,recipientName
+                ,PENDING_AMOUNT
+                ,LocalDateTime.now().plusMinutes(expirationMinutes)
+        );
 
-        return pendingTransferDao.init(pendingTransfer);
+        return pendingTransferRepository.save(pendingTransfer);
     }
     private void applyAmountUpdatePendingTransfer(PendingTransfer pendingTransfer, TransferAmountRequest transferAmountRequest) {
         pendingTransfer.setAmount(transferAmountRequest.getAmount());
         pendingTransfer.setStatus(PENDING_MESSAGE);
         pendingTransfer.setUpdatedAt(LocalDateTime.now());
-
-
-
-        pendingTransferDao.update(pendingTransfer);
     }
     private void applyMessageUpdatePendingTransfer(PendingTransfer pendingTransfer, TransferMessageRequest transferMessageRequest) {
         pendingTransfer.setMessage(transferMessageRequest.getMessage());
         pendingTransfer.setStatus(PENDING_AUTH);
         pendingTransfer.setUpdatedAt(LocalDateTime.now());
-        pendingTransferDao.update(pendingTransfer);
     }
     private void verifyMemberPassword(PendingTransfer pendingTransfer, TransferAuthRequest transferAuthRequest) throws IncorrectPasswordException{
-        Member senderMember = memberCheckService.findMemberByAccount(accountCheckService.findPrimaryAccountByAccountId(pendingTransfer.getSenderAccountId()));
+        Member senderMember = pendingTransfer.getSenderMember();
         if(!passwordEncoder.matches(transferAuthRequest.getPassword(), senderMember.getPassword())) {
             throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
         pendingTransfer.setStatus(PENDING_TRANSFER);
         pendingTransfer.setUpdatedAt(LocalDateTime.now());
-        pendingTransferDao.update(pendingTransfer);
 
     }
+
+    // TODO : return value is never used
     private long debitFromSender(PendingTransfer pendingTransfer) {
         if(pendingTransfer.getStatus() != PENDING_TRANSFER){
             throw new IllegalTransferStateException("거래 단계가 아닙니다.");
         }
 
         return accountService.debit(new AccountTransactionRequest(
-                pendingTransfer.getSenderAccountId(),
+                pendingTransfer.getSenderAccount().getAccountId(),
                 pendingTransfer.getAmount(),
                 "transfer"));
     }
@@ -197,15 +186,11 @@ public class DefaultTransferService implements TransferService {
                 "transfer"
         ));
     }
-    private void recordTransferCompletion(PendingTransfer pendingTransfer, long senderLedgerId, long receiverLedgerId) {
-
+    // TODO: 함수명 바꾸기 (원장 기록 안함)
+    // TODO : JPA 로 간단해진 부분 체크 , 고치기
+    private void recordTransferCompletion(PendingTransfer pendingTransfer) {
         pendingTransfer.setStatus(COMPLETED);
         pendingTransfer.setUpdatedAt(LocalDateTime.now());
-        pendingTransfer.setSenderLedgerId(senderLedgerId);
-        pendingTransfer.setReceiverLedgerId(receiverLedgerId);
-
-        pendingTransferDao.update(pendingTransfer);
-
     }
 
 }

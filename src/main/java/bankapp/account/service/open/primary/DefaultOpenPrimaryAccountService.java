@@ -1,15 +1,17 @@
 package bankapp.account.service.open.primary;
 
-import bankapp.account.dao.account.AccountDao;
 import bankapp.account.model.account.PrimaryAccount;
+import bankapp.account.repository.AccountRepository;
 import bankapp.account.request.open.OpenPrimaryAccountRequest;
 import bankapp.account.exceptions.InvalidDepositAmountException;
 import bankapp.account.service.open.component.AccountNumberGenerator;
 import bankapp.account.service.open.component.AccountOpeningValidator;
 import bankapp.member.exceptions.MemberNotFoundException;
+import bankapp.member.model.Member;
+import bankapp.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -23,33 +25,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultOpenPrimaryAccountService implements OpenPrimaryAccountService{
 
-    private final AccountDao accountDao;
+    private final MemberRepository memberRepository;
+    private final AccountRepository accountRepository;
     private final AccountOpeningValidator validator;
     private final AccountNumberGenerator accountNumberGenerator;
 
     @Autowired
-    public DefaultOpenPrimaryAccountService(AccountDao accountDao,
+    public DefaultOpenPrimaryAccountService(MemberRepository memberRepository,
+                                            AccountRepository accountRepository,
                                             AccountOpeningValidator validator,
                                             AccountNumberGenerator accountNumberGenerator) {
-        this.accountDao = accountDao;
+        this.memberRepository = memberRepository;
+        this.accountRepository = accountRepository;
         this.validator = validator;
         this.accountNumberGenerator = accountNumberGenerator;
     }
 
-
     @Override
+    @Transactional
     public PrimaryAccount openPrimaryAccount(OpenPrimaryAccountRequest openPrimaryAccountRequest) throws InvalidDepositAmountException, MemberNotFoundException {
         validator.validate(openPrimaryAccountRequest);
 
-        PrimaryAccount newAccount = PrimaryAccount.from(openPrimaryAccountRequest);
-        newAccount.setAccountNumber(accountNumberGenerator.generate());
-        newAccount.setAccountType("PRIMARY");
+        Member member = memberRepository.findById(openPrimaryAccountRequest.getMemberId())
+                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다: " + openPrimaryAccountRequest.getMemberId()));
 
-        return accountDao.insertAccount(newAccount);
+
+        String accountNumber = accountNumberGenerator.generate();
+        PrimaryAccount newAccount = PrimaryAccount.from(openPrimaryAccountRequest,member,accountNumber);
+
+        return accountRepository.save(newAccount);
     }
-
-
-
-
 
 }

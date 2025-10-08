@@ -7,7 +7,7 @@ import bankapp.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// TODO : JPA 수정 1
+
 // TODO: 테스트 코드 작성
 /**
  * {@inheritDoc}
@@ -46,12 +46,11 @@ public class DefaultMemberCheckService implements MemberCheckService {
 
     @Override
     public Member findMemberByAccount(Account account) throws MemberNotFoundException{
-        if(account == null) {
+        if(account == null || account.getMember() == null) {
             throw new MemberNotFoundException("멤버를 찾을 수 없습니다.");
         }
 
-        return memberRepository.findById(account.getMemberId())
-                .orElseThrow(() -> new MemberNotFoundException("계정에 해당하는 멤버를 찾을 수 없습니다."));
+        return account.getMember();
     }
 
 

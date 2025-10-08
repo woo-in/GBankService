@@ -1,13 +1,13 @@
 package bankapp.account.service.account;
 
-import bankapp.account.dao.account.AccountDao;
-import bankapp.account.dao.ledger.AccountLedgerDao;
 import bankapp.account.exceptions.AccountNotFoundException;
 import bankapp.account.exceptions.InsufficientBalanceException;
 import bankapp.account.exceptions.InvalidAmountException;
 import bankapp.account.model.account.Account;
 import bankapp.account.model.ledger.AccountLedger;
 import bankapp.account.model.ledger.TransactionType;
+import bankapp.account.repository.AccountLedgerRepository;
+import bankapp.account.repository.AccountRepository;
 import bankapp.account.request.account.AccountTransactionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,15 @@ import java.math.BigDecimal;
 @Service
 public class DefaultAccountService implements AccountService {
 
-    private final AccountDao accountDao;
-    private final AccountLedgerDao accountLedgerDao;
+
+    private final AccountRepository accountRepository;
+    private final AccountLedgerRepository accountLedgerRepository;
 
 
     @Autowired
-    public DefaultAccountService(AccountDao accountDao, AccountLedgerDao accountLedgerDao ){
-        this.accountDao = accountDao;
-        this.accountLedgerDao = accountLedgerDao;
+    public DefaultAccountService(AccountRepository accountRepository , AccountLedgerRepository accountLedgerRepository ){
+        this.accountRepository = accountRepository;
+        this.accountLedgerRepository = accountLedgerRepository;
     }
 
     // TODO: 트랜잭션 최적으로 바꾸기
@@ -62,7 +63,7 @@ public class DefaultAccountService implements AccountService {
      * 계좌를 비관적 잠금으로 조회하고, 존재하지 않을 경우 예외를 발생시킵니다.
      */
     private Account lockAndGetAccount(Long accountId) {
-        return accountDao.findByIdForUpdate(accountId)
+        return accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("계좌가 존재하지 않습니다. ID: " + accountId));
     }
 
@@ -74,6 +75,7 @@ public class DefaultAccountService implements AccountService {
         validateAmount(amount);
         return lockAndGetAccount(accountId);
     }
+
     /**
      * 계좌의 잔액이 출금 금액에 충분한지 검증합니다.
      */
@@ -90,9 +92,8 @@ public class DefaultAccountService implements AccountService {
     private AccountLedger applyTransaction(Account account, AccountTransactionRequest request, TransactionType type) {
         // TransactionType에 계산 로직을 위임
         BigDecimal balanceAfter = type.calculate(account.getBalance(), request.getAmount());
-
-        accountDao.setBalance(account.getAccountId(), balanceAfter);
-        return accountLedgerDao.save(AccountLedger.from(request, type, balanceAfter));
+        account.setBalance(balanceAfter);
+        return accountLedgerRepository.save(AccountLedger.from(account,request, type, balanceAfter));
     }
 
 }

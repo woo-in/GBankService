@@ -1,10 +1,10 @@
 package bankapp.account.service.check;
 
-import bankapp.account.dao.account.AccountDao;
 import bankapp.account.exceptions.AccountNotFoundException;
 import bankapp.account.exceptions.PrimaryAccountNotFoundException;
 import bankapp.account.model.account.Account;
 import bankapp.account.model.account.PrimaryAccount;
+import bankapp.account.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +21,11 @@ import static bankapp.core.common.BankCode.WOOIN_BANK;
 @Service
 public class DefaultAccountCheckService implements AccountCheckService {
 
-    private final AccountDao accountDao;
+    private final AccountRepository accountRepository;
 
     @Autowired
-    public DefaultAccountCheckService(AccountDao accountDao){
-        this.accountDao = accountDao;
+    public DefaultAccountCheckService(AccountRepository accountRepository){
+        this.accountRepository = accountRepository;
     }
 
 
@@ -36,20 +36,20 @@ public class DefaultAccountCheckService implements AccountCheckService {
             return false;
         }
 
-        return accountDao.existsByAccountNumber(accountNumber);
+        return accountRepository.existsByAccountNumber(accountNumber);
     }
 
     @Override
     public PrimaryAccount findPrimaryAccountByMemberId(Long memberId) throws PrimaryAccountNotFoundException{
 
-        return accountDao.findPrimaryAccountByMemberId(memberId)
+        return accountRepository.findPrimaryAccountByMemberId(memberId)
                 .orElseThrow(() -> new PrimaryAccountNotFoundException("해당 회원의 주계좌(PRIMARY)를 찾을 수 없습니다. memberId: " + memberId));
 
     }
 
     @Override
     public PrimaryAccount findPrimaryAccountByAccountId(Long accountId) throws PrimaryAccountNotFoundException{
-        return accountDao.findPrimaryAccountByAccountId(accountId)
+        return accountRepository.findPrimaryAccountByAccountId(accountId)
                 .orElseThrow(() -> new PrimaryAccountNotFoundException("해당 회원의 주계좌(PRIMARY)를 찾을 수 없습니다. memberId: " + accountId));
 
     }
@@ -62,7 +62,7 @@ public class DefaultAccountCheckService implements AccountCheckService {
             throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
         }
 
-        return accountDao.findByAccountNumber(accountNumber)
+        return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountNotFoundException("해당 계좌를 찾을 수 없습니다. 계좌번호: " + accountNumber));
     }
 
@@ -73,7 +73,7 @@ public class DefaultAccountCheckService implements AccountCheckService {
             throw new AccountNotFoundException("해당 하는 계좌를 찾을 수 없습니다.");
         }
 
-        return accountDao.findByAccountId(accountId)
+        return accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("해당 계좌를 찾을 수 없습니다. 계좌번호: " + accountId));
     }
 

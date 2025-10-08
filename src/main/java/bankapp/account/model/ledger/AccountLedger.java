@@ -1,21 +1,40 @@
 package bankapp.account.model.ledger;
 
+import bankapp.account.model.account.Account;
 import bankapp.account.request.account.AccountTransactionRequest;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@Entity
 public class AccountLedger {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ledgerId;
-    private Long accountId;
+
+    @ManyToOne(fetch = FetchType.LAZY , optional = false)
+    @JoinColumn(name = "account_id" , nullable = false)
+    private Account account;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TransactionType transactionType;
+
+    @Column(nullable = false)
     private BigDecimal amount;
+
+    @Column(nullable = false)
     private BigDecimal balanceAfter;
+
     private String description;
+
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
+
 
 
     /**
@@ -25,15 +44,25 @@ public class AccountLedger {
      * @param balanceAfter 거래 후 잔액
      * @return 생성된 AccountLedger 객체
      */
-    public static AccountLedger from(AccountTransactionRequest accountTransactionRequest, TransactionType type, BigDecimal balanceAfter) {
-        AccountLedger ledger = new AccountLedger();
-        ledger.setAccountId(accountTransactionRequest.getAccountId());
-        ledger.setAmount(accountTransactionRequest.getAmount());
-        ledger.setDescription(accountTransactionRequest.getDescription());
-        ledger.setTransactionType(type);
-        ledger.setBalanceAfter(balanceAfter);
-        return ledger;
+    public static AccountLedger from(Account account , AccountTransactionRequest accountTransactionRequest, TransactionType type, BigDecimal balanceAfter) {
+        return new AccountLedger(account ,type , accountTransactionRequest.getAmount() , balanceAfter, accountTransactionRequest.getDescription());
     }
 
+    protected AccountLedger() {}
+
+    public AccountLedger(Account account, TransactionType transactionType, BigDecimal amount, BigDecimal balanceAfter, String description) {
+        this.account = account;
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.balanceAfter = balanceAfter;
+        this.description = description;
+    }
+
+    public AccountLedger(Account account, TransactionType transactionType, BigDecimal amount, BigDecimal balanceAfter) {
+        this.account = account;
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.balanceAfter = balanceAfter;
+    }
 
 }

@@ -7,25 +7,38 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "MEMBER")
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "username" , unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(name = "password" , nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "name" , nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "created_at", updatable = false)
+    // todo : Member 를 비롯한 모든 엔티티 날짜 어떻게 할지 고민하기
+    // 애플리케이션에서 위임 ?
+    // 데이터베이스가 자동으로 설정하도록 ?
+    @Column(insertable = false, updatable = false , nullable = false)
     private LocalDateTime createdAt;
 
-    public Member() { }
+    protected Member() { }
+
+    public Member(String username, String password, String name) {
+
+        if(username == null || password == null || name == null || username.isEmpty() || password.isEmpty() || name.isEmpty()){
+            throw new IllegalArgumentException("null error");
+        }
+
+        this.username = username;
+        this.password = password;
+        this.name = name;
+    }
+
 }

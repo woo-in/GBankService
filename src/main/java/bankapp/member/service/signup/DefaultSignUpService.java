@@ -41,10 +41,11 @@ public class DefaultSignUpService implements SignUpService{
         signUpRequestValidator.validate(signUpRequest);
 
 
-        Member newMember = new Member();
-        newMember.setUsername(signUpRequest.getUsername());
-        newMember.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        newMember.setName(signUpRequest.getName());
+        Member newMember = new Member(signUpRequest.getUsername(),
+                passwordEncoder.encode(signUpRequest.getPassword()),
+                signUpRequest.getName()
+                );
+
         return memberRepository.save(newMember);
     }
 

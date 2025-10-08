@@ -1,9 +1,9 @@
 package bankapp.account.service.transfer.component;
 
-import bankapp.account.dao.transfer.PendingTransferDao;
 import bankapp.account.exceptions.IllegalTransferStateException;
 import bankapp.account.exceptions.PendingTransferNotFoundException;
 import bankapp.account.model.transfer.PendingTransfer;
+import bankapp.account.repository.PendingTransferRepository;
 import org.springframework.stereotype.Component;
 
 import static bankapp.account.model.transfer.TransferStatus.PENDING_AUTH;
@@ -11,10 +11,10 @@ import static bankapp.account.model.transfer.TransferStatus.PENDING_AUTH;
 @Component
 public class TransferAuthValidator {
 
-    private final PendingTransferDao pendingTransferDao;
+    private final PendingTransferRepository pendingTransferRepository;
 
-    public TransferAuthValidator(PendingTransferDao pendingTransferDao) {
-        this.pendingTransferDao = pendingTransferDao;
+    public TransferAuthValidator(PendingTransferRepository pendingTransferRepository) {
+        this.pendingTransferRepository = pendingTransferRepository;
     }
 
 
@@ -28,7 +28,7 @@ public class TransferAuthValidator {
      * @return 검증된 PendingTransfer
      */
     public PendingTransfer validate(String requestId) throws PendingTransferNotFoundException, IllegalTransferStateException  {
-        PendingTransfer pendingTransfer = pendingTransferDao.findById(requestId)
+        PendingTransfer pendingTransfer = pendingTransferRepository.findById(requestId)
                 .orElseThrow(() -> new PendingTransferNotFoundException("유효하지 않은 송금 요청입니다. ID: " + requestId));
 
         if (pendingTransfer.getStatus() != PENDING_AUTH) {
