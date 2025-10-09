@@ -4,6 +4,7 @@ import bankapp.account.model.account.Account;
 import bankapp.account.request.account.AccountTransactionRequest;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class AccountLedger {
 
     private String description;
 
+    @CreationTimestamp
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 

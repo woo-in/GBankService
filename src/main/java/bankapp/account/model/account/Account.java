@@ -3,6 +3,7 @@ package bankapp.account.model.account;
 import bankapp.member.model.Member;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ public abstract class Account {
     @Column(nullable = false)
     private AccountStatus status;
 
+    @CreationTimestamp
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
