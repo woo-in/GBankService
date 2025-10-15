@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>우인은행 - 신용대출</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* --- 심플 헤더 스타일 --- */
+    .simple-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      margin-bottom: 20px;
+      background-color: #f0f2f5;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .back-button {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      text-decoration: none;
+      margin-right: 15px;
+      padding: 0 10px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* --- 상품 목록 카드 스타일 --- */
+    .product-list-card {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px; /* 상품 간 간격 */
+    }
+
+    .product-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 25px 20px;
+      border-radius: 15px;
+      background-color: #f7f9fc;
+      text-decoration: none;
+      color: #333;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-left: 5px solid #4a90e2; /* 왼쪽에 포인트 컬러 바 추가 */
+    }
+
+    .product-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .product-info {
+      flex-grow: 1;
+    }
+
+    .product-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0 0 5px 0;
+    }
+
+    .product-desc {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+
+    .go-arrow {
+      font-size: 24px;
+      color: #888;
+      transition: color 0.2s;
+    }
+
+    .product-item:hover .go-arrow {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<header class="simple-header">
+  <a href="/loan/home" class="back-button">&lt;</a>
+  <h1 class="page-title">신용대출</h1>
+</header>
+
+<main>
+  <section class="product-list-card">
+    <div class="product-list">
+      <a th:each="product : ${LoanProductInfoResponses}"
+         th:href="@{'/loan/credit/' + ${product.loanProductSlug}}" class="product-item">
+        <div class="product-info">
+          <h3 class="product-title" th:text="${product.loanProductName}">상품 이름</h3>
+          <p class="product-desc" th:text="${product.productDescription}">상품 설명</p>
+        </div>
+        <div class="go-arrow">&gt;</div>
+      </a>
+
+    </div>
+  </section>
+</main>
+</body>
+</html>

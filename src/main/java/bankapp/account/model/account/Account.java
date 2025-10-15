@@ -3,8 +3,8 @@ package bankapp.account.model.account;
 import bankapp.member.model.Member;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "account_type")
+@NoArgsConstructor
 public abstract class Account {
 
     @Id
@@ -40,9 +41,8 @@ public abstract class Account {
     private LocalDateTime createdAt;
 
     @Column(name = "account_type", insertable = false, updatable = false)
-    protected String accountType;
+    private String accountType;
 
-    protected Account() {}
 
     protected Account(Member member, String accountNumber, BigDecimal balance, String nickname, AccountStatus status) {
         this.member = member;

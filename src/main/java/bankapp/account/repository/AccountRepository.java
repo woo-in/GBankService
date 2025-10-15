@@ -21,7 +21,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // 계좌번호로 계좌 정보 조회
     Optional<Account> findByAccountNumber(String accountNumber);
 
-
+    // todo : primaryaccount repository 따로 만들고 그곳에 두기
     // memberId로 주계좌(PrimaryAccount) 정보 조회
     @Query("SELECT pa FROM PrimaryAccount pa WHERE pa.member.memberId = :memberId")
     Optional<PrimaryAccount> findPrimaryAccountByMemberId(@Param("memberId") Long memberId);

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>우인은행 - 전체 서비스</title>
+  <title>우인은행 - 상품 찾기</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -120,8 +120,8 @@
     <div class="nav-tabs">
       <a href="/" class="nav-item">통장</a>
       <a href="/" class="nav-item">내 자산</a>
-      <a href="/product" class="nav-item">상품찾기</a>
-      <a href="/feature" class="nav-item active">서비스</a>
+      <a href="/product" class="nav-item active">상품찾기</a>
+      <a href="/feature" class="nav-item">서비스</a>
     </div>
     <a href="#" class="nav-management">관리</a>
   </nav>
@@ -129,31 +129,31 @@
 
 <main>
   <section class="service-menu-card">
-    <h2 class="menu-header">전체 서비스</h2>
+    <h2 class="menu-header">상품 찾기</h2>
     <div class="service-grid">
 
-      <a href="/feature/market-data/exchange-rates/today" class="service-item">
-        <div class="service-item-icon">💹</div>
-        <h3 class="service-item-title">환율 조회</h3>
-        <p class="service-item-desc">실시간으로 주요 통화의 환율을 확인하세요.</p>
+      <a href="/" class="service-item">
+        <div class="service-item-icon">💰</div>
+        <h3 class="service-item-title">예적금</h3>
+        <p class="service-item-desc">목돈 마련을 위한 다양한 예금 및 적금 상품을 찾아보세요.</p>
       </a>
 
-      <a href="/services/utility-bills" class="service-item">
-        <div class="service-item-icon">🧾</div>
-        <h3 class="service-item-title">공과금 납부</h3>
-        <p class="service-item-desc">각종 세금 및 공과금을 간편하게 납부합니다.</p>
+      <a href="/loan/home" class="service-item">
+        <div class="service-item-icon">🏠</div>
+        <h3 class="service-item-title">대출</h3>
+        <p class="service-item-desc">주택, 신용, 비상금 등 필요에 맞는 대출 상품을 안내합니다.</p>
       </a>
 
-      <a href="/services/cert-center" class="service-item">
-        <div class="service-item-icon">🛡️</div>
-        <h3 class="service-item-title">인증 센터</h3>
-        <p class="service-item-desc">공동인증서(구 공인인증서)를 관리합니다.</p>
+      <a href="/" class="service-item">
+        <div class="service-item-icon">💳</div>
+        <h3 class="service-item-title">입출금</h3>
+        <p class="service-item-desc">자유로운 입출금이 가능한 통장과 체크카드를 만나보세요.</p>
       </a>
 
-      <a href="/services/doc-request" class="service-item">
-        <div class="service-item-icon">📄</div>
-        <h3 class="service-item-title">증명서 발급</h3>
-        <p class="service-item-desc">필요한 금융 증명서를 온라인으로 발급받으세요.</p>
+      <a href="/" class="service-item">
+        <div class="service-item-icon">📈</div>
+        <h3 class="service-item-title">퇴직연금</h3>
+        <p class="service-item-desc">안정적인 노후 준비를 위한 퇴직연금 상품을 확인하세요.</p>
       </a>
 
     </div>

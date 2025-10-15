@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="'우인은행 - ' + ${LoanProductInformation.productName}">우인은행 - 대출상품</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* --- 심플 헤더 스타일 --- */
+    .simple-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      margin-bottom: 20px;
+      background-color: #f0f2f5;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .back-button {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      text-decoration: none;
+      margin-right: 15px;
+      padding: 0 10px;
+    }
+
+    /* --- 상품 상세 정보 카드 --- */
+    .product-detail-card {
+      background-color: white;
+      padding: 35px 40px;
+      border-radius: 20px;
+      box-shadow: 0 4px
+      15px rgba(0,0,0,0.08);
+    }
+
+    .product-header {
+      margin-bottom: 30px;
+      border-bottom: 2px solid #f0f2f5;
+      padding-bottom: 20px;
+    }
+
+    .product-name {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin: 0 0 8px 0;
+    }
+
+    .product-title {
+      font-size: 16px;
+      color: #555;
+      margin: 0;
+    }
+
+    /* --- 정보 테이블 스타일 --- */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse; /* 테이블 셀 사이의 간격 제거 */
+      margin-bottom: 40px;
+    }
+
+    .info-table th, .info-table td {
+      padding: 20px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .info-table th {
+      width: 30%;
+      font-weight: bold;
+      background-color: #f7f9fc;
+      color: #333;
+    }
+
+    .info-table td {
+      color: #555;
+      font-weight: 500;
+    }
+
+    .info-table tr:last-child th, .info-table tr:last-child td {
+      border-bottom: none;
+    }
+
+
+    /* --- 하단 버튼 컨테이너 --- */
+    .action-button-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 18px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      background-color: #4a90e2;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .action-button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+<header class="simple-header">
+  <a href="/loan/auto/list" class="back-button">&lt;</a>
+</header>
+
+<main>
+  <section class="product-detail-card">
+    <div class="product-header">
+      <h1 class="product-name" th:text="${LoanProductInformation.productName}">상품 이름</h1>
+      <p class="product-title" th:text="${LoanProductInformation.productTitle}">상품 타이틀(특징)</p>
+    </div>
+
+    <table class="info-table">
+      <tbody>
+      <tr>
+        <th>최고 금리</th>
+        <td th:text="${#numbers.formatDecimal(LoanProductInformation.maxInterestRate, 1, 2)} + '%'">연 12.00%</td>
+      </tr>
+      <tr>
+        <th>최저 금리</th>
+        <td th:text="${#numbers.formatDecimal(LoanProductInformation.minInterestRate, 1, 2)} + '%'">연 4.50%</td>
+      </tr>
+      <tr>
+        <th>대출 한도</th>
+        <td th:text="'최대 ' + ${#numbers.formatInteger(LoanProductInformation.maxLoanAmount, 3, 'COMMA')} + '원'">최대 300,000,000원</td>
+      </tr>
+      <tr>
+        <th>대출 기간</th>
+        <td th:text="'최장 ' + ${LoanProductInformation.maxLoanTerm} + '개월'">최장 120개월</td>
+      </tr>
+      <tr>
+        <th>상환 방법</th>
+        <td th:text="${LoanProductInformation.repaymentMethod}">원리금균등분할상환</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="action-button-container">
+      <button class="action-button" th:onclick="|location.href='@{/loans/check(productId=${LoanProductInformation.productId})}'|">
+        한도 및 금리 알아보기
+      </button>
+    </div>
+  </section>
+</main>
+</body>
+</html>

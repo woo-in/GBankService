@@ -32,21 +32,12 @@ public class HomeController {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    @GetMapping("product")
+    public String showProduct(){
+        return "home/product-home";
+    }
 
     private void prepareHomeDetailsViewModel(Model model , Member loginMember){
-        log.info(loginMember.getName());
         AccountResponse accountResponse = AccountResponse.from(accountCheckService.findPrimaryAccountByMemberId(loginMember.getMemberId()));
         model.addAttribute("accountResponse", accountResponse);
     }

@@ -31,6 +31,7 @@ public class AccountLedger {
     @Column(nullable = false)
     private BigDecimal balanceAfter;
 
+    @Column(nullable = false)
     private String description;
 
     @CreationTimestamp

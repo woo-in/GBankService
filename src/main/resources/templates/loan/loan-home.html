@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>우인은행 - 전체 서비스</title>
+  <title>우인은행 - 대출</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -120,8 +120,8 @@
     <div class="nav-tabs">
       <a href="/" class="nav-item">통장</a>
       <a href="/" class="nav-item">내 자산</a>
-      <a href="/product" class="nav-item">상품찾기</a>
-      <a href="/feature" class="nav-item active">서비스</a>
+      <a href="/product" class="nav-item active">상품찾기</a>
+      <a href="/feature" class="nav-item">서비스</a>
     </div>
     <a href="#" class="nav-management">관리</a>
   </nav>
@@ -129,31 +129,31 @@
 
 <main>
   <section class="service-menu-card">
-    <h2 class="menu-header">전체 서비스</h2>
+    <h2 class="menu-header">대출 상품</h2>
     <div class="service-grid">
 
-      <a href="/feature/market-data/exchange-rates/today" class="service-item">
-        <div class="service-item-icon">💹</div>
-        <h3 class="service-item-title">환율 조회</h3>
-        <p class="service-item-desc">실시간으로 주요 통화의 환율을 확인하세요.</p>
+      <a href="/loan/credit" class="service-item">
+        <div class="service-item-icon">💸</div>
+        <h3 class="service-item-title">신용대출</h3>
+        <p class="service-item-desc">담보 없이 빠르고 간편하게, 목돈이 필요할 때 이용해 보세요.</p>
       </a>
 
-      <a href="/services/utility-bills" class="service-item">
-        <div class="service-item-icon">🧾</div>
-        <h3 class="service-item-title">공과금 납부</h3>
-        <p class="service-item-desc">각종 세금 및 공과금을 간편하게 납부합니다.</p>
+      <a href="/loan/rental-deposit" class="service-item">
+        <div class="service-item-icon">🔑</div>
+        <h3 class="service-item-title">전월세보증금대출</h3>
+        <p class="service-item-desc">전월세 계약 시 부족한 보증금을 마련해 보세요.</p>
       </a>
 
-      <a href="/services/cert-center" class="service-item">
-        <div class="service-item-icon">🛡️</div>
-        <h3 class="service-item-title">인증 센터</h3>
-        <p class="service-item-desc">공동인증서(구 공인인증서)를 관리합니다.</p>
+      <a href="/loan/mortgage" class="service-item">
+        <div class="service-item-icon">🏠</div>
+        <h3 class="service-item-title">주택담보대출</h3>
+        <p class="service-item-desc">내 집 마련의 꿈, 다양한 조건의 주택담보대출로 이뤄보세요.</p>
       </a>
 
-      <a href="/services/doc-request" class="service-item">
-        <div class="service-item-icon">📄</div>
-        <h3 class="service-item-title">증명서 발급</h3>
-        <p class="service-item-desc">필요한 금융 증명서를 온라인으로 발급받으세요.</p>
+      <a href="/loan/auto" class="service-item">
+        <div class="service-item-icon">🚗</div>
+        <h3 class="service-item-title">자동차대출</h3>
+        <p class="service-item-desc">신차, 중고차 구매를 위한 합리적인 선택. 간편하게 신청하세요.</p>
       </a>
 
     </div>
