@@ -123,7 +123,7 @@ public class DefaultTransferService implements TransferService {
         verifyMemberPassword(pendingTransfer, transferAuthRequest);
         debitFromSender(pendingTransfer);
         creditToReceiver(pendingTransfer);
-        recordTransferCompletion(pendingTransfer);
+        transferCompletion(pendingTransfer);
     }
 
 
@@ -162,33 +162,32 @@ public class DefaultTransferService implements TransferService {
 
     }
 
-    // TODO : return value is never used
-    private long debitFromSender(PendingTransfer pendingTransfer) {
+    private void debitFromSender(PendingTransfer pendingTransfer) {
         if(pendingTransfer.getStatus() != PENDING_TRANSFER){
             throw new IllegalTransferStateException("거래 단계가 아닙니다.");
         }
 
-        return accountService.debit(new AccountTransactionRequest(
+        accountService.debit(new AccountTransactionRequest(
                 pendingTransfer.getSenderAccount().getAccountId(),
                 pendingTransfer.getAmount(),
                 "transfer"));
     }
-    private long creditToReceiver(PendingTransfer pendingTransfer) {
+    private void creditToReceiver(PendingTransfer pendingTransfer) {
         if(pendingTransfer.getStatus() != PENDING_TRANSFER){
             throw new IllegalTransferStateException("거래 단계가 아닙니다.");
         }
 
         long receiverAccountId = accountCheckService.findAccountByAccountNumber(pendingTransfer.getReceiverAccountNumber()).getAccountId();
 
-        return accountService.credit(new AccountTransactionRequest(
+        accountService.credit(new AccountTransactionRequest(
                 receiverAccountId,
                 pendingTransfer.getAmount(),
                 "transfer"
         ));
     }
-    // TODO: 함수명 바꾸기 (원장 기록 안함)
+
     // TODO : JPA 로 간단해진 부분 체크 , 고치기
-    private void recordTransferCompletion(PendingTransfer pendingTransfer) {
+    private void transferCompletion(PendingTransfer pendingTransfer) {
         pendingTransfer.setStatus(COMPLETED);
         pendingTransfer.setUpdatedAt(LocalDateTime.now());
     }

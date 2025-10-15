@@ -4,6 +4,7 @@ import bankapp.account.model.account.Account;
 import bankapp.member.model.Member;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class PendingTransfer {
 
     @Id
@@ -54,7 +56,6 @@ public class PendingTransfer {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    protected PendingTransfer() {}
 
     public PendingTransfer(Member senderMember, Account senderAccount, String receiverBankName, String receiverAccountNumber, String receiverName, TransferStatus status, LocalDateTime expiresAt) {
         this.senderMember = senderMember;

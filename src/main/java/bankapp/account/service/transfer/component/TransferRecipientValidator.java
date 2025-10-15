@@ -40,7 +40,7 @@ public class TransferRecipientValidator {
             throw new RecipientAccountNotFoundException("수취인 계좌를 찾을 수 없습니다.");
         }
 
-        PrimaryAccount fromAccount = accountCheckService.findPrimaryAccountByMemberId(loginMember.getMemberId());
+        PrimaryAccount fromAccount = accountCheckService.findPrimaryAccountByMember(loginMember);
 
         if (toAccountNumber.equals(fromAccount.getAccountNumber())) {
             throw new SameAccountTransferException("동일한 계좌로는 송금할 수 없습니다.");

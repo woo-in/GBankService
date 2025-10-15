@@ -30,8 +30,6 @@ public class LoanHomeController {
         return "loan/loan-home";
     }
 
-    // TODO : URL 좀 더 효율적 정리 공부
-
     @RequestMapping("/credit")
     public String showCreditList(Model model)
     {
@@ -42,7 +40,6 @@ public class LoanHomeController {
 
     @RequestMapping("/credit/{type}")
     public String showCreditDetail(@PathVariable("type") String type, Model model){
-
         CreditLoanProduct creditLoanProduct = creditLoanService.findCreditLoanProductByLoanProductSlug(type);
         LoanProductInfoResponse loanProductInfoResponse = LoanProductInfoResponse.from(creditLoanProduct);
         model.addAttribute("LoanProductInfoResponse" , loanProductInfoResponse);

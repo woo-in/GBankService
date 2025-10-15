@@ -38,7 +38,7 @@ public class HomeController {
     }
 
     private void prepareHomeDetailsViewModel(Model model , Member loginMember){
-        AccountResponse accountResponse = AccountResponse.from(accountCheckService.findPrimaryAccountByMemberId(loginMember.getMemberId()));
+        AccountResponse accountResponse = AccountResponse.from(accountCheckService.findPrimaryAccountByMember(loginMember));
         model.addAttribute("accountResponse", accountResponse);
     }
 

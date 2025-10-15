@@ -1,35 +1,20 @@
 package bankapp.account.repository;
 
 import bankapp.account.model.account.Account;
-import bankapp.account.model.account.PrimaryAccount;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    // 계좌번호로 계좌 존재 여부 확인
+
     boolean existsByAccountNumber(String accountNumber);
-
-
-    // 계좌번호로 계좌 정보 조회
     Optional<Account> findByAccountNumber(String accountNumber);
 
-    // todo : primaryaccount repository 따로 만들고 그곳에 두기
-    // memberId로 주계좌(PrimaryAccount) 정보 조회
-    @Query("SELECT pa FROM PrimaryAccount pa WHERE pa.member.memberId = :memberId")
-    Optional<PrimaryAccount> findPrimaryAccountByMemberId(@Param("memberId") Long memberId);
-
-
-    // accountId로 주계좌(PrimaryAccount) 정보 조회
-    @Query("SELECT a FROM PrimaryAccount a WHERE a.accountId = :accountId")
-    Optional<PrimaryAccount> findPrimaryAccountByAccountId(@Param("accountId") Long accountId);
 
 
     /**

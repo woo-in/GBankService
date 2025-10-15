@@ -7,6 +7,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -15,9 +16,9 @@ import java.math.BigDecimal;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("PRIMARY")
+@NoArgsConstructor
 public class PrimaryAccount extends Account {
 
-    protected PrimaryAccount() {}
 
     public PrimaryAccount(Member member, String accountNumber, BigDecimal balance, String nickname, AccountStatus status) {
         super(member, accountNumber, balance, nickname,status);

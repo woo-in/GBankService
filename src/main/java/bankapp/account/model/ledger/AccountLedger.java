@@ -4,6 +4,7 @@ import bankapp.account.model.account.Account;
 import bankapp.account.request.account.AccountTransactionRequest;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class AccountLedger {
 
     @Id
@@ -51,7 +53,6 @@ public class AccountLedger {
         return new AccountLedger(account ,type , accountTransactionRequest.getAmount() , balanceAfter, accountTransactionRequest.getDescription());
     }
 
-    protected AccountLedger() {}
 
     public AccountLedger(Account account, TransactionType transactionType, BigDecimal amount, BigDecimal balanceAfter, String description) {
         this.account = account;

@@ -5,6 +5,8 @@ import bankapp.account.exceptions.PrimaryAccountNotFoundException;
 import bankapp.account.model.account.Account;
 import bankapp.account.model.account.PrimaryAccount;
 import bankapp.account.repository.AccountRepository;
+import bankapp.account.repository.PrimaryAccountRepository;
+import bankapp.member.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +24,12 @@ import static bankapp.core.common.BankCode.WOOIN_BANK;
 public class DefaultAccountCheckService implements AccountCheckService {
 
     private final AccountRepository accountRepository;
+    private final PrimaryAccountRepository primaryAccountRepository;
 
     @Autowired
-    public DefaultAccountCheckService(AccountRepository accountRepository){
+    public DefaultAccountCheckService(AccountRepository accountRepository , PrimaryAccountRepository primaryAccountRepository){
         this.accountRepository = accountRepository;
+        this.primaryAccountRepository = primaryAccountRepository;
     }
 
 
@@ -35,23 +39,23 @@ public class DefaultAccountCheckService implements AccountCheckService {
         if (isInvalidAccountNumber(accountNumber)) {
             return false;
         }
-
         return accountRepository.existsByAccountNumber(accountNumber);
     }
 
-    @Override
-    public PrimaryAccount findPrimaryAccountByMemberId(Long memberId) throws PrimaryAccountNotFoundException{
 
-        return accountRepository.findPrimaryAccountByMemberId(memberId)
-                .orElseThrow(() -> new PrimaryAccountNotFoundException("해당 회원의 주계좌(PRIMARY)를 찾을 수 없습니다. memberId: " + memberId));
+    @Override
+    public PrimaryAccount findPrimaryAccountByMember(Member member) throws PrimaryAccountNotFoundException{
+
+        return primaryAccountRepository.findByMember(member)
+                .orElseThrow(() -> new PrimaryAccountNotFoundException("주계좌(PRIMARY)를 찾을 수 없습니다"));
 
     }
 
+
     @Override
     public PrimaryAccount findPrimaryAccountByAccountId(Long accountId) throws PrimaryAccountNotFoundException{
-        return accountRepository.findPrimaryAccountByAccountId(accountId)
+        return primaryAccountRepository.findById(accountId)
                 .orElseThrow(() -> new PrimaryAccountNotFoundException("해당 회원의 주계좌(PRIMARY)를 찾을 수 없습니다. memberId: " + accountId));
-
     }
 
 

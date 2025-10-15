@@ -2,12 +2,13 @@ package bankapp.member.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class Member {
 
     @Id
@@ -23,15 +24,10 @@ public class Member {
     @Column(nullable = false)
     private String name;
 
-    // todo : Member 를 비롯한 모든 엔티티 날짜 어떻게 할지 고민하기
-    // 애플리케이션에서 위임 ?
-    // 데이터베이스가 자동으로 설정하도록 ?
     @CreationTimestamp
     @Column(updatable = false , nullable = false)
     private LocalDateTime createdAt;
 
-
-    protected Member() { }
 
     public Member(String username, String password, String name) {
 

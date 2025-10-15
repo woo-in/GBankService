@@ -4,6 +4,7 @@ import bankapp.account.exceptions.AccountNotFoundException;
 import bankapp.account.exceptions.PrimaryAccountNotFoundException;
 import bankapp.account.model.account.Account;
 import bankapp.account.model.account.PrimaryAccount;
+import bankapp.member.model.Member;
 
 /**
  * 계좌 정보의 존재 여부를 확인하거나, 특정 조건에 맞는 계좌를 조회하는 비즈니스 로직 명세를 정의합니다.
@@ -19,14 +20,16 @@ public interface AccountCheckService {
      */
     boolean isAccountNumberExist(String accountNumber);
 
+
     /**
-     * 주어진 회원 ID에 해당하는 주계좌(PRIMARY) 정보를 조회합니다.
+     * 주어진 회원에 해당하는 주계좌(PRIMARY) 정보를 조회합니다.
      *
-     * @param memberId 주계좌를 찾을 회원의 고유 ID
+     * @param member 주계좌를 찾을 회원
      * @return 회원의 주계좌 엔티티
      * @throws PrimaryAccountNotFoundException 해당 회원의 주계좌를 찾을 수 없을 경우
      */
-    PrimaryAccount findPrimaryAccountByMemberId(Long memberId) throws PrimaryAccountNotFoundException;
+    PrimaryAccount findPrimaryAccountByMember(Member member) throws PrimaryAccountNotFoundException;
+
 
     /**
      * 주어진 계좌 ID에 해당하는 주계좌(PRIMARY) 정보를 조회합니다.
